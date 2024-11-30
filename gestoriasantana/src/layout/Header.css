@@ -1,0 +1,109 @@
+/* .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #282c34;
+    padding: 20px;
+  }
+  
+  .logo img {
+    width: 100px; 
+  }
+  
+  .nav-menu ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .nav-menu li {
+    margin-left: 20px;
+  }
+  
+  .nav-menu a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+  }
+  
+  .nav-menu a:hover {
+    text-decoration: underline;
+  }
+   */
+
+
+   .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #282c34; /* Cambia a un color más atractivo si lo deseas */
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Agrega una sombra para profundidad */
+  }
+  
+  .header__logo img {
+    width: 100px; /* Tamaño del logo */
+  }
+  
+  .nav__content {
+    display: flex;
+    align-items: center; /* Alinea el contenido verticalmente */
+  }
+  
+  .nav__logo {
+    display: flex;
+    align-items: center; /* Alinea el logo y el texto */
+  }
+  
+  .nav__menu {
+    margin-left: auto; /* Asegúrate de que el menú esté alineado a la derecha */
+  }
+  
+  .nav__list {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .nav__item {
+    position: relative; /* Para manejar el dropdown */
+    margin-left: 20px; /* Espaciado entre los elementos */
+  }
+  
+  .nav__link {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 10px; /* Agrega un poco de padding para un área clicable más grande */
+    transition: background 0.3s; /* Transición suave al pasar el mouse */
+  }
+  
+  .nav__link:hover {
+    background: rgba(255, 255, 255, 0.1); /* Efecto de hover */
+  }
+  
+  .dropdown__menu {
+    position: absolute;
+    top: 100%; /* Coloca el menú desplegable justo debajo del elemento */
+    left: 0;
+    background-color: #282c34; /* Mismo color de fondo que el header */
+    border-radius: 4px; /* Bordes redondeados */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra para el menú */
+    z-index: 1000; /* Asegúrate de que esté por encima de otros elementos */
+    display: none; /* Inicialmente oculto */
+  }
+  
+  .nav__item:hover .dropdown__menu {
+    display: block; /* Muestra el submenú al hacer hover en el elemento padre */
+  }
+  
+  .dropdown__item {
+    padding: 10px 20px; /* Espaciado interno en el ítem del dropdown */
+  }
+  
+  .dropdown__item:hover {
+    background: rgba(255, 255, 255, 0.1); /* Efecto de hover en el ítem del dropdown */
+  }
+  
