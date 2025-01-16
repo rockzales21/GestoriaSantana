@@ -34,6 +34,17 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/afores', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT id_afore, nombre FROM Afores
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Error del servidor');
+  }
+});
 
 // Obtener un Afore por ID
 router.get('/:id', async (req, res) => {

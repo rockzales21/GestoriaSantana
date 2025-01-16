@@ -12,6 +12,119 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/asesores', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT id_usuario, nombres || ' ' || apellido_p || ' ' || apellido_m AS nombre
+      FROM Usuarios u 
+      INNER JOIN Personas p ON p.id_persona = u.id_persona
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Error del servidor');
+  }
+});
+
+router.get('/asesores2', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT id_usuario, nombres || ' ' || apellido_p || ' ' || apellido_m AS nombre
+      FROM Usuarios u 
+      INNER JOIN Personas p ON p.id_persona = u.id_persona
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Error del servidor');
+  }
+});
+
+router.get('/produccionYear', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT p.nombres || ' ' || p.apellido_p || ' ' || p.apellido_m AS nombre, COUNT(c.id_cliente)
+      FROM  Usuarios u 
+      INNER JOIN Personas p ON p.id_persona = u.id_persona
+      INNER JOIN clientes c ON c.id_asesor = u.id_usuario
+      GROUP BY p.nombres || ' ' || p.apellido_p || ' ' || p.apellido_m
+      ORDER BY COUNT(c.id_cliente)
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Error del servidor');
+  }
+});
+
+router.get('/produccionSemana', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+      DATE_PART('week', c.fecha_registro) AS semana,
+      COUNT(c.id_cliente) AS total_clientes
+      FROM clientes c
+      WHERE DATE_PART('year', c.fecha_registro) = 2024
+      GROUP BY DATE_PART('week', c.fecha_registro)
+      ORDER BY semana
+    `);
+    // WHERE DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Error del servidor');
+  }
+});
+
+router.get('/produccionMes', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT CASE 
+              WHEN DATE_PART('month', c.fecha_registro) = 1 THEN 'Enero'
+              WHEN DATE_PART('month', c.fecha_registro) = 2 THEN 'Febrero'
+              WHEN DATE_PART('month', c.fecha_registro) = 3 THEN 'Marzo'
+              WHEN DATE_PART('month', c.fecha_registro) = 4 THEN 'Abril'
+              WHEN DATE_PART('month', c.fecha_registro) = 5 THEN 'Mayo'
+              WHEN DATE_PART('month', c.fecha_registro) = 6 THEN 'Junio'
+              WHEN DATE_PART('month', c.fecha_registro) = 7 THEN 'Julio'
+              WHEN DATE_PART('month', c.fecha_registro) = 8 THEN 'Agosto'
+              WHEN DATE_PART('month', c.fecha_registro) = 9 THEN 'Septiembre'
+              WHEN DATE_PART('month', c.fecha_registro) = 10 THEN 'Octubre'
+              WHEN DATE_PART('month', c.fecha_registro) = 11 THEN 'Noviembre'
+              WHEN DATE_PART('month', c.fecha_registro) = 12 THEN 'Diciembre'
+              END AS mes,
+              COUNT(c.id_cliente) AS total_clientes
+              FROM clientes c
+              WHERE DATE_PART('year', c.fecha_registro) = 2024
+              GROUP BY DATE_PART('month', c.fecha_registro)
+              ORDER BY DATE_PART('month', c.fecha_registro)
+    `);
+    // WHERE DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Error del servidor');
+  }
+});
+
+router.get('/produccionAnio', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+    COUNT(c.id_cliente) AS total_clientes
+FROM 
+    clientes c
+WHERE 
+    DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Error del servidor');
+  }
+});
+
+
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -65,6 +178,8 @@ router.put('/:id', async (req, res) => {
     res.status(500).send('Error del servidor');
   }
 });
+
+
 
 
 module.exports = router;

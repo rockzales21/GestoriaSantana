@@ -9,6 +9,8 @@ const pool = require('./db');
 
 const cors = require('cors');
 
+
+
 // Importar otras rutas
 const aforesRuta = require('./routes/afores');
 const clientesRuta = require('./routes/clientes');
@@ -20,6 +22,9 @@ const testigosRuta = require('./routes/testigos');
 const usuariosRuta = require('./routes/usuarios');
 const registrarAsesorRuta = require('./routes/registrarAsesor');
 const honorariosRuta = require('./routes/honorarios');
+const registrarClienteRuta = require('./routes/registrarCliente');
+const liquidacionesRuta = require('./routes/liquidaciones');
+const schedule = require('./jobs/scheduler');
 
 // Verificar conexión a la base de datos
 pool.query('SELECT NOW()', (err, res) => {
@@ -52,6 +57,8 @@ app.use('/usuarios', usuariosRuta);
 app.use('/registrarAsesor', registrarAsesorRuta);
 app.use('/honorarios', honorariosRuta);
 app.use('/imagenes/afores', express.static(path.join(__dirname, 'imagenes/afores')));
+app.use('/registrarCliente', registrarClienteRuta);
+app.use('/liquidaciones', liquidacionesRuta);
 
 // Iniciar el servidor
 app.listen(port, () => {
