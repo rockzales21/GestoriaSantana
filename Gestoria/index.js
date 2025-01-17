@@ -1,8 +1,8 @@
 const express = require('express');
 const path = require('path');
 const app = express();
-const port = 5000;
-
+// const port = 5000;
+const port = process.env.PORT || 3000;
 // Importar rutas
 const indexRoutes = require('./routes/index');
 const pool = require('./db');
