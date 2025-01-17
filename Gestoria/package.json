@@ -1,9 +1,10 @@
 {
   "name": "gestoria",
   "version": "1.0.0",
-  "description": "Administrador de tramites para una gestoria",
+  "description": "Administrador de trámites para una gestoría",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Rockzales",
