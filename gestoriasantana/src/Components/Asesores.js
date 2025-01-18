@@ -3,6 +3,8 @@ import { Table, TableBody, TableCell, TableContainer, TableRow, Paper, Typograph
 import EditIcon from '@mui/icons-material/Edit';
 import DescriptionIcon from '@mui/icons-material/Description';
 import { useNavigate } from 'react-router-dom';
+import Contrato from './Contrato'; // Ajusta la ruta según sea necesario
+
 
 const commonStyles = {
   bgcolor: 'background.paper',
@@ -44,6 +46,7 @@ const Asesores = () => {
     // Navega a la ruta de edición con el ID del asesor
     navigate(`/asesores/editar/${id}`);
   };
+  
 
   return (
     <div style={{ padding: '20px' }}>
@@ -63,15 +66,17 @@ const Asesores = () => {
                   <TableCell sx={{ ...commonStyles }}>NSS:</TableCell>
                   <TableCell sx={{ ...commonStyles }}>{asesor.nss}</TableCell>
                   <TableCell sx={{ ...commonStyles }}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      startIcon={<DescriptionIcon />}
-                      sx={buttonStyles}  // Aplica el estilo aquí para ajustar el tamaño
-                      onClick={() => handleEdit(asesor.id_usuario)} // Pasa el ID al hacer clic
-                    >
-                      Contrato
-                    </Button>
+                  <Button
+  variant="contained"
+  color="primary"
+  startIcon={<DescriptionIcon />}
+  sx={buttonStyles}
+  onClick={() => navigate(`/asesores/contrato/${asesor.id_usuario}`)}
+>
+  Contrato
+</Button>
+
+
                   </TableCell>
                 </TableRow>
                 <TableRow>

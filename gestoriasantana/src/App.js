@@ -15,6 +15,9 @@ import ReporteProduccion from './Components/reporteProduccion';
 import FechasTramites from './Components/FechasTramites';
 import LiquidacionesPendientes from './Components/LiquidacionesPendientes';
 import FiltroClientes from './Components/FiltroClientes';
+
+import Contrato from './Components/Contrato';
+
 import Home from './pages/Home';
 import Header from './layout/Header';
 
@@ -29,7 +32,7 @@ function App() {
   const [showDetails, setShowDetails] = useState(false);
   const [cantidad, setCantidad] = useState('');
   const [honorarios, setHonorarios] = useState(0); // Nuevo estado para el monto de honorarios
-
+  document.title = 'Gestoria Mago Santana';
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
     setShowDetails(false); // Restablecer los detalles al abrir el modal
@@ -151,8 +154,7 @@ function App() {
           <Route path="/FechasTramites" element={<FechasTramites/>}/>
           <Route path="/LiquidacionesPendientes" element={<LiquidacionesPendientes/>}/>
           <Route path="/FiltroClientes" element={<FiltroClientes/>}/>
-          
-          
+          <Route path="/asesores/contrato/:id" element={<Contrato />} />
         </Routes>
       </div>
 
