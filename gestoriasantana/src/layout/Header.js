@@ -10,7 +10,19 @@ const Header = () => {
       <img src="/img/logo.png" alt="Logo" className="h-64 mr-4" />
       <nav className="flex space-x-4 ml-auto">
         <NavItem to="/" text="Inicio" className="text-xl" />
-        <NavItem to="/clientes" text="Clientes" className="text-xl" />
+        <NavItem
+          text="Clientes"
+          dropdownItems={[
+            { to: '/FiltroClientes', text: 'Trámites' },
+            { to: '/ReporteProduccion', text: 'Ingresos' },
+            { to: '/FechasTramites', text: 'Fechas de tramite' },
+          ]}
+          className="text-xl"
+        />
+        <NavItem to="/FormularioTramite" text="Altas" className="text-xl" />
+        <NavItem to="/Clientes" text="Clientes" className="text-xl" />
+        <NavItem to="/LiquidacionesPendientes" text="Liquidaciones" className="text-xl" />
+        {/* <NavItem to="/clientes" text="Clientes" className="text-xl" /> */}
         <NavItem
           text="Asesores"
           dropdownItems={[

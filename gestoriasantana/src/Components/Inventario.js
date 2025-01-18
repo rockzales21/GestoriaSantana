@@ -21,7 +21,9 @@ const Inventario = () => {
   useEffect(() => {
     const fetchInventario = async () => {
       try {
-        const response = await fetch('http://localhost:5000/inventario');
+        //https://gestoriasantana-production.up.railway.app/
+        // const response = await fetch('http://localhost:5000/inventario');
+        const response = await fetch('https://gestoriasantana-production.up.railway.app/inventario');
         const data = await response.json();
         setInventario(data);
       } catch (error) {
@@ -46,10 +48,13 @@ const Inventario = () => {
     e.preventDefault();
     try {
       const method = isEditing ? 'PUT' : 'POST';
-      const endpoint = isEditing
-        ? `http://localhost:5000/inventario/${formData.id_item}`
-        : 'http://localhost:5000/inventario';
+      // const endpoint = isEditing
+      //   ? `http://localhost:5000/inventario/${formData.id_item}`
+      //   : 'http://localhost:5000/inventario';
 
+      const endpoint = isEditing
+         ? `https://gestoriasantana-production.up.railway.app/inventario/${formData.id_item}`
+         : 'https://gestoriasantana-production.up.railway.app/inventario';
       const response = await fetch(endpoint, {
         method,
         headers: { 'Content-Type': 'application/json' },

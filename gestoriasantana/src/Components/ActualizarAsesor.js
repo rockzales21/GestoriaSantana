@@ -16,7 +16,9 @@ const ActualizarAsesor = () => {
     // Carga los datos actuales del asesor para editar
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/usuarios/${id}`);
+        // const response = await fetch(`http://localhost:5000/usuarios/${id}`);
+        const response = await fetch(`https://gestoriasantana-production.up.railway.app/usuarios/${id}`);
+        //https://gestoriasantana-production.up.railway.app/
         const data = await response.json();
         if (response.ok) {
           setFormData(data);
@@ -41,7 +43,8 @@ const ActualizarAsesor = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:5000/usuarios/${id}`, {
+      // const response = await fetch(`http://localhost:5000/usuarios/${id}`, {
+        const response = await fetch(`https://gestoriasantana-production.up.railway.app/usuarios/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

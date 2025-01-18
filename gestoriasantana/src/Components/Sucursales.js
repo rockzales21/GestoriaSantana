@@ -21,7 +21,9 @@ const Sucursales = () => {
   useEffect(() => {
     const fetchSucursales = async () => {
       try {
-        const response = await fetch('http://localhost:5000/sucursales');
+        //https://gestoriasantana-production.up.railway.app/
+        // const response = await fetch('http://localhost:5000/sucursales');
+        const response = await fetch('https://gestoriasantana-production.up.railway.app/sucursales');
         const data = await response.json();
         setSucursales(data);
       } catch (error) {
@@ -46,9 +48,14 @@ const Sucursales = () => {
     e.preventDefault();
     try {
       const method = isEditing ? 'PUT' : 'POST';
-      const endpoint = isEditing
-        ? `http://localhost:5000/sucursales/${formData.id_sucursal}`
-        : 'http://localhost:5000/sucursales';
+      // https://gestoriasantana-production.up.railway.app/
+      // const endpoint = isEditing
+      //   ? `http://localhost:5000/sucursales/${formData.id_sucursal}`
+      //   : 'http://localhost:5000/sucursales';
+
+        const endpoint = isEditing
+        ? `https://gestoriasantana-production.up.railway.app/sucursales/${formData.id_sucursal}`
+        : 'https://gestoriasantana-production.up.railway.app/sucursales';
 
       const response = await fetch(endpoint, {
         method,

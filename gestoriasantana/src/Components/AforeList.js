@@ -12,7 +12,9 @@ function AforeList() {
 
   const fetchAfores = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/afores');
+      //https://gestoriasantana-production.up.railway.app/
+      // const response = await axios.get('http://localhost:5000/afores');
+      const response = await axios.get('https://gestoriasantana-production.up.railway.app/afores');
       setAfores(response.data);
     } catch (error) {
       console.error('Error al obtener los afores:', error);

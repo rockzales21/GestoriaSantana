@@ -10,6 +10,11 @@ import RegistrarAsesor from './Components/RegistrarAsesor';
 import ActualizarAsesor from './Components/ActualizarAsesor';
 import Inventario from './Components/Inventario';
 import Sucursales from './Components/Sucursales';
+import FormularioTramite from './Components/FormularioTramite';
+import ReporteProduccion from './Components/reporteProduccion';
+import FechasTramites from './Components/FechasTramites';
+import LiquidacionesPendientes from './Components/LiquidacionesPendientes';
+import FiltroClientes from './Components/FiltroClientes';
 import Home from './pages/Home';
 import Header from './layout/Header';
 
@@ -109,7 +114,7 @@ function App() {
             autoFocus
           />
         ) : (
-          <div className="results">
+          <div className="results text-justify">
             <p>Cantidad total: {formatoPesos(total)}</p>
             <p>Honorarios: {formatoPesos(honorario)}</p>
             <p>Aseguramiento 3: {formatoPesos(aseguramiento)}</p>
@@ -141,6 +146,13 @@ function App() {
           <Route path="/registrarAsesor" element={<RegistrarAsesor />} />
           <Route path="/asesores/editar/:id" element={<ActualizarAsesor />} />
           <Route path="/VisorSemanas" element={<VisorSemanas />} />
+          <Route path="/FormularioTramite" element={<FormularioTramite/>}/>
+          <Route path="/ReporteProduccion" element={<ReporteProduccion/>}/>
+          <Route path="/FechasTramites" element={<FechasTramites/>}/>
+          <Route path="/LiquidacionesPendientes" element={<LiquidacionesPendientes/>}/>
+          <Route path="/FiltroClientes" element={<FiltroClientes/>}/>
+          
+          
         </Routes>
       </div>
 

@@ -22,7 +22,9 @@ const Asesores = () => {
   const [asesores, setAsesores] = useState([]);
   const navigate = useNavigate();
   useEffect(() => {
-    fetch('http://localhost:5000/usuarios')
+    //https://gestoriasantana-production.up.railway.app/
+    // fetch('http://localhost:5000/usuarios')
+    fetch('https://gestoriasantana-production.up.railway.app/usuarios')
       .then((response) => {
         if (!response.ok) {
           throw new Error('Error al obtener los asesores');

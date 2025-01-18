@@ -21,7 +21,9 @@ function AforeForm() {
 
   const fetchAfore = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/afores/${id}`);
+      //https://gestoriasantana-production.up.railway.app/
+      // const response = await axios.get(`http://localhost:5000/afores/${id}`);
+      const response = await axios.get(`https://gestoriasantana-production.up.railway.app/afores/${id}`);
       const { nombre, link, telefono } = response.data;
       setFormData({ nombre, link, telefono, imagen: null });
     } catch (error) {
@@ -47,10 +49,13 @@ function AforeForm() {
 
     try {
       if (id) {
-        await axios.put(`http://localhost:5000/afores/${id}`, data);
+        //https://gestoriasantana-production.up.railway.app/
+        // await axios.put(`http://localhost:5000/afores/${id}`, data);
+        await axios.put(`https://gestoriasantana-production.up.railway.app/afores/${id}`, data);
         alert('Afore actualizado correctamente');
       } else {
-        await axios.post('http://localhost:5000/afores', data);
+        // await axios.post('http://localhost:5000/afores', data);
+        await axios.post('https://gestoriasantana-production.up.railway.app/afores', data);
         alert('Afore creado correctamente');
       }
       navigate('/afores');
