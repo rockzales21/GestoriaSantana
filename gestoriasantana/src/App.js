@@ -52,7 +52,9 @@ function App() {
   useEffect(() => {
     const fetchHonorarios = async () => {
       try {
-        const response = await fetch('http://localhost:5000/honorarios');
+        //https://gestoriasantana-production.up.railway.app/
+        // const response = await fetch('http://localhost:5000/honorarios');
+        const response = await fetch('https://gestoriasantana-production.up.railway.app/honorarios');
         const data = await response.json();
         if (response.ok) {
           setHonorarios(parseFloat(data.monto)); // Convertir directamente a número

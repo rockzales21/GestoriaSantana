@@ -85,70 +85,21 @@ const FormularioTramite = () => {
     });
   };
 
-  // const handleTipoTramiteChange = (e) => {
-  //   setTipoTramite(e.target.value);
-  // };
 
   const handleTipoTramiteChange = (e) => {
     const value = e.target.value;
     setTipoTramite(value);
 
-    // Calculamos la fecha del primero del mes siguiente
-  // let fecha_alta = null;
-  // if (value === "Activate") {
-  //   const today = new Date();
-  //   const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-  //   fecha_alta = nextMonth.toISOString(); // Convertimos a formato datetime
-  // }
-
-//   let fecha_alta = null;
-//   let fecha_fin_tramite = null;
-
-// if (value === "Activate") {
-//   const today = new Date();
-//   const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-//   fecha_alta = nextMonth.toISOString(); // Convertimos a formato datetime
-// } else {
-//   const today = new Date();
-//   const sevenDaysLater = new Date(today);
-//   sevenDaysLater.setDate(today.getDate() + 7); // Sumar 7 días a la fecha actual
-//   fecha_alta = sevenDaysLater.toISOString(); // Convertimos a formato datetime
-//   fecha_fin_tramite = fechaFinTramite.toISOString(); // Convertimos a formato datetime
-// }
-
-    // // Actualizamos el campo status según el tipo de trámite
-    // const status =
-    //   value === "Pensión" || value === "Negativa" || value === "Desempleo"
-    //     ? "Alta"
-    //     : value === "Activate"
-    //     ? "Activo"
-    //     : "";
-
-    // setFormData({
-    //   ...formData,
-    //   tipo_tramite: value,
-    //   status, // Incluimos el campo status dinámicamente
-    // });
-
-    // setFormData({
-    //   ...formData,
-    //   tipo_tramite: value,
-    //   status: 
-    //     value === "Pensión" || value === "Negativa" || value === "Desempleo"
-    //       ? "Alta"
-    //       : value === "Activate"
-    //       ? "Activo"
-    //       : "",
-    //   fecha_alta, // Incluimos la fecha_alta si aplica
-    // });
 
     let fecha_alta = null;
 let fecha_fin_tramite = null;
+let monto = formData.monto; // Mantener el valor actual por defecto
 
 if (value === "Activate") {
   const today = new Date();
   const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
   fecha_alta = nextMonth.toISOString(); // Convertimos a formato datetime
+  monto = 0; // Establecer el monto a 0 solo para "Activate"
 } else {
   const today = new Date();
   const sevenDaysLater = new Date(today);
@@ -171,6 +122,7 @@ setFormData({
       : "",
   fecha_alta, // Incluimos la fecha_alta si aplica
   fecha_fin_tramite, // Incluimos la fecha_fin_tramite si aplica
+  monto,
 });
 
   };
@@ -179,7 +131,7 @@ setFormData({
     e.preventDefault();
     try {
       //https://gestoriasantana-production.up.railway.app/
-      // const response = await fetch('http://localhost:5000/registrarCliente', {
+      // const response = await fetch('http://localhost:3000/registrarCliente', {
         const response = await fetch('https://gestoriasantana-production.up.railway.app/registrarCliente', {
         method: 'POST',
         headers: {
