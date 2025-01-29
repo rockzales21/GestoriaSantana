@@ -24,6 +24,7 @@ const registrarAsesorRuta = require('./routes/registrarAsesor');
 const honorariosRuta = require('./routes/honorarios');
 const registrarClienteRuta = require('./routes/registrarCliente');
 const liquidacionesRuta = require('./routes/liquidaciones');
+const usersRuta = require('./routes/users'); // Importa la ruta
 const schedule = require('./jobs/scheduler');
 
 // Verificar conexión a la base de datos
@@ -59,6 +60,7 @@ app.use('/honorarios', honorariosRuta);
 app.use('/imagenes/afores', express.static(path.join(__dirname, 'imagenes/afores')));
 app.use('/registrarCliente', registrarClienteRuta);
 app.use('/liquidaciones', liquidacionesRuta);
+app.use('/users', usersRuta); // Usa la ruta con el prefijo '/users'
 
 // Iniciar el servidor
 app.listen(port, () => {
