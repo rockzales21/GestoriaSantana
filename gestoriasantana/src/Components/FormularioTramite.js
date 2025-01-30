@@ -652,6 +652,7 @@ setFormData({
           id="parentescoTestigo1"
           name="parentescoTestigo1"
           className="block w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          required
           value={formData.parentescoTestigo1} // Cambiado a formData
           onChange={handleChange} // Cambiado a handleChange
           >
@@ -734,6 +735,7 @@ setFormData({
           name="parentescoTestigo2"
           className="block w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           value={formData.parentescoTestigo2} // Cambiado a formData
+          required
           onChange={handleChange} // Cambiado a handleChange
           >
             <option value="">Seleccione el parentesco</option>

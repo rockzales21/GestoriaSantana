@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Outlet } from 'react-router-dom';
 import Clientes from './Components/Clientes';
 import Asesores from './Components/Asesores';
 import Afores from './Components/Afores';
@@ -15,6 +15,9 @@ import ReporteProduccion from './Components/reporteProduccion';
 import FechasTramites from './Components/FechasTramites';
 import LiquidacionesPendientes from './Components/LiquidacionesPendientes';
 import FiltroClientes from './Components/FiltroClientes';
+import Login from './Components/auth/Login';
+import { AuthProvider } from './Components/auth/AuthContext';
+import PrivateRoute from './Components/auth/PrivateRoute';
 
 import Contrato from './Components/Contrato';
 
@@ -136,11 +139,28 @@ function App() {
 
   return (
     <Router>
-      <Header />
+    <AuthProvider> 
+    
+      
       <ToastContainer position="top-center" autoClose={3000} />
-      <div className="content">
-        <Routes>
-          <Route path="/" element={<Home />} />
+
+<Routes>
+  <Route path="/login" element={<Login />} />
+  
+  <Route element={<PrivateRoute />}></Route>
+<Route 
+  path="/" 
+  element={
+    <>
+      <Header />
+      <FloatingButton onClick={toggleModal} />
+      <CotizadorModal isOpen={isModalOpen} onClose={toggleModal} />
+      <Outlet/>
+      </>
+  }
+  >
+            
+            <Route index element={<Home />} />
           <Route path="/clientes" element={<Clientes />} />
           <Route path="/inventario" element={<Inventario />} />
           <Route path="/sucursales" element={<Sucursales />} />
@@ -157,11 +177,12 @@ function App() {
           <Route path="/LiquidacionesPendientes" element={<LiquidacionesPendientes/>}/>
           <Route path="/FiltroClientes" element={<FiltroClientes/>}/>
           <Route path="/asesores/contrato/:id" element={<Contrato />} />
-        </Routes>
-      </div>
+          <Route path="/login" element={<Login />} />
 
-      <FloatingButton onClick={toggleModal} />
-      <CotizadorModal isOpen={isModalOpen} onClose={toggleModal} />
+  </Route>
+</Routes>
+    
+    </AuthProvider>
     </Router>
   );
 }
