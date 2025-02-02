@@ -39,7 +39,10 @@ pool.query('SELECT NOW()', (err, res) => {
 
 
 // Usar CORS antes de las rutas
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+  origin: 'https://gestoria-santana.vercel.app'
+}));
 
 // Usar middleware para parsear JSON
 app.use(express.json());
