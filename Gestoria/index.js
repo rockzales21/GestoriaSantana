@@ -41,7 +41,9 @@ pool.query('SELECT NOW()', (err, res) => {
 // Usar CORS antes de las rutas
 // app.use(cors());
 app.use(cors({
-  origin: 'https://gestoria-santana.vercel.app'
+  origin: 'https://gestoria-santana.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // Usar middleware para parsear JSON
