@@ -1,72 +1,3 @@
-// const express = require('express');
-// const bcrypt = require('bcrypt');
-// const jwt = require('jsonwebtoken');
-// const pool = require('../db'); // Conexión a tu base de datos
-// const router = express.Router();
-
-// // Clave secreta para JWT (puedes almacenarla en un archivo .env)
-// const JWT_SECRET = 'secret_key';
-
-// // Ruta de registro
-// router.post('/register', async (req, res) => {
-//     const { username, email, password } = req.body;
-
-//     try {
-//         // Verificar si el usuario ya existe
-//         const userExist = await pool.query(
-//             'SELECT * FROM users WHERE email = $1',
-//             [email]
-//         );
-
-//         if (userExist.rows.length > 0) {
-//             return res.status(400).json({ message: 'El usuario ya existe' });
-//         }
-
-//         // Encriptar la contraseña
-//         const salt = await bcrypt.genSalt(10);
-//         const hashedPassword = await bcrypt.hash(password, salt);
-
-//         // Insertar nuevo usuario
-//         const newUser = await pool.query(
-//             'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *',
-//             [username, email, hashedPassword]
-//         );
-
-//         res.status(201).json({ message: 'Usuario registrado con éxito', user: newUser.rows[0] });
-//     } catch (error) {
-//         res.status(500).json({ error: error.message });
-//     }
-// });
-
-// // Ruta de login
-// router.post('/login', async (req, res) => {
-//     const { email, password } = req.body;
-
-//     try {
-//         // Buscar al usuario
-//         const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-
-//         if (user.rows.length === 0) {
-//             return res.status(400).json({ message: 'Usuario o contraseña incorrectos' });
-//         }
-
-//         // Verificar contraseña
-//         const validPassword = await bcrypt.compare(password, user.rows[0].password);
-//         if (!validPassword) {
-//             return res.status(400).json({ message: 'Usuario o contraseña incorrectos' });
-//         }
-
-//         // Crear token JWT
-//         const token = jwt.sign({ id: user.rows[0].id }, JWT_SECRET, { expiresIn: '1h' });
-
-//         res.json({ message: 'Inicio de sesión exitoso', token });
-//     } catch (error) {
-//         res.status(500).json({ error: error.message });
-//     }
-// });
-
-// module.exports = router;
-
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -147,5 +78,36 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+// Ruta para obtener los datos del usuario en sesión
+router.get('/profile', async (req, res) => {
+    const token = req.header('Authorization');
+    if (!token) {
+        return res.status(401).json({ message: 'Acceso denegado' });
+    }
+
+    try {
+        const verified = jwt.verify(token, JWT_SECRET);
+        const userId = verified.id_usuario;
+
+        const userProfile = await pool.query(`
+            SELECT u.username, p.email, p.telefono, s.tel_oficina, s.oficina
+            FROM public.users u
+            INNER JOIN public.usuarios us ON u.id_usuario = us.id_usuario
+            INNER JOIN public.personas p ON p.id_persona = us.id_persona 
+            INNER JOIN public.sucursales s ON s.encargado = us.id_usuario
+            WHERE u.id_usuario = $1
+        `, [userId]);
+
+        if (userProfile.rows.length === 0) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        res.json(userProfile.rows[0]);
+    } catch (error) {
+        res.status(400).json({ message: 'Token no válido' });
+    }
+});
+
 
 module.exports = router;
