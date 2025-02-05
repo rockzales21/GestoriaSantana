@@ -407,6 +407,7 @@ import PrivateRoute from './Components/auth/PrivateRoute';
 import Contrato from './Components/Contrato';
 import Home from './pages/Home';
 import Header from './layout/Header';
+import Profile from './Components/Profile';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaMoneyBillWave } from 'react-icons/fa';
@@ -549,6 +550,7 @@ function App() {
               <Route path="LiquidacionesPendientes" element={<LiquidacionesPendientes />} />
               <Route path="FiltroClientes" element={<FiltroClientes />} />
               <Route path="asesores/contrato/:id" element={<Contrato />} />
+              <Route path="profile" element={<Profile />} />
             </Route>
           </Route>
         </Routes>

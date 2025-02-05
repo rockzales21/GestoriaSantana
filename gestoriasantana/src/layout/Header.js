@@ -51,68 +51,149 @@
 // export default Header;
 
 
+// import React, { useContext } from 'react';
+// import NavItem from './Components/NavItem';
+// import { AuthContext } from '../Components/auth/AuthContext';
+// import { FaSignOutAlt } from 'react-icons/fa';
+
+// const Header = () => {
+//   const { user, profile, logout } = useContext(AuthContext);
+
+//   return (
+//     <header className="bg-gradient-to-r from-gray-300 to-gray-800 text-white p-4 flex justify-between items-center">
+//       <div className="flex items-center">
+//         <img src="/img/logo.png" alt="Logo" className="h-64 mr-4" />
+//         {user && (
+//         <div className="user-info">
+//           {profile && <span className="text-xl">Oficina: {profile.oficina}</span>}
+//           <span className="text-xl">Bienvenido, {user.username}</span>
+//           <button
+//             onClick={logout}
+//             className="logout-button"
+//             title="Cerrar sesión"
+//             aria-label="Cerrar sesión"
+//           >
+//             <FaSignOutAlt className="text-2xl" />
+//           </button>
+//         </div>
+//       )}
+//       <div>
+//         <nav className="flex space-x-4">
+//           <NavItem to="/" text="Inicio" className="text-xl" />
+//           <NavItem
+//             text="Clientes"
+//             dropdownItems={[
+//               { to: '/FiltroClientes', text: 'Trámites' },
+//               { to: '/ReporteProduccion', text: 'Ingresos' },
+//               { to: '/FechasTramites', text: 'Fechas de tramite' },
+//             ]}
+//             className="text-xl"
+//           />
+//           <NavItem to="/FormularioTramite" text="Altas" className="text-xl" />
+//           <NavItem to="/Clientes" text="Clientes" className="text-xl" />
+//           <NavItem to="/LiquidacionesPendientes" text="Liquidaciones" className="text-xl" />
+//           <NavItem
+//             text="Asesores"
+//             dropdownItems={[
+//               { to: '/asesores', text: 'Lista de Asesores' },
+//               { to: '/registrarAsesor', text: 'Registrar Asesor' },
+//             ]}
+//             className="text-xl"
+//           />
+//           <NavItem
+//             text="Recursos"
+//             dropdownItems={[
+//               { to: '/sucursales', text: 'Directorio' },
+//               { to: '/afores', text: 'Afores' },
+//               { to: 'https://serviciosdigitales.imss.gob.mx/semanascotizadas-web/usuarios/IngresoAsegurado', text: 'Semanas cotizadas', target: '_blank' },
+//               { to: 'https://www.gob.mx/curp/', text: 'CURP', target: '_blank' },
+//               { to: '/VisorSemanas', text: 'Días hábiles' },
+//             ]}
+//             className="text-xl"
+//           />
+//           <NavItem to="/inventario" text="Inventario" className="text-xl" />
+//         </nav>
+//         </div>
+//       </div>
+
+//     </header>
+//   );
+// };
+
+// export default Header;
+
 import React, { useContext } from 'react';
 import NavItem from './Components/NavItem';
 import { AuthContext } from '../Components/auth/AuthContext';
 import { FaSignOutAlt } from 'react-icons/fa';
 
 const Header = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { user, profile, logout } = useContext(AuthContext);
 
   return (
-    <header className="bg-gradient-to-r from-gray-300 to-gray-800 text-white p-4 flex justify-between items-center">
+    <header className="bg-gradient-to-r from-gray-300 to-gray-800 text-white p-4">
       <div className="flex items-center">
+        {/* Logo */}
         <img src="/img/logo.png" alt="Logo" className="h-64 mr-4" />
-        <nav className="flex space-x-4">
-          <NavItem to="/" text="Inicio" className="text-xl" />
-          <NavItem
-            text="Clientes"
-            dropdownItems={[
-              { to: '/FiltroClientes', text: 'Trámites' },
-              { to: '/ReporteProduccion', text: 'Ingresos' },
-              { to: '/FechasTramites', text: 'Fechas de tramite' },
-            ]}
-            className="text-xl"
-          />
-          <NavItem to="/FormularioTramite" text="Altas" className="text-xl" />
-          <NavItem to="/Clientes" text="Clientes" className="text-xl" />
-          <NavItem to="/LiquidacionesPendientes" text="Liquidaciones" className="text-xl" />
-          <NavItem
-            text="Asesores"
-            dropdownItems={[
-              { to: '/asesores', text: 'Lista de Asesores' },
-              { to: '/registrarAsesor', text: 'Registrar Asesor' },
-            ]}
-            className="text-xl"
-          />
-          <NavItem
-            text="Recursos"
-            dropdownItems={[
-              { to: '/sucursales', text: 'Directorio' },
-              { to: '/afores', text: 'Afores' },
-              { to: 'https://serviciosdigitales.imss.gob.mx/semanascotizadas-web/usuarios/IngresoAsegurado', text: 'Semanas cotizadas', target: '_blank' },
-              { to: 'https://www.gob.mx/curp/', text: 'CURP', target: '_blank' },
-              { to: '/VisorSemanas', text: 'Días hábiles' },
-            ]}
-            className="text-xl"
-          />
-          <NavItem to="/inventario" text="Inventario" className="text-xl" />
-        </nav>
-      </div>
+        
+        {/* Contenedor de información del usuario y navegación */}
+        <div className="flex flex-col">
+          {/* Fila superior: Información del usuario */}
+          <div className="flex justify-between items-center">
+            {user && (
+              <div className="user-info">
+                {profile && <span className="text-xl">Oficina: {profile.oficina}</span>}
+                <span className="text-xl">Bienvenido, {user.username}</span>
+                <button
+                  onClick={logout}
+                  className="logout-button"
+                  title="Cerrar sesión"
+                  aria-label="Cerrar sesión"
+                >
+                  <FaSignOutAlt className="text-2xl" />
+                </button>
+              </div>
+            )}
+          </div>
 
-      {user && (
-        <div className="flex items-center gap-4">
-          <span className="text-xl">Bienvenido, {user.username}</span>
-          <button
-            onClick={logout}
-            className="p-2 hover:bg-red-600 rounded-full transition-colors duration-200"
-            title="Cerrar sesión"
-            aria-label="Cerrar sesión"
-          >
-            <FaSignOutAlt className="text-2xl" />
-          </button>
+          {/* Fila inferior: Navegación */}
+          <nav className="flex space-x-4">
+            <NavItem to="/profile" text="Inicio" className="text-xl" />
+            <NavItem
+              text="Clientes"
+              dropdownItems={[
+                { to: '/FiltroClientes', text: 'Trámites' },
+                { to: '/ReporteProduccion', text: 'Ingresos' },
+                { to: '/FechasTramites', text: 'Fechas de tramite' },
+              ]}
+              className="text-xl"
+            />
+            <NavItem to="/FormularioTramite" text="Altas" className="text-xl" />
+            <NavItem to="/Clientes" text="Clientes" className="text-xl" />
+            <NavItem to="/LiquidacionesPendientes" text="Liquidaciones" className="text-xl" />
+            <NavItem
+              text="Asesores"
+              dropdownItems={[
+                { to: '/asesores', text: 'Lista de Asesores' },
+                { to: '/registrarAsesor', text: 'Registrar Asesor' },
+              ]}
+              className="text-xl"
+            />
+            <NavItem
+              text="Recursos"
+              dropdownItems={[
+                { to: '/sucursales', text: 'Directorio' },
+                { to: '/afores', text: 'Afores' },
+                { to: 'https://serviciosdigitales.imss.gob.mx/semanascotizadas-web/usuarios/IngresoAsegurado', text: 'Semanas cotizadas', target: '_blank' },
+                { to: 'https://www.gob.mx/curp/', text: 'CURP', target: '_blank' },
+                { to: '/VisorSemanas', text: 'Días hábiles' },
+              ]}
+              className="text-xl"
+            />
+            <NavItem to="/inventario" text="Inventario" className="text-xl" />
+          </nav>
         </div>
-      )}
+      </div>
     </header>
   );
 };

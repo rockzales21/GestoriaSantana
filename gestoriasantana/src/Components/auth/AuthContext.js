@@ -163,6 +163,60 @@
 
 
 
+// import { createContext, useState, useEffect } from "react";
+// import { useNavigate } from "react-router-dom";
+
+// export const AuthContext = createContext();
+
+// export const AuthProvider = ({ children }) => {
+//   const [user, setUser] = useState(null);
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     const token = localStorage.getItem("token");
+//     const username = localStorage.getItem("username");
+//     if (token && username) {
+//       setUser({ token, username });
+//     }
+//   }, []);
+
+//   const login = async (username, password) => {
+//     try {
+//       const response = await fetch("https://gestoriasantana-production.up.railway.app/users/login", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ username, password }),
+//       });
+
+//       const data = await response.json();
+//       if (!response.ok) {
+//         throw new Error(data.message || "Error al iniciar sesión");
+//       }
+
+//       localStorage.setItem("token", data.token);
+//       localStorage.setItem("username", username);
+//       setUser({ token: data.token, username });
+//       navigate("/");
+//     } catch (error) {
+//       throw error;
+//     }
+//   };
+
+//   const logout = () => {
+//     localStorage.removeItem("token");
+//     localStorage.removeItem("username");
+//     setUser(null);
+//     navigate("/login");
+//   };
+
+//   return (
+//     <AuthContext.Provider value={{ user, login, logout }}>
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// };
+
+
 import { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -170,6 +224,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null); // Nuevo estado para el perfil del usuario
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -177,8 +232,21 @@ export const AuthProvider = ({ children }) => {
     const username = localStorage.getItem("username");
     if (token && username) {
       setUser({ token, username });
+      fetchProfile(token); // Obtener el perfil del usuario
     }
   }, []);
+
+  const fetchProfile = async (token) => {
+    try {
+      const response = await fetch("https://gestoriasantana-production.up.railway.app/users/profile", {
+        headers: { Authorization: token },
+      });
+      const data = await response.json();
+      setProfile(data);
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    }
+  };
 
   const login = async (username, password) => {
     try {
@@ -196,7 +264,8 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("username", username);
       setUser({ token: data.token, username });
-      navigate("/");
+      fetchProfile(data.token); // Obtener el perfil del usuario
+      navigate("/profile"); // Redirigir a la vista de perfil
     } catch (error) {
       throw error;
     }
@@ -206,11 +275,12 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
     setUser(null);
+    setProfile(null); // Limpiar el perfil del usuario
     navigate("/login");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, profile, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
