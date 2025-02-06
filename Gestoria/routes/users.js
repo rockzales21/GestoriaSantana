@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('../db'); // Conexión a la base de datos
 const router = express.Router();
+const verifyToken = require('./middleware/verifyToken');
+
 
 // Clave secreta para JWT (guárdala en .env en producción)
 const JWT_SECRET = 'secret_key';
@@ -110,21 +112,12 @@ router.get('/profile', async (req, res) => {
 });
 
 // Ruta para cambiar la contraseña del usuario
-router.post('/change-password', async (req, res) => {
-    const token = req.header('Authorization');
+router.put('/change-password', verifyToken, async (req, res) => {
     const { currentPassword, newPassword } = req.body;
-  
-    if (!token) {
-      return res.status(401).json({ message: 'Acceso denegado' });
-    }
+    const userId = req.user.id; // Obtener el ID del usuario del token verificado
   
     try {
-      const verified = jwt.verify(token, JWT_SECRET);
-      const userId = verified.id;
-  
-      // Buscar al usuario
-      const user = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
-  
+      const user = await pool.query('SELECT password FROM users WHERE id = $1', [userId]);
       if (user.rows.length === 0) {
         return res.status(404).json({ message: 'Usuario no encontrado' });
       }
@@ -146,7 +139,7 @@ router.post('/change-password', async (req, res) => {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  });
+});
 
 
 module.exports = router;
