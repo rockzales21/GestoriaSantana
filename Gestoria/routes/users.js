@@ -109,5 +109,44 @@ router.get('/profile', async (req, res) => {
     }
 });
 
+// Ruta para cambiar la contraseña del usuario
+router.post('/change-password', async (req, res) => {
+    const token = req.header('Authorization');
+    const { currentPassword, newPassword } = req.body;
+  
+    if (!token) {
+      return res.status(401).json({ message: 'Acceso denegado' });
+    }
+  
+    try {
+      const verified = jwt.verify(token, JWT_SECRET);
+      const userId = verified.id;
+  
+      // Buscar al usuario
+      const user = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+  
+      if (user.rows.length === 0) {
+        return res.status(404).json({ message: 'Usuario no encontrado' });
+      }
+  
+      // Verificar la contraseña actual
+      const validPassword = await bcrypt.compare(currentPassword, user.rows[0].password);
+      if (!validPassword) {
+        return res.status(400).json({ message: 'Contraseña actual incorrecta' });
+      }
+  
+      // Encriptar la nueva contraseña
+      const salt = await bcrypt.genSalt(10);
+      const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+  
+      // Actualizar la contraseña en la base de datos
+      await pool.query('UPDATE users SET password = $1 WHERE id = $2', [hashedNewPassword, userId]);
+  
+      res.json({ message: 'Contraseña actualizada correctamente' });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
 
 module.exports = router;
