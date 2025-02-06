@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const FechasTramites = () => {
     const [semanas, setSemanas] = useState([]);
@@ -34,12 +36,15 @@ const FechasTramites = () => {
             const response = await axios.post('https://gestoriasantana-production.up.railway.app/fechasTramites/semanas', { numero_semana, fecha_tramite, observaciones });
 
             if (response.data.message.includes("Semana guardada correctamente.")) {
-                alert('Semana guardada correctamente.');
+                // alert('Semana guardada correctamente.');
+                toast.success("Semana guardada correctamente.");
             } else {
-                alert('Semana actualizada correctamente.');
+                // alert('Semana actualizada correctamente.');
+                toast.success("Semana actualizada correctamente.");
             }
         } catch (error) {
-            alert('Error al guardar la semana.');
+            // alert('Error al guardar la semana.');
+            toast.error("Error al guardar la semana.");
         }
     };
 
@@ -89,6 +94,7 @@ const FechasTramites = () => {
                     </tbody>
                 </table>
             </div>
+            <ToastContainer />
         </div>
     );
 };

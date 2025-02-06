@@ -1,5 +1,8 @@
 // import React, { useState } from 'react';
 import React, { useState, useEffect } from "react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const FormularioTramite = () => {
   const [tipo_tramite, setTipoTramite] = useState("");
   const [asesores, setAsesores] = useState([]); 
@@ -142,7 +145,8 @@ setFormData({
 
       const data = await response.json();
       if (response.ok) {
-        alert('Cliente registrado correctamente');
+        // alert('Cliente registrado correctamente');
+        toast.success("Formulario enviado con éxito.");
         setFormData({
           nombre: '',
     apellido_p: '',
@@ -185,11 +189,12 @@ setFormData({
     fecha_fin_tramite: '',
         });
       } else {
-        alert('Error al registrar el cleinte: ' + data.msg);
+        // alert('Error al registrar el cleinte: ' + data.msg);
+        toast.error("Error al registrar al cliente.");
       }
     } catch (error) {
-      console.error('Error:', error);
-      alert('Error al registrar el asesor');
+      // console.error('Error:', error);
+      toast.error("Error al registrar al cliente.");
     }
   };
 
@@ -377,6 +382,7 @@ setFormData({
           name="id_asesor"
           className="block w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           value={formData.asesor} // Cambiado a formData
+          required
           onChange={handleChange} // Cambiado a handleChange
           >
             <option value="">Seleccione un asesor</option>
@@ -394,6 +400,7 @@ setFormData({
           name="id_afore"
           className="block w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           value={formData.afore} // Cambiado a formData
+          required
           onChange={handleChange} // Cambiado a handleChange
           >
             <option value="">Seleccione un afore</option>
@@ -465,20 +472,37 @@ setFormData({
       </label> 
       </div> 
       {/* Infonavit */} 
-      <div className="relative z-0 w-full group"> 
-        <label className="block text-sm text-gray-500"> 
-          Infonavit: 
-          </label> 
-          <div className="flex items-center space-x-4 mt-2"> 
-            <label className="flex items-center"> 
-              <input type="radio" name="infonavit" value="true" checked={formData.infonavit === "true"} onChange={handleChange} className="form-radio text-blue-600" /> 
-              <span className="ml-2 text-gray-700">Sí</span> </label> 
-              <label className="flex items-center"> 
-                <input type="radio" name="infonavit" value="false" checked={formData.infonavit === "false"} onChange={handleChange} className="form-radio text-blue-600" /> 
-                <span className="ml-2 text-gray-700">No</span> 
-                </label> 
-                </div> 
-                </div> 
+      <div className="relative z-0 w-full group">
+  <label className="block text-sm text-gray-500">
+    Infonavit:
+  </label>
+  <div className="flex items-center space-x-4 mt-2">
+    <label className="flex items-center">
+      <input
+        type="radio"
+        name="infonavit"
+        value="true"
+        checked={formData.infonavit === "true"}
+        onChange={handleChange}
+        className="form-radio text-blue-600"
+        required
+      />
+      <span className="ml-2 text-gray-700">Sí</span>
+    </label>
+    <label className="flex items-center">
+      <input
+        type="radio"
+        name="infonavit"
+        value="false"
+        checked={formData.infonavit === "false"}
+        onChange={handleChange}
+        className="form-radio text-blue-600"
+        required
+      />
+      <span className="ml-2 text-gray-700">No</span>
+    </label>
+  </div>
+</div>
                 {/* Código Postal */} 
                 <div className="relative z-0 w-full group"> 
                   <input type="text" name="codigo_postal" value={formData.codigo_postal} onChange={handleChange} 
@@ -515,6 +539,7 @@ setFormData({
                 name="fecha_ultima_baja"
                 className="mt-2 w-full p-2 border border-gray-300 rounded-md"
                 value={formData.fecha_ultima_baja}
+                required
                 onChange={handleChange}
               />
             </div>
@@ -529,6 +554,7 @@ setFormData({
                 name="monto"
                 className="mt-2 w-full p-2 border border-gray-300 rounded-md"
                 value={formData.monto}
+                required
                 onChange={handleChange}
               />
             </div>
@@ -541,6 +567,7 @@ setFormData({
                 name="fecha_solucion"
                 className="mt-2 w-full p-2 border border-gray-300 rounded-md"
                 value={formData.fecha_solucion}
+                required
                 onChange={handleChange}
               />
             </div>
@@ -560,6 +587,7 @@ setFormData({
                 name="salario"
                 className="mt-2 w-full p-2 border border-gray-300 rounded-md"
                 value={formData.salario}
+                required
                 onChange={handleChange}
               />
             </div>
@@ -572,6 +600,7 @@ setFormData({
                 name="empleo"
                 className="mt-2 w-full p-2 border border-gray-300 rounded-md"
                 value={formData.empleo}
+                required
                 onChange={handleChange}
               />
             </div>
@@ -584,6 +613,7 @@ setFormData({
               name="forma_pago"
               className="mt-2 w-full p-2 border border-gray-300 rounded-md"
               value={formData.forma_pago}
+              required
               onChange={handleChange}
             >
               <option value="">Seleccione una forma de pago</option>
@@ -786,6 +816,7 @@ setFormData({
       >
         Enviar
       </button>
+      <ToastContainer />
     </form>
   );
 };

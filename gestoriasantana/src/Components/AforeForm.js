@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function AforeForm() {
   const { id } = useParams();
@@ -52,16 +54,19 @@ function AforeForm() {
         //https://gestoriasantana-production.up.railway.app/
         // await axios.put(`http://localhost:5000/afores/${id}`, data);
         await axios.put(`https://gestoriasantana-production.up.railway.app/afores/${id}`, data);
-        alert('Afore actualizado correctamente');
+        // alert('Afore actualizado correctamente');
+        toast.success("Afore actualizado correctamente.");
       } else {
         // await axios.post('http://localhost:5000/afores', data);
         await axios.post('https://gestoriasantana-production.up.railway.app/afores', data);
-        alert('Afore creado correctamente');
+        // alert('Afore creado correctamente');
+        toast.success("Afore creado correctamente.");
       }
       navigate('/afores');
     } catch (error) {
-      console.error('Error al guardar el afore:', error);
-      alert('Ocurrió un error');
+      toast.error('Error al guardar el afore:', error);
+      // console.error('Error al guardar el afore:', error);
+      // alert('Ocurrió un error');
     }
   };
 
@@ -115,6 +120,7 @@ function AforeForm() {
       >
         {id ? 'Actualizar' : 'Crear'}
       </button>
+      <ToastContainer />
     </form>
   );
 }

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const RegistrarAsesor = () => {
   const [formData, setFormData] = useState({
@@ -60,7 +62,8 @@ const RegistrarAsesor = () => {
 
       const data = await response.json();
       if (response.ok) {
-        alert('Asesor registrado correctamente');
+        // alert('Asesor registrado correctamente');
+        toast.success("Asesor registrado correctamente.");
         setFormData({
           nombres: '',
           apellido_p: '',
@@ -89,11 +92,13 @@ const RegistrarAsesor = () => {
           telefonoTestigo2: '',
         });
       } else {
-        alert('Error al registrar el asesor: ' + data.msg);
+        // alert('Error al registrar el asesor: ' + data.msg);
+        toast.error('Error al registrar el asesor: ' + data.msg);
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Error al registrar el asesor');
+      // alert('Error al registrar el asesor');
+      toast.error("Error al registrar el asesor.");
     }
   };
 
