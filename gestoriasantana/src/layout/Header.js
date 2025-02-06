@@ -137,21 +137,31 @@ const Header = () => {
         <img src="/img/logo.png" alt="Logo" className="h-64 mr-4" />
         
         {/* Contenedor de información del usuario y navegación */}
-        <div className="flex flex-col">
+        <div className="flex flex-col w-full">
           {/* Fila superior: Información del usuario */}
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center w-full">
             {user && (
-              <div className="user-info">
-                {profile && <span className="text-xl">Oficina: {profile.oficina}</span>}
-                <span className="text-xl">Bienvenido, {user.username}</span>
-                <button
-                  onClick={logout}
-                  className="logout-button"
-                  title="Cerrar sesión"
-                  aria-label="Cerrar sesión"
-                >
-                  <FaSignOutAlt className="text-2xl" />
-                </button>
+              <div className="user-info w-full flex items-center">
+                {/* Sucursal a la izquierda */}
+                {profile && (
+                  <span className="branch text-xl">
+                    Oficina: {profile.oficina}
+                  </span>
+                )}
+                {/* Nombre de usuario y botón de logout a la derecha */}
+                <div className="flex items-center ml-auto">
+                  <span className="username text-xl mr-2">
+                    Bienvenido, {user.username}
+                  </span>
+                  <button
+                    onClick={logout}
+                    className="logout-button"
+                    title="Cerrar sesión"
+                    aria-label="Cerrar sesión"
+                  >
+                    <FaSignOutAlt className="text-2xl" />
+                  </button>
+                </div>
               </div>
             )}
           </div>

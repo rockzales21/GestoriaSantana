@@ -20,12 +20,20 @@
 
 .user-info {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* Asegura que los elementos estén en extremos opuestos */
   align-items: center;
   width: 100%;
   margin-bottom: 10px; /* Espacio entre la información del usuario y el menú */
 }
 
+/* Asegúrate de que los elementos dentro de .user-info estén correctamente alineados */
+.user-info .branch {
+  margin-right: auto; /* Mueve la sucursal a la izquierda */
+}
+
+.user-info .username {
+  margin-left: auto; /* Mueve el nombre de usuario a la derecha */
+}
 .logout-button {
   background-color: #ff4d4d;
   color: white;

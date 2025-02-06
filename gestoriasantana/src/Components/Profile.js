@@ -1,8 +1,10 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { AuthContext } from "./auth/AuthContext";
+import CambiarPassModal from "./CambiarPassModal";
 
 const Profile = () => {
   const { profile } = useContext(AuthContext);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   if (!profile) {
     return <div className="text-center text-gray-500">Cargando...</div>;
@@ -15,6 +17,13 @@ const Profile = () => {
       <p className="text-lg text-gray-700 mb-2"><strong className="text-gray-900">Email:</strong> {profile.email}</p>
       <p className="text-lg text-gray-700 mb-2"><strong className="text-gray-900">Teléfono:</strong> {profile.telefono}</p>
       <p className="text-lg text-gray-700 mb-2"><strong className="text-gray-900">Teléfono de oficina:</strong> {profile.tel_oficina}</p>
+      <button
+        className="mt-4 bg-blue-500 text-white py-2 px-4 rounded"
+        onClick={() => setIsModalOpen(true)}
+      >
+        Cambiar Contraseña
+      </button>
+      {isModalOpen && <CambiarPassModal onClose={() => setIsModalOpen(false)} />}
     </div>
   );
 };
