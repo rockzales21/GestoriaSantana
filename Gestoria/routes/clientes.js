@@ -29,6 +29,32 @@
 
 // module.exports = router;
 
+router.get('/cliente/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const query = `
+      SELECT 
+        nombres || ' ' || apellido_p || ' ' || apellido_m AS nombre, 
+        nss, curp, direccion || ', ' || ciudad || ', ' || estado AS direccion_completa
+      FROM public.Personas p
+      INNER JOIN public.clientes c ON p.id_persona = c.id_persona
+      WHERE c.id_cliente = $1
+    `;
+
+    const result = await pool.query(query, [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Cliente no encontrado' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error al obtener el cliente:', err.message);
+    res.status(500).send('Error del servidor');
+  }
+});
+
 
 
 const express = require('express');
