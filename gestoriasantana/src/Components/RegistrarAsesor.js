@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { AuthContext } from "./auth/AuthContext";
+
 
 const RegistrarAsesor = () => {
+  const { user } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     nombres: '',
     apellido_p: '',
@@ -50,19 +53,17 @@ const RegistrarAsesor = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      //https://gestoriasantana-production.up.railway.app/
-      // const response = await fetch('http://localhost:5000/registrarAsesor', {
-        const response = await fetch('https://gestoriasantana-production.up.railway.app/registrarAsesor', {
+      const token = localStorage.getItem("token");
+      const response = await fetch('https://gestoriasantana-production.up.railway.app/registrarAsesor', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(formData),
       });
-
       const data = await response.json();
       if (response.ok) {
-        // alert('Asesor registrado correctamente');
         toast.success("Asesor registrado correctamente.");
         setFormData({
           nombres: '',
