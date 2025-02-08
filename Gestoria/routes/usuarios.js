@@ -26,6 +26,21 @@ router.get('/asesores', async (req, res) => {
   }
 });
 
+router.get('/encargados', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT u.id_usuario, nombres || ' ' || apellido_p || ' ' || apellido_m AS nombre
+      FROM Usuarios u 
+      INNER JOIN Personas p ON p.id_persona = u.id_persona
+      INNER JOIN public.users us ON us.id_usuario = u.id_usuario
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Error del servidor');
+  }
+});
+
 router.get('/asesores2', async (req, res) => {
   try {
     const result = await pool.query(`
