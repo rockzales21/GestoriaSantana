@@ -29,6 +29,13 @@
 
 // module.exports = router;
 
+
+
+
+const express = require('express');
+const router = express.Router();
+const pool = require('../db');
+
 router.get('/cliente/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -55,11 +62,6 @@ router.get('/cliente/:id', async (req, res) => {
   }
 });
 
-
-
-const express = require('express');
-const router = express.Router();
-const pool = require('../db');
 
 router.get('/clientes', async (req, res) => {
   const { status, semana, año, mes, asesor } = req.query;
