@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
+// Obtener todas las sucursales
 router.get('/', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM Usuarios u INNER JOIN Personas p ON p.id_persona = u.id_persona');
+    const result = await pool.query('SELECT s.id_sucursal, s.oficina, s.encargado, s.tel_oficina, s.email, s.direccion, p.telefono AS telefonoEncargado FROM Sucursales s INNER JOIN usuarios u ON s.encargado = u.id_usuario INNER JOIN personas p ON p.id_persona = u.id_persona');
     res.json(result.rows);
   } catch (err) {
     console.error(err.message);
@@ -12,130 +13,14 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/asesores', async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT id_usuario, nombres || ' ' || apellido_p || ' ' || apellido_m AS nombre
-      FROM Usuarios u 
-      INNER JOIN Personas p ON p.id_persona = u.id_persona
-    `);
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Error del servidor');
-  }
-});
-
-router.get('/asesores2', async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT id_usuario, nombres || ' ' || apellido_p || ' ' || apellido_m AS nombre
-      FROM Usuarios u 
-      INNER JOIN Personas p ON p.id_persona = u.id_persona
-    `);
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Error del servidor');
-  }
-});
-
-router.get('/produccionYear', async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT p.nombres || ' ' || p.apellido_p || ' ' || p.apellido_m AS nombre, COUNT(c.id_cliente)
-      FROM  Usuarios u 
-      INNER JOIN Personas p ON p.id_persona = u.id_persona
-      INNER JOIN clientes c ON c.id_asesor = u.id_usuario
-      GROUP BY p.nombres || ' ' || p.apellido_p || ' ' || p.apellido_m
-      ORDER BY COUNT(c.id_cliente)
-    `);
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Error del servidor');
-  }
-});
-
-router.get('/produccionSemana', async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT 
-      DATE_PART('week', c.fecha_registro) AS semana,
-      COUNT(c.id_cliente) AS total_clientes
-      FROM clientes c
-      WHERE DATE_PART('year', c.fecha_registro) = 2024
-      GROUP BY DATE_PART('week', c.fecha_registro)
-      ORDER BY semana
-    `);
-    // WHERE DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Error del servidor');
-  }
-});
-
-router.get('/produccionMes', async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT CASE 
-              WHEN DATE_PART('month', c.fecha_registro) = 1 THEN 'Enero'
-              WHEN DATE_PART('month', c.fecha_registro) = 2 THEN 'Febrero'
-              WHEN DATE_PART('month', c.fecha_registro) = 3 THEN 'Marzo'
-              WHEN DATE_PART('month', c.fecha_registro) = 4 THEN 'Abril'
-              WHEN DATE_PART('month', c.fecha_registro) = 5 THEN 'Mayo'
-              WHEN DATE_PART('month', c.fecha_registro) = 6 THEN 'Junio'
-              WHEN DATE_PART('month', c.fecha_registro) = 7 THEN 'Julio'
-              WHEN DATE_PART('month', c.fecha_registro) = 8 THEN 'Agosto'
-              WHEN DATE_PART('month', c.fecha_registro) = 9 THEN 'Septiembre'
-              WHEN DATE_PART('month', c.fecha_registro) = 10 THEN 'Octubre'
-              WHEN DATE_PART('month', c.fecha_registro) = 11 THEN 'Noviembre'
-              WHEN DATE_PART('month', c.fecha_registro) = 12 THEN 'Diciembre'
-              END AS mes,
-              COUNT(c.id_cliente) AS total_clientes
-              FROM clientes c
-              WHERE DATE_PART('year', c.fecha_registro) = 2024
-              GROUP BY DATE_PART('month', c.fecha_registro)
-              ORDER BY DATE_PART('month', c.fecha_registro)
-    `);
-    // WHERE DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Error del servidor');
-  }
-});
-
-router.get('/produccionAnio', async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT 
-    COUNT(c.id_cliente) AS total_clientes
-FROM 
-    clientes c
-WHERE 
-    DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
-    `);
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Error del servidor');
-  }
-});
-
-
-router.get('/:id', async (req, res) => {
-  const { id } = req.params;
+// Crear una nueva sucursal
+router.post('/', async (req, res) => {
+  const { oficina, encargado, tel_oficina, email, direccion, telefonoencargado } = req.body;
   try {
     const result = await pool.query(
-      `SELECT * FROM Usuarios u 
-       INNER JOIN Personas p ON p.id_persona = u.id_persona 
-       WHERE u.id_usuario = $1`, [id]
+      'INSERT INTO Sucursales (oficina, encargado, tel_oficina, email, direccion, celular) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [oficina, encargado, tel_oficina, email, direccion, telefonoencargado]
     );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Usuario no encontrado' });
-    }
     res.json(result.rows[0]);
   } catch (err) {
     console.error(err.message);
@@ -143,43 +28,217 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-
+// Actualizar una sucursal existente
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { nombres, apellido_p, apellido_m, curp, nss, rfc, telefono, email, ciudad, estado, codigo_postal, calle, numero_interior, numero_exterior, colonia, status, tipo } = req.body;
-
+  const { oficina, encargado, tel_oficina, email, direccion, telefonoencargado } = req.body;
   try {
-    // Inicia una transacción para asegurar que ambos cambios suceden juntos
-    await pool.query('BEGIN');
-
-    // Actualiza la tabla Personas
-    await pool.query(
-      `UPDATE Personas SET nombres = $1, apellido_p = $2, apellido_m = $3, curp = $4, nss = $5, rfc = $6, telefono = $7, email = $8, ciudad = $9, estado = $10, codigo_postal = $11
-       WHERE id_persona = (SELECT id_persona FROM Usuarios WHERE id_usuario = $12)`,
-      [nombres, apellido_p, apellido_m, curp, nss, rfc, telefono, email, ciudad, estado, codigo_postal, id]
+    const result = await pool.query(
+      'UPDATE Sucursales SET oficina = $1, encargado = $2, tel_oficina = $3, email = $4, direccion = $5, celular = $6 WHERE id_sucursal = $7 RETURNING *',
+      [oficina, encargado, tel_oficina, email, direccion, telefonoencargado, id]
     );
-
-    await pool.query(
-      `UPDATE Usuarios SET calle = $1, numero_interior = $2, numero_exterior = $3, colonia = $4, status = $5, tipo = $6
-       WHERE id_usuario = $7`,
-      [calle, numero_interior, numero_exterior, colonia, status, tipo, id]
-    );
-
-
-    // Puedes incluir otras actualizaciones específicas de Usuarios aquí
-
-    // Finaliza la transacción
-    await pool.query('COMMIT');
-
-    res.json({ message: 'Usuario actualizado con éxito' });
+    res.json(result.rows[0]);
   } catch (err) {
-    await pool.query('ROLLBACK');
     console.error(err.message);
     res.status(500).send('Error del servidor');
   }
 });
 
-
-
+// Eliminar una sucursal
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM Sucursales WHERE id_sucursal = $1', [id]);
+    res.send('Sucursal eliminada');
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Error del servidor');
+  }
+});
 
 module.exports = router;
+// const express = require('express');
+// const router = express.Router();
+// const pool = require('../db');
+
+// router.get('/', async (req, res) => {
+//   try {
+//     const result = await pool.query('SELECT * FROM Usuarios u INNER JOIN Personas p ON p.id_persona = u.id_persona');
+//     res.json(result.rows);
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Error del servidor');
+//   }
+// });
+
+// router.get('/asesores', async (req, res) => {
+//   try {
+//     const result = await pool.query(`
+//       SELECT id_usuario, nombres || ' ' || apellido_p || ' ' || apellido_m AS nombre
+//       FROM Usuarios u 
+//       INNER JOIN Personas p ON p.id_persona = u.id_persona
+//     `);
+//     res.json(result.rows);
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Error del servidor');
+//   }
+// });
+
+// router.get('/asesores2', async (req, res) => {
+//   try {
+//     const result = await pool.query(`
+//       SELECT id_usuario, nombres || ' ' || apellido_p || ' ' || apellido_m AS nombre
+//       FROM Usuarios u 
+//       INNER JOIN Personas p ON p.id_persona = u.id_persona
+//     `);
+//     res.json(result.rows);
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Error del servidor');
+//   }
+// });
+
+// router.get('/produccionYear', async (req, res) => {
+//   try {
+//     const result = await pool.query(`
+//       SELECT p.nombres || ' ' || p.apellido_p || ' ' || p.apellido_m AS nombre, COUNT(c.id_cliente)
+//       FROM  Usuarios u 
+//       INNER JOIN Personas p ON p.id_persona = u.id_persona
+//       INNER JOIN clientes c ON c.id_asesor = u.id_usuario
+//       GROUP BY p.nombres || ' ' || p.apellido_p || ' ' || p.apellido_m
+//       ORDER BY COUNT(c.id_cliente)
+//     `);
+//     res.json(result.rows);
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Error del servidor');
+//   }
+// });
+
+// router.get('/produccionSemana', async (req, res) => {
+//   try {
+//     const result = await pool.query(`
+//       SELECT 
+//       DATE_PART('week', c.fecha_registro) AS semana,
+//       COUNT(c.id_cliente) AS total_clientes
+//       FROM clientes c
+//       WHERE DATE_PART('year', c.fecha_registro) = 2024
+//       GROUP BY DATE_PART('week', c.fecha_registro)
+//       ORDER BY semana
+//     `);
+//     // WHERE DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
+//     res.json(result.rows);
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Error del servidor');
+//   }
+// });
+
+// router.get('/produccionMes', async (req, res) => {
+//   try {
+//     const result = await pool.query(`
+//       SELECT CASE 
+//               WHEN DATE_PART('month', c.fecha_registro) = 1 THEN 'Enero'
+//               WHEN DATE_PART('month', c.fecha_registro) = 2 THEN 'Febrero'
+//               WHEN DATE_PART('month', c.fecha_registro) = 3 THEN 'Marzo'
+//               WHEN DATE_PART('month', c.fecha_registro) = 4 THEN 'Abril'
+//               WHEN DATE_PART('month', c.fecha_registro) = 5 THEN 'Mayo'
+//               WHEN DATE_PART('month', c.fecha_registro) = 6 THEN 'Junio'
+//               WHEN DATE_PART('month', c.fecha_registro) = 7 THEN 'Julio'
+//               WHEN DATE_PART('month', c.fecha_registro) = 8 THEN 'Agosto'
+//               WHEN DATE_PART('month', c.fecha_registro) = 9 THEN 'Septiembre'
+//               WHEN DATE_PART('month', c.fecha_registro) = 10 THEN 'Octubre'
+//               WHEN DATE_PART('month', c.fecha_registro) = 11 THEN 'Noviembre'
+//               WHEN DATE_PART('month', c.fecha_registro) = 12 THEN 'Diciembre'
+//               END AS mes,
+//               COUNT(c.id_cliente) AS total_clientes
+//               FROM clientes c
+//               WHERE DATE_PART('year', c.fecha_registro) = 2024
+//               GROUP BY DATE_PART('month', c.fecha_registro)
+//               ORDER BY DATE_PART('month', c.fecha_registro)
+//     `);
+//     // WHERE DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
+//     res.json(result.rows);
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Error del servidor');
+//   }
+// });
+
+// router.get('/produccionAnio', async (req, res) => {
+//   try {
+//     const result = await pool.query(`
+//       SELECT 
+//     COUNT(c.id_cliente) AS total_clientes
+// FROM 
+//     clientes c
+// WHERE 
+//     DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
+//     `);
+//     res.json(result.rows);
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Error del servidor');
+//   }
+// });
+
+
+// router.get('/:id', async (req, res) => {
+//   const { id } = req.params;
+//   try {
+//     const result = await pool.query(
+//       `SELECT * FROM Usuarios u 
+//        INNER JOIN Personas p ON p.id_persona = u.id_persona 
+//        WHERE u.id_usuario = $1`, [id]
+//     );
+//     if (result.rows.length === 0) {
+//       return res.status(404).json({ error: 'Usuario no encontrado' });
+//     }
+//     res.json(result.rows[0]);
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Error del servidor');
+//   }
+// });
+
+
+// router.put('/:id', async (req, res) => {
+//   const { id } = req.params;
+//   const { nombres, apellido_p, apellido_m, curp, nss, rfc, telefono, email, ciudad, estado, codigo_postal, calle, numero_interior, numero_exterior, colonia, status, tipo } = req.body;
+
+//   try {
+//     // Inicia una transacción para asegurar que ambos cambios suceden juntos
+//     await pool.query('BEGIN');
+
+//     // Actualiza la tabla Personas
+//     await pool.query(
+//       `UPDATE Personas SET nombres = $1, apellido_p = $2, apellido_m = $3, curp = $4, nss = $5, rfc = $6, telefono = $7, email = $8, ciudad = $9, estado = $10, codigo_postal = $11
+//        WHERE id_persona = (SELECT id_persona FROM Usuarios WHERE id_usuario = $12)`,
+//       [nombres, apellido_p, apellido_m, curp, nss, rfc, telefono, email, ciudad, estado, codigo_postal, id]
+//     );
+
+//     await pool.query(
+//       `UPDATE Usuarios SET calle = $1, numero_interior = $2, numero_exterior = $3, colonia = $4, status = $5, tipo = $6
+//        WHERE id_usuario = $7`,
+//       [calle, numero_interior, numero_exterior, colonia, status, tipo, id]
+//     );
+
+
+//     // Puedes incluir otras actualizaciones específicas de Usuarios aquí
+
+//     // Finaliza la transacción
+//     await pool.query('COMMIT');
+
+//     res.json({ message: 'Usuario actualizado con éxito' });
+//   } catch (err) {
+//     await pool.query('ROLLBACK');
+//     console.error(err.message);
+//     res.status(500).send('Error del servidor');
+//   }
+// });
+
+
+
+
+// module.exports = router;
