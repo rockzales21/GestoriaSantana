@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const verifyToken = require('./middleware/verifyToken');
 
 // Función auxiliar para validar datos
 function validateData(data) {
   const requiredFields = ['nombres', 'apellido_p', 'apellido_m', 'curp', 'nss', 'rfc', 'telefono', 'calle', 'numero_interior', 'numero_exterior', 'colonia', 'codigo_postal', 'ciudad', 'estado',
     'nombresTestigo1', 'apellido_pTestigo1', 'apellido_mTestigo1', 'parentescoTestigo1', 'telefonoTestigo1',
-      'nombresTestigo2', 'apellido_pTestigo2', 'apellido_mTestigo2', 'parentescoTestigo2', 'telefonoTestigo2'
+    'nombresTestigo2', 'apellido_pTestigo2', 'apellido_mTestigo2', 'parentescoTestigo2', 'telefonoTestigo2'
   ];
 
   for (const field of requiredFields) {
@@ -19,8 +20,10 @@ function validateData(data) {
 }
 
 // Registrar nuevo asesor
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
   try {
+    const id_jefe = req.user.id_usuario;
+
     const {
       nombres, apellido_p, apellido_m, curp, nss, rfc,
       telefono, email, calle, numero_interior, numero_exterior, colonia,
@@ -46,8 +49,8 @@ router.post('/', async (req, res) => {
     // Insertar en tabla Usuarios
     const newUsuario = await pool.query(
       `INSERT INTO Usuarios (id_persona, calle, numero_interior, numero_exterior, colonia, status, tipo, fecha_registro, jefe)
-       VALUES ($1, $2, $3, $4, $5, 1, 1, NOW(), NULL) RETURNING id_usuario`,
-      [id_persona, calle, numero_interior, numero_exterior, colonia]
+       VALUES ($1, $2, $3, $4, $5, 1, 1, NOW(), $6) RETURNING id_usuario`,
+      [id_persona, calle, numero_interior, numero_exterior, colonia, id_jefe]
     );
 
     // Insertar el primer testigo
