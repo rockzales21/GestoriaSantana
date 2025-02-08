@@ -6,7 +6,12 @@ const pool = require('../db');
 // Obtener todas las sucursales
 router.get('/', async (req, res) => {
   try {
-    const result = await pool.query('SELECT s.id_sucursal, s.oficina, s.encargado, s.tel_oficina, s.email, s.direccion, p.telefono AS telefonoEncargado FROM Sucursales s INNER JOIN usuarios u ON s.encargado = u.id_usuario INNER JOIN personas p ON p.id_persona = u.id_persona');
+    const result = await pool.query(`
+      SELECT s.id_sucursal, s.oficina, nombres || ' ' || apellido_p || ' ' || apellido_m AS nombre, s.tel_oficina, s.email, s.direccion, p.telefono AS telefonoEncargado 
+      FROM Sucursales s 
+      INNER JOIN usuarios u ON s.encargado = u.id_usuario 
+      INNER JOIN personas p ON p.id_persona = u.id_persona
+      `);
     res.json(result.rows);
   } catch (err) {
     console.error(err.message);
