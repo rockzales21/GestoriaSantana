@@ -43,7 +43,7 @@ router.get('/cliente/:id', async (req, res) => {
     const query = `
       SELECT 
         nombres || ' ' || apellido_p || ' ' || apellido_m AS nombre, 
-        nss, curp, direccion || ', ' || ciudad || ', ' || estado AS direccion_completa
+        nss, curp, direccion || ', ' || ciudad || ', ' || estado AS direccion_completa, codigo_postal
       FROM public.Personas p
       INNER JOIN public.clientes c ON p.id_persona = c.id_persona
       WHERE c.id_cliente = $1
