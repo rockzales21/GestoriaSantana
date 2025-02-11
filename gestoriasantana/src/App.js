@@ -60,6 +60,7 @@ function App() {
         const data = await response.json();
         if (response.ok) {
           setHonorarios(parseFloat(data.monto));
+          console.error('Valor:', parseFloat(data.monto));
         } else {
           toast.error('Error al cargar el monto de honorarios');
         }
@@ -87,48 +88,110 @@ function App() {
     return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(cantidad);
   };
 
-  const CotizadorModal = ({ isOpen, onClose }) => {
-    if (!isOpen) return null;
 
-    const total = parseFloat(cantidad);
+  const CotizadorModal = ({ isOpen, onClose }) => {
+    const [inputValue, setInputValue] = useState('');
+    const [showDetails, setShowDetails] = useState(false);
+  
+    if (!isOpen) return null;
+  
+    const total = parseFloat(inputValue) || 0;
     let aseguramientoCalculo = total < 15000 ? 1500 : total < 25000 ? 1700 : 2000;
-    const honorario = total * honorarios;
+    const honorario = isNaN(honorarios) ? 0 : total * honorarios;
     const aseguramiento = aseguramientoCalculo;
     const totalPagar = honorario + aseguramiento;
     const totalCliente = total - totalPagar;
-
+  
     return (
-      <div
-        className={`fixed bottom-4 right-4 bg-white p-6 rounded-lg shadow-lg w-80 z-50 transition-transform ${
-          isOpen ? 'modal-open' : 'modal-close'
-        }`}
-      >
-        <h2 className="text-lg font-semibold mb-4">Cotizador</h2>
-        {!showDetails ? (
-          <input
-            type="number"
-            value={cantidad}
-            onChange={handleChange}
-            onKeyDown={handleKeyDown}
-            className="border border-gray-300 p-2 rounded w-full mb-4"
-            placeholder="Cantidad a retirar"
-            autoFocus
-          />
-        ) : (
-          <div className="results text-justify">
-            <p>Cantidad total: {formatoPesos(total)}</p>
-            <p>Honorarios: {formatoPesos(honorario)}</p>
-            <p>Aseguramiento: {formatoPesos(aseguramiento)}</p>
-            <p>Total: {formatoPesos(totalPagar)}</p>
-            <p>Cliente: {formatoPesos(totalCliente)}</p>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+          <h2 className="text-lg font-semibold mb-4">Cotizador</h2>
+          {!showDetails ? (
+            <input
+              type="number"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  setShowDetails(true);
+                }
+              }}
+              className="border border-gray-300 p-2 rounded w-full mb-4"
+              placeholder="Cantidad a retirar"
+              autoFocus
+            />
+          ) : (
+            <div className="results text-justify">
+              <p><strong>Cantidad total:</strong> {formatoPesos(total)}</p>
+              <p><strong>Honorarios:</strong> {formatoPesos(honorario)}</p>
+              <p><strong>Aseguramiento:</strong> {formatoPesos(aseguramiento)}</p>
+              <p><strong>Total a pagar:</strong> {formatoPesos(totalPagar)}</p>
+              <p><strong>Cliente recibe:</strong> {formatoPesos(totalCliente)}</p>
+            </div>
+          )}
+          <div className="flex justify-end mt-4">
+            <button
+              onClick={() => {
+                setShowDetails(false);
+                setInputValue('');
+                onClose();
+              }}
+              className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition"
+            >
+              Cerrar
+            </button>
           </div>
-        )}
-        <button onClick={onClose} className="text-red-500 font-bold mt-4">
-          Cerrar
-        </button>
+        </div>
       </div>
     );
   };
+//   const CotizadorModal = ({ isOpen, onClose }) => {
+//     const [inputValue, setInputValue] = useState('');
+//     const [showDetails, setShowDetails] = useState(false);
+  
+
+//     if (!isOpen) return null;
+
+//   const total = parseFloat(inputValue) || 0; // Asegurar que sea un número válido
+//   let aseguramientoCalculo = total < 15000 ? 1500 : total < 25000 ? 1700 : 2000;
+//   const honorario = isNaN(honorarios) ? 0 : total * honorarios; // Evitar NaN
+//   const aseguramiento = aseguramientoCalculo;
+//   const totalPagar = honorario + aseguramiento;
+//     const totalCliente = total - totalPagar;
+
+//   return (
+//     <div className="fixed bottom-4 right-4 bg-white p-6 rounded-lg shadow-lg w-80 z-50">
+//       <h2 className="text-lg font-semibold mb-4">Cotizador</h2>
+//       {!showDetails ? (
+//         <input
+//           type="number"
+//           value={inputValue}
+//           onChange={(e) => setInputValue(e.target.value)}
+//           onKeyDown={(e) => {
+//             if (e.key === 'Enter') {
+//               setShowDetails(true);
+//             }
+//           }}
+//           className="border border-gray-300 p-2 rounded w-full mb-4"
+//           placeholder="Cantidad a retirar"
+//           autoFocus
+//         />
+//       ) : (
+//         <div className="results text-justify">
+//           <p>Cantidad total: {formatoPesos(total)}</p>
+//           <p>Honorarios: {formatoPesos(honorario)}</p>
+//           <p>Aseguramiento: {formatoPesos(aseguramiento)}</p>
+//           <p>Total: {formatoPesos(totalPagar)}</p>
+//           <p>Cliente: {formatoPesos(totalCliente)}</p>
+//         </div>
+//       )}
+//       <button onClick={onClose} className="text-red-500 font-bold mt-4">
+//         Cerrar
+//       </button>
+//     </div>
+//   );
+// };
+
 
   return (
     <Router>
@@ -176,3 +239,4 @@ function App() {
 }
 
 export default App;
+
