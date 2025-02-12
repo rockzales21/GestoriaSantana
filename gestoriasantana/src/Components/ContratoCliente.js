@@ -19,7 +19,7 @@ const buttonStyles = {
 const ContratoCliente = ({ cliente }) => {
     const { id } = useParams(); // Obtienes el id del asesor desde la URL
     const [asesor, setAsesor] = useState(null);
-  
+
     useEffect(() => {
       const fetchAsesor = async () => {
         try {
@@ -36,8 +36,9 @@ const ContratoCliente = ({ cliente }) => {
           console.error('Error:', error);
         }
       };
-  
+
       fetchAsesor();
+
     }, [id]);
   
     if (!asesor) {
@@ -50,13 +51,16 @@ const ContratoCliente = ({ cliente }) => {
   
     return (
       <div style={{ padding: '20px' }}>
-        <Typography variant="h4" gutterBottom>
-          Contrato de Comisión Mercantil
-        </Typography>
-        <Paper sx={{ padding: '20px' }}>
+        <Paper sx={{ padding: '100px' }}>
           {/* <Typography variant="h6" gutterBottom> */}
+          <div style={{ width: '800px', margin: '0 auto' }}>
+
           <Typography variant="h6" gutterBottom style={{ textAlign: 'justify' }}>
-          <strong>CONTRATO DE COMISIÓN MERCANTIL, QUE CELEBRAN, POR UNA PARTE: LA NEGOCIACIÓN “M SANTANA ASESORIAS” REPRESENTADA POR: MARTHA MARGARITA SANTANA CEJA, LA CUAL SERÁ DESIGNADA EN EL CURSO DE ESTE CONTRATO COMO “LA COMITENTE” Y POR LA OTRA PARTE {nombreCompleto} A QUIEN SE LE DESIGNARÁ COMO “LA COMISIONISTA”, QUIENES HACEN LAS SIGUIENTES:</strong>
+            <strong>CONTRATO DE PRESTACIÓN DE SERVICIOS PROFESIONALES</strong>
+          </Typography>
+          
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+            Que celebran, por una parte, el consultor financiero y de seguridad social <strong>Martha Margarita Santana Ceja</strong> quien en lo sucesivo se le denominara “El Profesionista”, y por otra parte <strong>{nombreCompleto}</strong> la quien e n lo sucesivo se le denominara como “El Cliente” y de manera conjunta como “Las Partes”, de conformidad con las declaraciones y clausulas.
           </Typography>
 
           <Typography variant="h6" gutterBottom style={{ textAlign: 'justify' }}>
@@ -64,99 +68,175 @@ const ContratoCliente = ({ cliente }) => {
           </Typography>
 
           <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
-          <strong>I.-</strong> Declara <strong>LA COMITENTE “M SANTANA ASESORIAS” representada por la M en A. Martha Margarita Santana Ceja</strong>, ser un nombre para efectos comerciales, dedicada a las actividades de servicios de consultoría en administración, dada de alta ante el SAT con REGISTRO FEDERAL DE CONTRIBUYENTES SACM710414QL1 y tener su domicilio en Calle Cuernavaca #47 Condominios Cuauhnáhuac CP 62430, Cuernavaca Morelos.
+          <strong>I.-</strong> DEL PROFESIONISTA
           </Typography>
           <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
-          <strong>II.-</strong> Declara <strong>LA COMISIONISTA {nombreCompleto}</strong> y tener su domicilio en <strong>C. {asesor.direccion_completa}, CP {asesor.codigo_postal}</strong>.
+            <strong>1.1.-</strong> Llamarse tal y como ha quedado asentado en el proemio del presente contrato.
           </Typography>
           <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
-          <strong>III.-</strong> Ambas partes declaran estar de acuerdo en que para realizar con éxito el presente contrato, se sujetan a las siguientes:
+            <strong>1.2.-</strong> Ser persona física, mayor de edad y contar con capacidad legal plena para obligarse a nombre y por cuenta propia a lo establecido en el presente contrato.
           </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+            <strong>1.3.-</strong> Que tiene su domicilio para el ejercicio profesional de asesoría y gestoría financiera y legal en Calle Cuernavaca no. 47 condominios Cuauhnáhuac en Cuernavaca Morelos.
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+            <strong>1.4.-</strong> Que está facultado para prestar los servicios financieros y legales en materia del presente Contrato y que, por lo mismo, cuenta con la capacidad técnica y operativa suficiente para llevar a cabo el cumplimiento del objeto de este Contrato.
+          </Typography>
+
+
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+          <strong>II.-</strong> DEL CLIENTE
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+            <strong>2.1.-</strong> Llamarse tal y como ha quedado asentado en el proemio del presente contrato.
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+            <strong>2.2.-</strong> Ser persona física, mayor de edad y contar con capacidad legal plena para obligarse a nombre y por cuenta propia a lo establecido en el presente contrato.
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+            <strong>2.3.-</strong> Contar con numero de seguridad social (NSS): {asesor.nss}
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+            <strong>2.4.-</strong> Contar con número de CURP: {asesor.curp}
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+            <strong>2.5.-</strong> Tener su domicilio ubicado en {asesor.direccion_completa}, CP {asesor.codigo_postal}
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+            <strong>2.6.-</strong> Que es su libre voluntad la celebración de este contrato y que no tiene impedimento alguno para ello, aceptando que el servicio de asesoría financiera y materia legal del mismo está sujeto a la legislación aplicable.
+          </Typography>
+
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+          <strong>III.-</strong> DE LAS PARTES
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+            <strong>3.1.-</strong> Que es su libre voluntad la celebración de este contrato y que no tienen impedimento alguno para ello, aceptando que el servicio de asesoría financiera y legal materia de este, está sujeto a la legislación aplicable.
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+            <strong>3.2.-</strong> Que se reconocen con capacidad jurídica suficiente para obligarse recíprocamente en virtud de lo anterior se someten a lo establecido en la siguientes clausulas.
+          </Typography>
+          
+
           <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
           <strong>CLAUSULAS</strong>
           </Typography>
+
+
           <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
-            <strong>PRIMERA.</strong> - La <strong>COMISIONISTA</strong> conviene en hacerse cargo de la venta de servicios, promoción y servicios que se enlistan anexas a éste, en la inteligencia de que las ventas, promociones o servicios que lleve a cabo <strong>LA COMISIONISTA</strong> serán realizadas de acuerdo con los precios, términos y condiciones de pago que <strong>LA COMITENTE</strong> señaló en la lista anexa a este contrato y que estará vigente hasta que otra lista la sustituya expresamente.
-            </Typography>
-          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
-          <strong>SEGUNDA.</strong> - Ambas partes convienen, que la<strong>COMISIONISTA</strong> sólo tendrá a su cargo las ventas, promociones y servicios a que se refiere la cláusula anterior, en el territorio que comprende y en consecuencia no podrá realizar la venta, contratación o promoción de los artículos o servicios objeto de este contrato, en cualquier otro lugar de la República o fuera de ella, a menos que medie consentimiento de <strong>LA COMITENTE</strong>.
+            <strong>PRIMERA.–</strong> en TERMINOS DEL SERVICIO En virtud del presente contrato EL PROFESIONISTA se obliga a prestar a EL CLIENTE, los siguientes servicios profesionales independientes: ASESORIA Y CONSULTORIA DE SERVICIOS ADMINISTRATIVOS. Los trabajos resultantes de la prestación de servicios profesionales independientes antes referidos serán entregados por EL PROFESIONISTA de acuerdo con el plan de actividades y entregas que para tal efecto acuerdan las partes. 
           </Typography>
           <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
-          <strong>TERCERA.</strong> - La <strong>COMISIONISTA</strong> queda en libertad para vender, promocionar o colocar servicios por su cuenta o por cuenta de terceros otros productos o servicios, que no sean de la naturaleza de los que venda, promocione o brinde servicios <strong>LA COMITENTE</strong>.
+            <strong>SEGUNDA.–</strong> DISPOSICIÓN DEL SERVICIO EL PROFESIONISTA desarrollará las actividades que por el presente instrumento se le encomiendan en la forma, términos y con los materiales y/o herramientas que estime convenientes, de acuerdo con los conocimientos que, como profesional de la materia, ha adquirido y posee. 
           </Typography>
           <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
-          <strong>CUARTA.</strong> - La <strong>COMISIONISTA</strong> manifiesta que cuenta con recursos y personal adecuado para realizar la venta y promoción de los servicios de la <strong>COMITENTE</strong>, pudiendo la <strong>COMISIONISTA</strong> presentarse o ausentarse cuando así lo desee, debido a que no está obligado a cumplir personalmente la comisión; asimismo, éste contrato no confiere exclusividad para ninguna de las partes, por lo cual la <strong>COMISIONISTA</strong> tiene plena libertad para contratar con otros comisionistas o comitentes y por tanto, la <strong>COMISIONISTA</strong> está en libertad de realizar su actividad en forma independiente.
+            <strong>TERCERA.–</strong> HONORARIOS DE SERVICIO EL CLIENTE se obliga a pagar a EL PROFESIONISTA sus servicios de Honorarios por:
           </Typography>
           <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
-          <strong>QUINTA.</strong> - La liquidación de las comisiones y gastos que le correspondan a la comisionista se harán cada <strong>SEMANA</strong> un porcentaje de un 5% sobre el precio de sus operaciones. Si por alguna razón debe darse a <strong>LA COMISIONISTA</strong> porcentajes diferentes según se trate del tipo o el origen de los productos o servicios que venda, entonces en lista anexa se especificarán las comisiones que correspondan a todos los diversos tipos, marcas, orígenes o clases de productos o servicios que venda.
-          </Typography>
-          {/* Aquí puedes continuar con el resto de las cláusulas */}
-          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
-          <strong>SEXTA.</strong> - Si <strong>LA COMISIONISTA</strong> recibe para su resguardo productos, dinero o documentos, propiedad de <strong>LA COMITENTE</strong>, actuará en todo momento con honradez garantizando su buen manejo.
+            ASESORIA Y CONSULTORIA:        $ _____________
           </Typography>
           <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
-          <strong>SEPTIMA.</strong> - <strong>LA COMISIONISTA</strong>, conviene en regirse por principios de honradez, diligencia y profesionalismo en su encargo. Buscará con todos los medios legales a su alcance la expansión de las ventas, contratación o colocación de los servicios de <strong>LA COMITENTE</strong>. No desviará el dinero o productos que por su representación llegará a tener por la confianza que le otorga <strong>LA COMITENTE</strong>. Por lo que, si <strong>LA COMISIONISTA</strong> se llegara a exceder en su representación y faltara a esos principios de rectitud y lealtad para con <strong>LA COMITENTE</strong>, este contrato será rescindido, respondiendo <strong>LA COMISIONISTA</strong> por todos los daños que haya causado a <strong>LA COMITENTE</strong>.
+            +SERVICIOS ADMINISTRATIVOS: $ _____________     
           </Typography>
           <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
-          <strong>OCTAVA.</strong> - <strong>LA COMITENTE</strong>, conviene en proporcionar en todo momento a <strong>LA COMISIONISTA</strong>, de todos los medios a los que se comprometió en este contrato para facilitarle el desempeño de su representación, sin pena de responder por los daños y perjuicios causados a <strong>LA COMISIONISTA</strong>.
+            Total, a recibir por servicios de Honorarios la cantidad de $ ___________
           </Typography>
           <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
-          <strong>NOVENA.</strong> - El término del presente contrato de Comisión Mercantil, es por tiempo indeterminado quedando facultadas ambas partes para darlo por terminado y sin ninguna responsabilidad, previo aviso por escrito.
+            (___________________________________________________________ 00/100 M.N). 
           </Typography>
           <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
-          <strong>DECIMA.</strong> - Para la interpretación y cumplimiento de este contrato, así como para todo lo no previsto en el mismo, las partes se someten a la jurisdicción y competencia de la Jurisdicción de los Tribunales del Estado de Campeche; por lo que renuncian expresamente al fuero que, por razón de su domicilio presente o uturo, pudiera corresponderles.
+          Que será cubierta en una exhibición al término de los servicios prestados. El lugar para la recepción del cobro será Calle Cuernavaca no. 47 Cond. Cuauhnáhuac C.P. 62430 Cuernavaca Morelos O DONDE LAS PARTES ACUERDEN.
+          </Typography>
+
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+            <strong>CUARTA.–</strong> VIGENCIA DEL SERVICIO Se estipula que la vigencia del presente contrato será a partir de la fecha de firma del presente documento y hasta que se concluya los servicios a realizarse; no más de un promedio máximo de 70 días naturales una vez firmado el contrato de servicios, plazo que podrá prorrogarse, previo acuerdo entre las partes siempre y cuando se presente la información completa y correcta.
           </Typography>
           <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
-          Leído el que fue el presente y de conformidad, lo firman el presente documento, por duplicado en la ciudad de ____________________________________________, a los ______ días del mes de __________________ del año 202__; quedando un ejemplar de este en poder de cada parte contratante.
+            EL PROFESIONISTA se obliga a informar periódicamente al CLIENTE el resultado de sus gestiones, lo que podrá hacer de manera personal, o a través de cualquier medio de comunicación que las partes acuerden, siempre que quede un registro del cumplimiento de esta obligación.
           </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+            <strong>QUINTA.-</strong> EL CLIENTE acepta recibir exclusivamente del PROFESIONISTA los servicios profesionales contratados en el presente escrito.
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+            EL CLIENTE podrá pedir dentro de la vigencia del contrato y cuantas veces lo requiera, la asesoría a que se refiere la presente clausula.
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+            <strong>SEXTA.–</strong> Son causal de terminación del presente contrato las siguientes: 
+          </Typography>
+
+
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+          a.- Por haberse cumplido el OBJETO del contrato, 
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+          b.- Por muerte o incapacidad física permanente de cualquiera de las PARTES.
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+          c.- Por que el cliente se active antes de la terminación del contrato al IMSS como trabajador 
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+          Cuando cualquiera de las PARTES lo solicite a la otra sin mayores requisitos que el aviso se realice por escrito y notifique a la otra parte con 15 días de anticipación y siempre y cuando no existan obligaciones pendientes de cumplimiento.
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+            <strong>SEPTIMA.–</strong> Son causales de recisión de contrato las siguientes:
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+          a.- El incumplimiento de las obligaciones de cualquiera de las PARTES conforme a lo establecido en el presente contrato.
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+          b. – Para el caso de rescisión, la parte cliente se obliga a pagar a la parte afectada la cantidad de $2,000.00 (DOS Mil Pesos 00/100 M.N.) por concepto de pena convencional.
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+            <strong>OCTAVA.–</strong> Ambas partes manifiestan que, para el caso de interpretación, cumplimiento y resolución del presente contrato se someten a la competencia de los Tribunales de la Ciudad de Cuernavaca, Morelos, renunciando a la que pudiera corresponderles con motivo del domicilio presente o futuro.
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+            <strong>NOVENA.–</strong> Política de Privacidad y Confidencialidad. 
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+          Los datos, documentos e información personal que el “CLIENTE” proporcione al “PROFESIONISTA” serán utilizados única y exclusivamente para lo estipulado en el presente contrato y serán resguardados en calidad de confidencial.
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+          El CLIENTE se compromete a no divulgar los datos del proceso realizado por EL PROFESIONISTA mientras este en curso ni al finalizar el mismo, así como los costos y la información interna que se le proporcione a EL CLIENTE.
+          </Typography>
+          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
+          En señal de expresa conformidad y aceptación de los términos del presente contrato, y enteradas LAS PARTES de su contenido y alcances, lo firman por duplicado en Cuernavaca, Morelos el día ____   de diciembre    del 202_.
+          </Typography>
+
+
 
           <div className="grid grid-cols-2 gap-4 mt-5">
                 <div className="text-left">
-                    <Typography variant="body1">
-                        El Comitente
-                    </Typography>
-                    <br/><br/>
-                    <Typography variant="body1">
-                        M en A Martha Margarita Santana Ceja
-                    </Typography>
-                </div>
-                <div className="text-right">
-                    <Typography variant="body1">
-                        La Comisionista
+                <Typography variant="body1">
+                        _____________________________
                     </Typography>
                     <br/><br/>
                     <Typography variant="body1">
                     {nombreCompleto}
                     </Typography>
                 </div>
+                <div className="text-right">
+                <Typography variant="body1">
+                _____________________________
+                    </Typography>
+                    <br/><br/>
+                    <Typography variant="body1">
+                        Lic. Martha Margarita Santana Ceja
+                    </Typography>
+                    
+                </div>
             </div>
 
           {/* Continua con las siguientes cláusulas */}
 <br/><br/>
-          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
-          Testigo
-          </Typography>
-          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
-          C. Jose Alfredo  Cuc  Ek
-          </Typography>
-          <br/><br/><br/><br/>
-          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
-          Testigo
-          </Typography>
-          <Typography variant="body1" gutterBottom style={{ textAlign: 'justify' }}>
-          C. _____________________________________________
-          </Typography>
-          
           <Box display="flex" justifyContent="center" mt={3}>
-          {/* <Button
-    variant="contained"
-    color="primary"
-    onClick={() => navigate(`/asesores`)} // Redirige al usuario a la ruta '/asesores'
-  >
-    Regresar a Asesores
-  </Button> */}
-  
+          <Button
+                variant="contained"
+                color="primary"
+                onClick={() => window.print()}
+              >
+                Imprimir Contrato
+              </Button>
           </Box>
+          </div>
         </Paper>
       </div>
     );
