@@ -102,6 +102,12 @@
   max-width: 90%;
 }
 
+.custom-modal {
+  width: 90vw !important;
+  max-width: 450px !important;
+}
+
+
 .modal-content h2 {
   margin-top: 0;
 }

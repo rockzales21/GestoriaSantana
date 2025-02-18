@@ -5,6 +5,7 @@ import html2pdf from 'html2pdf.js';
 
 const Clientes = () => {
   const [clientes, setClientes] = useState([]);
+  const [detalleCliente, setDetalleCliente] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,11 +34,22 @@ const Clientes = () => {
   // const handleDetallesClick = (cliente) => {
   //   navigate(`/clientes/contratoClientes/${cliente.id_cliente}`, { state: { cliente } });
   // };
-  const handleDetallesClick = async (cliente) => {
+  // const handleDetallesClick = async (cliente) => {
+  const handleContratoClick = async (cliente) => {
     try {
       const response = await axios.get(`https://gestoriasantana-production.up.railway.app/clientes/cliente/${cliente.id_cliente}`);
       const clienteData = response.data;
       generatePDF(clienteData);
+    } catch (error) {
+      console.error("Error al cargar los detalles del cliente:", error);
+    }
+  };
+
+  const handleDetallesClick = async (cliente) => {
+    try {
+      // const response = await axios.get(`http://localhost:3000/clientes/detalle/${cliente.id_cliente}`);
+      const response = await axios.get(`https://gestoriasantana-production.up.railway.app/clientes/detalle/${cliente.id_cliente}`);
+      setDetalleCliente(response.data);
     } catch (error) {
       console.error("Error al cargar los detalles del cliente:", error);
     }
@@ -227,7 +239,7 @@ const Clientes = () => {
   
       for (let i = 1; i <= totalPages; i++) {
         pdf.setPage(i);
-        pdf.addImage(headerImage, 'PNG', 0, 0, 50, 20); // Adjust the position and size as needed
+        pdf.addImage(headerImage, 'PNG', 0, -5, 40, 30); // Adjust the position and size as needed
         pdf.setFontSize(10);
         const textWidth = pdf.getTextDimensions(footerText).w;
         const xPosition = (pageWidth - textWidth) / 2;
@@ -283,112 +295,48 @@ const Clientes = () => {
               <p>{cliente.status}</p>
               <button
                 className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-700"
+                onClick={() => handleContratoClick(cliente)}
+              >
+                Contrato
+              </button>
+              <button
+                className="bg-green-500 text-white py-1 px-4 rounded hover:bg-green-700 ml-2"
                 onClick={() => handleDetallesClick(cliente)}
               >
-                Ver Detalles
+                Ver detalles
               </button>
             </div>
           </div>
         ))}
       </div>
+      {detalleCliente && (
+  <div className="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="modal-content custom-modal p-4 rounded shadow-lg overflow-auto">
+      <h2 className="text-xl font-bold mb-4">Detalles del Cliente</h2>
+      <p className="whitespace-normal"><strong>Nombre:</strong> {detalleCliente.nombre}</p>
+      <p className="whitespace-normal"><strong>CURP:</strong> {detalleCliente.curp}</p>
+      <p className="whitespace-normal"><strong>NSS:</strong> {detalleCliente.nss}</p>
+      <p className="whitespace-normal"><strong>Email:</strong> {detalleCliente.email}</p>
+      <p className="whitespace-normal"><strong>RFC:</strong> {detalleCliente.rfc}</p>
+      <p className="whitespace-normal"><strong>Teléfono:</strong> {detalleCliente.telefono}</p>
+      <p className="whitespace-normal"><strong>Dirección:</strong> {detalleCliente.direccioncompleta}</p>
+      <p className="whitespace-normal"><strong>Status:</strong> {detalleCliente.status}</p>
+      <p className="whitespace-normal"><strong>Zona:</strong> {detalleCliente.zona}</p>
+      <p className="whitespace-normal"><strong>Actualizó:</strong> {detalleCliente.actualizo}</p>
+      <p className="whitespace-normal"><strong>Fecha de solución:</strong> {formatFecha(detalleCliente.fecha_solucion)}</p>
+      <p className="whitespace-normal"><strong>Observaciones:</strong> {detalleCliente.observaciones}</p>
+      <button
+        className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-700 mt-4"
+        onClick={() => setDetalleCliente(null)}
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+)}
     </div>
   );
 };
 
 export default Clientes;
 
-// import React, { useEffect, useState } from "react";
-// import axios from "axios";
-
-// const Clientes = () => {
-//   const [clientes, setClientes] = useState([]);
-
-//   useEffect(() => {
-//     const fetchClientes = async () => {
-//       try {
-//         //https://gestoriasantana-production.up.railway.app/
-//         // const response = await axios.get("http://localhost:5000/clientes/clientes");
-//         const response = await axios.get("https://gestoriasantana-production.up.railway.app/clientes/clientes");
-//         setClientes(response.data);
-//       } catch (error) {
-//         console.error("Error al cargar los clientes:", error);
-//       }
-//     };
-
-//     fetchClientes();
-//   }, []);
-
-//   const formatFecha = (fecha) => {
-//     if (!fecha) return "No disponible";
-//     const opciones = { year: "numeric", month: "2-digit", day: "2-digit" };
-//     return new Date(fecha).toLocaleDateString("es-MX", opciones);
-//   };
-
-//   const formatMonto = (monto) => {
-//     return `$${monto.toLocaleString("es-MX")}`;
-//   };
-
-//   const handleDetallesClick = (cliente) => {
-//     navigate(`/contratoCliente/${cliente.id_cliente}`, { state: { cliente } });
-//   };
-
-//   return (
-//     <div className="container mx-auto p-4">
-//       <h1 className="text-2xl font-bold mb-4 text-center">Lista de Clientes</h1>
-//       <div className="grid gap-4">
-//         {clientes.map((cliente) => (
-//           <div
-//             key={cliente.id_cliente}
-//             className="border rounded-lg p-4 shadow-md bg-white"
-//           >
-//             {/* Renglón 1 */}
-//             <div className="flex justify-between mb-2">
-//               <p className="font-bold">Cliente:</p>
-//               <p>{cliente.nombre}</p>
-//               <p className="font-bold">CURP:</p>
-//               <p>{cliente.curp}</p>
-//               <p className="font-bold">NSS:</p>
-//               <p>{cliente.nss}</p>
-//             </div>
-
-//             {/* Renglón 2 */}
-//             <div className="flex justify-between mb-2">
-//               <p className="font-bold">Monto:</p>
-//               <p>{formatMonto(cliente.monto)}</p>
-//               <p className="font-bold">Fecha de trámite:</p>
-//               <p>{formatFecha(cliente.fecha_registro)}</p>
-//               <p className="font-bold">Fecha de último retiro:</p>
-//               <p>{formatFecha(cliente.fecha_ultimo_retiro)}</p>
-//             </div>
-
-//             {/* Renglón 3 */}
-//             <div className="flex justify-between mb-2">
-//               <p className="font-bold">Semanas cotizadas:</p>
-//               <p>{cliente.semanas_cotizadas}</p>
-//               <p className="font-bold">Semanas descontadas:</p>
-//               <p>{cliente.semanas_descontadas}</p>
-//               <p className="font-bold">Afore:</p>
-//               <p>{cliente.id_afore || "No asignado"}</p>
-//             </div>
-
-//             {/* Renglón 4 */}
-//             <div className="flex justify-between items-center">
-//               <p className="font-bold">Asesor:</p>
-//               <p>{cliente.id_asesor || "No asignado"}</p>
-//               <p className="font-bold">Status:</p>
-//               <p>{cliente.status}</p>
-//               <button
-//                 className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-700"
-//                 onClick={() => handleDetallesClick(cliente)}
-//               >
-//                 Ver Detalles
-//               </button>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Clientes;
