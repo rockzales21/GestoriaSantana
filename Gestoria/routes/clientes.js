@@ -63,6 +63,51 @@ router.get('/cliente/:id', async (req, res) => {
 });
 
 
+router.get('/detalle/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const query = `
+      SELECT p.id_persona, 
+             p.nombres || ' ' || p.apellido_p || ' ' || p.apellido_m AS nombre, 
+             fecha_alta,
+             monto,
+             p.curp,
+             p.nss,
+             p.email,
+             p.rfc,
+             semanas_cotizadas,
+             semanas_descontadas,
+             fecha_baja,
+             c.direccion || ', ' || p.ciudad || ', ' || p.estado || ', CP: ' || p.codigo_postal AS direccionCompleta,
+             p.telefono,
+             c.status,
+             s.oficina AS ZONA,
+             pu.nombres || ' ' || pu.apellido_p || ' ' || pu.apellido_m AS ACTUALIZO,
+             fecha_solucion,
+             observaciones
+      FROM public.Personas p
+      INNER JOIN public.clientes c ON p.id_persona = c.id_persona
+      INNER JOIN public.usuarios u ON u.id_usuario = c.id_asesor
+      INNER JOIN public.Personas pu ON pu.id_persona = u.id_persona
+      INNER JOIN public.sucursales s ON s.encargado = u.jefe
+      WHERE c.id_cliente = $1
+    `;
+
+    const result = await pool.query(query, [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Cliente no encontrado' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error al obtener el detalle del cliente:', err.message);
+    res.status(500).send('Error del servidor');
+  }
+});
+
+
 router.get('/clientes', async (req, res) => {
   const { status, semana, año, mes, asesor } = req.query;
 
