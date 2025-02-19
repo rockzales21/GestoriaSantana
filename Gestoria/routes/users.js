@@ -44,6 +44,12 @@ router.post('/register', async (req, res) => {
             [username, hashedPassword, id_usuario]
         );
 
+        // Actualizar el campo tipo en la tabla usuarios
+        await pool.query(
+            'UPDATE usuarios SET tipo = 2 WHERE id_usuario = $1',
+            [id_usuario]
+        );
+
         res.status(201).json({ message: 'Usuario registrado con éxito', user: newUser.rows[0] });
     } catch (error) {
         res.status(500).json({ error: error.message });
