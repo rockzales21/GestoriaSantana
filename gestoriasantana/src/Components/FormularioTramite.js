@@ -118,7 +118,7 @@ setFormData({
   ...formData,
   tipo_tramite: value,
   status: 
-    value === "Pensión" || value === "Negativa" || value === "Desempleo"
+    value === "Pensión" || value === "Negativa" || value === "Desempleo" || value === "Mejoravit" || value === "Creditos" || value === "PPR"
       ? "Alta"
       : value === "Activate"
       ? "Activo"
@@ -216,9 +216,9 @@ setFormData({
           <option value="Pensión">Pensión</option>
           <option value="Negativa">Negativa/ Recuperación de saldos</option>
           <option value="Desempleo">Desempleo</option>
-          <option value="Desempleo">Mejoravit</option>
-          <option value="Desempleo">Créditos</option>
-          <option value="Desempleo">PPR</option>
+          <option value="Mejoravit">Mejoravit</option>
+          <option value="Creditos">Créditos</option>
+          <option value="PPR">PPR</option>
           <option value="Activate">Activate</option>
         </select>
       </div>
@@ -519,7 +519,7 @@ setFormData({
 
 
       {/* Campos específicos para Pensión, Negativa o Desempleo */}
-      {(tipo_tramite === 'Pensión' || tipo_tramite === 'Negativa' || tipo_tramite === 'Desempleo') && (
+      {(tipo_tramite === 'Pensión' || tipo_tramite === 'Negativa' || tipo_tramite === 'Desempleo' || tipo_tramite === 'Mejoravit' || tipo_tramite === 'Creditos' || tipo_tramite === 'PPR') && (
         <>
           <div className="grid grid-cols-2 gap-4">
             <div className="mb-4">
