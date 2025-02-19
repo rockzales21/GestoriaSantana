@@ -307,7 +307,7 @@ const Asesores = () => {
               <strong>I.-</strong> LA M en A <strong>Martha Margarita Santana Ceja</strong>, denominada en lo adelante como “EL EMISOR”, manifiesta ser mayor de edad, con domicilio en la calle Cuernavaca no.  47 condominios Cuauhnáhuac CP 62430, del municipio de Cuernavaca, Estado de Morelos, identificándose con CURP SACM710414MMNNJR02 y credencial de elector con folio 0045015314261.
             </p>
             <p style="text-align: justify; margin-bottom: 16px;">
-              <strong>II.-</strong> La <strong>${nombreCompleto}</strong>, denominado en lo adelante como “LA PARTE RECEPTORA”, manifiesta ser mayor de edad, con domicilio en <strong>C. ${domicilioCompleto}, CP ${asesor.codigo_postal}</strong>. Identificándose con de elector con folio ___________________. CURP: ${asesor.cupr} y credencial.
+              <strong>II.-</strong> La <strong>${nombreCompleto}</strong>, denominado en lo adelante como “LA PARTE RECEPTORA”, manifiesta ser mayor de edad, con domicilio en <strong>C. ${domicilioCompleto}, CP ${asesor.codigo_postal}</strong>. Identificándose con de elector con folio ___________________. CURP: ${asesor.curp} y credencial.
             </p>
             
             <p style="text-align: justify; margin-bottom: 16px;">

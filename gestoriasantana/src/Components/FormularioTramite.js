@@ -214,8 +214,11 @@ setFormData({
         >
           <option value="">Seleccione un tipo de trámite</option>
           <option value="Pensión">Pensión</option>
-          <option value="Negativa">Negativa</option>
+          <option value="Negativa">Negativa/ Recuperación de saldos</option>
           <option value="Desempleo">Desempleo</option>
+          <option value="Desempleo">Mejoravit</option>
+          <option value="Desempleo">Créditos</option>
+          <option value="Desempleo">PPR</option>
           <option value="Activate">Activate</option>
         </select>
       </div>
