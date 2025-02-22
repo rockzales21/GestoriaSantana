@@ -2,11 +2,15 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import html2pdf from 'html2pdf.js';
+import CambiarStatus from "./Modales/CambiarStatus";
 
 const Clientes = () => {
   const [clientes, setClientes] = useState([]);
   const [detalleCliente, setDetalleCliente] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
 
   useEffect(() => {
     const fetchClientes = async () => {
@@ -248,11 +252,48 @@ const Clientes = () => {
     }).save();
   };
 
+  const handleChangeStatus = (cliente) => {
+    setClienteSeleccionado(cliente);
+    setModalOpen(true);
+  };
+
+  const handleConfirmStatusChange = async (cliente, nuevoStatus) => {
+    try {
+      await axios.put(`https://gestoriasantana-production.up.railway.app/cliente/${cliente.id_cliente}/status`, {
+          nuevoStatus
+      });
+
+      // Actualizar el estado local
+      setClientes((prevClientes) =>
+          prevClientes.map((c) =>
+              c.id_cliente === cliente.id_cliente ? { ...c, status: nuevoStatus } : c
+          )
+      );
+    } catch (error) {
+      console.error("Error al cambiar el status del cliente:", error);
+    }
+  };
+
+
+  const filteredClientes = clientes.filter((cliente) =>
+    cliente.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4 text-center">Lista de Clientes</h1>
+
+      <input
+        type="text"
+        placeholder="Buscar cliente..."
+        className="border p-2 mb-4 w-full"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+
+
       <div className="grid gap-4">
-        {clientes.map((cliente) => (
+      {filteredClientes.map((cliente) => (
           <div
             key={cliente.id_cliente}
             className="border rounded-lg p-4 shadow-md bg-white"
@@ -285,6 +326,7 @@ const Clientes = () => {
               <p>{cliente.semanas_descontadas}</p>
               <p className="font-bold">Afore:</p>
               <p>{cliente.id_afore || "No asignado"}</p>
+              
             </div>
 
             {/* Renglón 4 */}
@@ -293,6 +335,13 @@ const Clientes = () => {
               <p>{cliente.id_asesor || "No asignado"}</p>
               <p className="font-bold">Status:</p>
               <p>{cliente.status}</p>
+              <button 
+                className="bg-yellow-500 text-white py-1 px-4 rounded hover:bg-yellow-700 ml-2"
+                onClick={() => handleChangeStatus(cliente)}
+              >
+                Cambiar Status
+              </button>
+
               <button
                 className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-700"
                 onClick={() => handleContratoClick(cliente)}
@@ -309,6 +358,12 @@ const Clientes = () => {
           </div>
         ))}
       </div>
+      <CambiarStatus 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        onConfirm={handleConfirmStatusChange} 
+        cliente={clienteSeleccionado}
+      />
       {detalleCliente && (
   <div className="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
     <div className="modal-content custom-modal p-4 rounded shadow-lg overflow-auto">
