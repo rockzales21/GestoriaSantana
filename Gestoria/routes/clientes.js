@@ -1,37 +1,3 @@
-// const express = require('express');
-// const router = express.Router();
-// const pool = require('../db');
-
-// router.get('/', async (req, res) => {
-//   try {
-//     const result = await pool.query('SELECT * FROM clientes');
-//     res.json(result.rows);
-//   } catch (err) {
-//     console.error(err.message);
-//     res.status(500).send('Error del servidor');
-//   }
-// });
-
-// router.get('/clientes', async (req, res) => {
-//   try {
-//     const result = await pool.query(`
-//       SELECT p.id_persona, c.id_cliente, nombres || ' ' || apellido_p || ' ' || apellido_m AS nombre, curp, nss, 
-//       monto, id_afore, fecha_registro, semanas_cotizadas, id_asesor, fecha_ultimo_retiro, semanas_descontadas, status 
-//       FROM Personas p 
-//       INNER JOIN Clientes c ON p.id_persona = c.id_persona
-//     `);
-//     res.json(result.rows);
-//   } catch (err) {
-//     console.error(err.message);
-//     res.status(500).send('Error del servidor');
-//   }
-// });
-
-// module.exports = router;
-
-
-
-
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
@@ -153,5 +119,22 @@ router.get('/clientes', async (req, res) => {
     res.status(500).send('Error del servidor');
   }
 });
+
+router.put('/cliente/:id/status', async (req, res) => {
+  const { id } = req.params;
+  const { nuevoStatus } = req.body;
+
+  try {
+    // Actualizar el estado del cliente
+    const updateQuery = `UPDATE clientes SET status = $1 WHERE id_cliente = $2`;
+    await pool.query(updateQuery, [nuevoStatus, id]);
+
+    res.json({ message: 'Estado actualizado correctamente' });
+  } catch (err) {
+    console.error('Error al actualizar el estado del cliente:', err.message);
+    res.status(500).send('Error del servidor');
+  }
+});
+
 
 module.exports = router;
