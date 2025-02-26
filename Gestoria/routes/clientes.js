@@ -9,9 +9,13 @@ router.get('/cliente/:id', async (req, res) => {
     const query = `
       SELECT 
         nombres || ' ' || apellido_p || ' ' || apellido_m AS nombre, 
-        nss, curp, direccion || ', ' || ciudad || ', ' || estado AS direccion_completa, codigo_postal
+        nss, curp, c.direccion || ', ' || ciudad || ', ' || estado AS direccion_completa, codigo_postal
+        , c.monto, 
+		    s.direccion || s.tel_oficina AS direccion_sucursal
       FROM public.Personas p
       INNER JOIN public.clientes c ON p.id_persona = c.id_persona
+      INNER JOIN public.usuarios u ON u.id_usuario = c.id_asesor
+	    INNER JOIN public.sucursales s ON s.encargado = u.jefe
       WHERE c.id_cliente = $1
     `;
 
@@ -20,6 +24,8 @@ router.get('/cliente/:id', async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Cliente no encontrado' });
     }
+
+    console.log(result.rows[0]);
 
     res.json(result.rows[0]);
   } catch (err) {
