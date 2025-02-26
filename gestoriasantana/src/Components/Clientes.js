@@ -3,6 +3,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import html2pdf from 'html2pdf.js';
 import CambiarStatus from "./Modales/CambiarStatus";
+import { toast } from 'react-toastify';
+
+import { NumerosALetras } from 'numero-a-letras';
 
 const Clientes = () => {
   const [clientes, setClientes] = useState([]);
@@ -16,6 +19,8 @@ const Clientes = () => {
     const fetchClientes = async () => {
       try {
         const response = await axios.get("https://gestoriasantana-production.up.railway.app/clientes/clientes");
+        // const response = await axios.get('http://localhost:3000/clientes/clientes');
+        // console.log('Response:', response.data);
         setClientes(response.data);
       } catch (error) {
         console.error("Error al cargar los clientes:", error);
@@ -24,6 +29,8 @@ const Clientes = () => {
 
     fetchClientes();
   }, []);
+
+  
 
   const formatFecha = (fecha) => {
     if (!fecha) return "No disponible";
@@ -42,7 +49,12 @@ const Clientes = () => {
   const handleContratoClick = async (cliente) => {
     try {
       const response = await axios.get(`https://gestoriasantana-production.up.railway.app/clientes/cliente/${cliente.id_cliente}`);
+      // const response = await axios.get(`http://localhost:3000/clientes/cliente/${cliente.id_cliente}`);
+        console.log('Response:', response.data);
       const clienteData = response.data;
+
+      
+      
       generatePDF(clienteData);
     } catch (error) {
       console.error("Error al cargar los detalles del cliente:", error);
@@ -59,11 +71,59 @@ const Clientes = () => {
     }
   };
 
+  const [honorarios, setHonorarios] = useState(0);
+
   const generatePDF = (cliente) => {
+    const fetchHonorarios = async () => {
+      try {
+        const response = await fetch('https://gestoriasantana-production.up.railway.app/honorarios');
+        const data = await response.json();
+        if (response.ok) {
+          setHonorarios(parseFloat(data.monto));
+          console.log('Valor:', parseFloat(data.monto));
+          console.error('Valor:', parseFloat(data.monto));
+        } else {
+          toast.error('Error al cargar el monto de honorarios');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        toast.error('Error al cargar el monto de honorarios');
+      }
+    };
+
+
+
+    const ahora = new Date();
+    const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
+    const fechaActual = ahora.toLocaleDateString('es-MX', opciones);
     const nombreCompleto = `${cliente.nombre}`;
+
+    console.log('Monto:', cliente.monto);
+
+    fetchHonorarios();
+    let aseguramientoCalculo = cliente.monto < 15000 ? 1500 : cliente.monto < 25000 ? 1700 : 2000;
+    var honorario = isNaN(honorarios) ? 0 : cliente.monto * honorarios;
+    var aseguramiento = aseguramientoCalculo;
+    var totalPagar = honorario + aseguramiento;
+    var totalCliente = cliente.monto - totalPagar;
+
+    honorario = honorario.toFixed(2);
+    aseguramiento = aseguramiento.toFixed(2);
+    totalCliente = totalCliente.toFixed(2);
+
+const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
+  
+      plural: 'pesos',
+      singular: 'peso',
+      centPlural: 'centavos',
+      centSingular: 'centavo'
+  });
+
+
     const input = document.createElement('div');
+
     input.innerHTML = `
-      <div style="width: 700px; margin: 0 auto; font-size: 15px;">
+      <div style="width: 700px; margin: 0 auto; font-size: 14px;">
         <h6 style="text-align: justify; margin-bottom: 16px;">
           <strong>CONTRATO DE PRESTACIÓN DE SERVICIOS PROFESIONALES</strong>
         </h6>
@@ -136,16 +196,16 @@ const Clientes = () => {
           <strong>TERCERA.–</strong> HONORARIOS DE SERVICIO EL CLIENTE se obliga a pagar a EL PROFESIONISTA sus servicios de Honorarios por:
         </p>
         <p style="text-align: justify; margin-bottom: 16px;">
-          ASESORIA Y CONSULTORIA:        $ _____________
+          ASESORIA Y CONSULTORIA:        $ ${honorario}
         </p>
         <p style="text-align: justify; margin-bottom: 16px;">
-          +SERVICIOS ADMINISTRATIVOS: $ _____________     
+          +SERVICIOS ADMINISTRATIVOS: $ ${aseguramiento}
         </p>
         <p style="text-align: justify; margin-bottom: 16px;">
-          Total, a recibir por servicios de Honorarios la cantidad de $ ___________
+          Total, a recibir por servicios de Honorarios la cantidad de $ ${totalCliente}
         </p>
         <p style="text-align: justify; margin-bottom: 16px;">
-          (___________________________________________________________ 00/100 M.N). 
+(${totalEnLetras}} 
         </p>
         <p style="text-align: justify; margin-bottom: 16px;">
         Que será cubierta en una exhibición al término de los servicios prestados. El lugar para la recepción del cobro será Calle Cuernavaca no. 47 Cond. Cuauhnáhuac C.P. 62430 Cuernavaca Morelos O DONDE LAS PARTES ACUERDEN.
@@ -201,7 +261,7 @@ const Clientes = () => {
           El CLIENTE se compromete a no divulgar los datos del proceso realizado por EL PROFESIONISTA mientras este en curso ni al finalizar el mismo, así como los costos y la información interna que se le proporcione a EL CLIENTE.
         </p>
         <p style="text-align: justify; margin-bottom: 16px;">
-          En señal de expresa conformidad y aceptación de los términos del presente contrato, y enteradas LAS PARTES de su contenido y alcances, lo firman por duplicado en Cuernavaca, Morelos el día ____   de __________________ del 20__.
+          En señal de expresa conformidad y aceptación de los términos del presente contrato, y enteradas LAS PARTES de su contenido y alcances, lo firman por duplicado en Cuernavaca, Morelos el día ${fechaActual}.
         </p>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px;">  
           <div style="text-align: left;">
@@ -239,7 +299,8 @@ const Clientes = () => {
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       const headerImage = '/img/logo.png';
-      const footerText = 'C. CUERNAVACA NO. 47 COND CUAHUNAHUAC  CUERNAVACA MORELOS 7772167527';
+      // const footerText = 'C. CUERNAVACA NO. 47 COND CUAHUNAHUAC  CUERNAVACA MORELOS 7772167527';
+      const footerText = cliente.direccion_sucursal;
   
       for (let i = 1; i <= totalPages; i++) {
         pdf.setPage(i);
