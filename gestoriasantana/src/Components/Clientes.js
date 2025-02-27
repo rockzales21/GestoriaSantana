@@ -39,6 +39,9 @@ const Clientes = () => {
   };
 
   const formatMonto = (monto) => {
+    if (monto === null || monto === undefined) {
+      return "$0.00"; // Or any default value you prefer
+    }
     return `$${monto.toLocaleString("es-MX")}`;
   };
 
