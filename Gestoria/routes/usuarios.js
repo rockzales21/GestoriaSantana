@@ -196,7 +196,30 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-
+router.get('/detalle/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      `SELECT p.nombres || ' ' || p.apellido_p || ' ' || p.apellido_m AS nombreCompleto,
+              p.nss, p.curp, p.nss, p.rfc, p.telefono, p.email, 
+              u.calle || ', Int:' || u.numero_interior || ', Ext:' || u.numero_exterior || ', ' || u.colonia || ', ' || p.ciudad || ', ' || p.estado || '. CP: ' || p.codigo_postal AS direccionCompleta,
+              pJefe.nombres || ' ' || pJefe.apellido_p || ' ' || pJefe.apellido_m AS aCargo,
+              s.oficina
+       FROM Usuarios u 
+       INNER JOIN Personas p ON p.id_persona = u.id_persona 
+       INNER JOIN Personas pJefe ON pJefe.id_persona = u.jefe
+       INNER JOIN Sucursales s ON s.encargado = pJefe.id_persona
+       WHERE u.id_usuario = $1`, [id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Error del servidor');
+  }
+});
 
 
 module.exports = router;
