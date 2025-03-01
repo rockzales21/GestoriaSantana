@@ -144,8 +144,10 @@ router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query(
-      `SELECT * FROM Usuarios u 
+      `SELECT u.*, p.*,s.direccion FROM Usuarios u 
        INNER JOIN Personas p ON p.id_persona = u.id_persona 
+       INNER JOIN Personas pJefe ON pJefe.id_persona = u.jefe
+       INNER JOIN Sucursales s ON s.encargado = pJefe.id_persona
        WHERE u.id_usuario = $1`, [id]
     );
     if (result.rows.length === 0) {
