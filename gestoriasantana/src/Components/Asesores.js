@@ -145,8 +145,8 @@ const Asesores = () => {
 
   const handleDetallesClick = async (asesor) => {
     try {
-      // const response = await axios.get(`https://gestoriasantana-production.up.railway.app/usuarios/detalle/${asesor.id_usuario}`);
-      const response = await axios.get(`http://localhost:3000/usuarios/detalle/${asesor.id_usuario}`);
+      const response = await axios.get(`https://gestoriasantana-production.up.railway.app/usuarios/detalle/${asesor.id_usuario}`);
+      // const response = await axios.get(`http://localhost:3000/usuarios/detalle/${asesor.id_usuario}`);
       setDetalleAsesor(response.data);
     } catch (error) {
       console.error("Error al cargar los detalles del asesor:", error);
