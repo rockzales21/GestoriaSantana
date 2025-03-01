@@ -29,6 +29,10 @@ const Asesores = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [currentIdUsuario, setCurrentIdUsuario] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para el término de búsqueda
+  const [detalleAsesor, setDetalleAsesor] = useState(null); // Estado para los detalles del asesor
+
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -129,11 +133,23 @@ const Asesores = () => {
   const handleContratoClick = async (asesor) => {
     try {
       const response = await axios.get(`https://gestoriasantana-production.up.railway.app/usuarios/${asesor.id_usuario}`);
+      // const response = await axios.get(`http://localhost:3000/usuarios/${asesor.id_usuario}`);
+
       const asesorData = response.data;
       generatePDF(asesorData);
       generateSecondPDF(asesorData);
     } catch (error) {
       console.error("Error al cargar los detalles del cliente:", error);
+    }
+  };
+
+  const handleDetallesClick = async (asesor) => {
+    try {
+      // const response = await axios.get(`https://gestoriasantana-production.up.railway.app/usuarios/detalle/${asesor.id_usuario}`);
+      const response = await axios.get(`http://localhost:3000/usuarios/detalle/${asesor.id_usuario}`);
+      setDetalleAsesor(response.data);
+    } catch (error) {
+      console.error("Error al cargar los detalles del asesor:", error);
     }
   };
 
@@ -144,9 +160,13 @@ const Asesores = () => {
       asesor.numeroInterior ? ' #' + asesor.numeroInterior : ''
     }, ${asesor.ciudad || ''}, ${asesor.estado || ''}`.trim();
 
+    const ahora = new Date();
+    const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
+    const fechaActual = ahora.toLocaleDateString('es-MX', opciones);
+
       const input = document.createElement('div');
       input.innerHTML = `
-        <div style="width: 700px; margin: 0 auto; font-size: 15px;">
+        <div style="width: 700px; margin: 0 auto; font-size: 18px;">
           <h6 style="text-align: justify; margin-bottom: 16px;">
             <strong>CONTRATO DE COMISIÓN MERCANTIL, QUE CELEBRAN, POR UNA PARTE: LA NEGOCIACIÓN “M SANTANA ASESORIAS” REPRESENTADA POR: MARTHA MARGARITA SANTANA CEJA, LA CUAL SERÁ DESIGNADA EN EL CURSO DE ESTE CONTRATO COMO “LA COMITENTE” Y POR LA OTRA PARTE {nombreCompletoMayus} A QUIEN SE LE DESIGNARÁ COMO “LA COMISIONISTA”, QUIENES HACEN LAS SIGUIENTES:</strong>
           </h6>
@@ -182,7 +202,6 @@ const Asesores = () => {
                       <p style="text-align: justify; margin-bottom: 16px;">
                       <strong>QUINTA.</strong> - La liquidación de las comisiones y gastos que le correspondan a la comisionista se harán cada <strong>SEMANA</strong> un porcentaje de un 5% sobre el precio de sus operaciones. Si por alguna razón debe darse a <strong>LA COMISIONISTA</strong> porcentajes diferentes según se trate del tipo o el origen de los productos o servicios que venda, entonces en lista anexa se especificarán las comisiones que correspondan a todos los diversos tipos, marcas, orígenes o clases de productos o servicios que venda.
                       </p>
-                      {/* Aquí puedes continuar con el resto de las cláusulas */}
                       <p style="text-align: justify; margin-bottom: 16px;">
                       <strong>SEXTA.</strong> - Si <strong>LA COMISIONISTA</strong> recibe para su resguardo productos, dinero o documentos, propiedad de <strong>LA COMITENTE</strong>, actuará en todo momento con honradez garantizando su buen manejo.
                       </p>
@@ -199,7 +218,7 @@ const Asesores = () => {
                       <strong>DECIMA.</strong> - Para la interpretación y cumplimiento de este contrato, así como para todo lo no previsto en el mismo, las partes se someten a la jurisdicción y competencia de la Jurisdicción de los Tribunales del Estado de Campeche; por lo que renuncian expresamente al fuero que, por razón de su domicilio presente o uturo, pudiera corresponderles.
                       </p>
                       <p style="text-align: justify; margin-bottom: 16px;">
-                      Leído el que fue el presente y de conformidad, lo firman el presente documento, por duplicado en la ciudad de ____________________________________________, a los ______ días del mes de __________________ del año 202__; quedando un ejemplar de este en poder de cada parte contratante.
+                      Leído el que fue el presente y de conformidad, lo firman el presente documento, por duplicado en la ciudad de ____________________________________________, a ${fechaActual}; quedando un ejemplar de este en poder de cada parte contratante.
                       </p>
 
                       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px;">  
@@ -231,17 +250,12 @@ const Asesores = () => {
         <br/>
         <br/>
         <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
         <p style="text-align: justify; margin-bottom: 16px;"> 
           <strong>Testigo</strong>
         </p>
         <p style="text-align: justify; margin-bottom: 16px;"> 
           C. Jose Alfredo  Cuc  Ek
         </p>
-        <br/>
         <br/>
         <br/>
         <p style="text-align: justify; margin-bottom: 16px;"> 
@@ -269,7 +283,9 @@ const Asesores = () => {
         const pageWidth = pdf.internal.pageSize.getWidth();
         const pageHeight = pdf.internal.pageSize.getHeight();
         const headerImage = '/img/logo.png';
-        const footerText = 'C. CUERNAVACA NO. 47 COND CUAHUNAHUAC  CUERNAVACA MORELOS 7772167527';
+        // const footerText = 'C. CUERNAVACA NO. 47 COND CUAHUNAHUAC  CUERNAVACA MORELOS 7772167527';
+        const footerText = asesor.direccion;
+        
     
         for (let i = 1; i <= totalPages; i++) {
           pdf.setPage(i);
@@ -289,6 +305,9 @@ const Asesores = () => {
         asesor.numeroInterior ? ' #' + asesor.numeroInterior : ''
       }, ${asesor.ciudad || ''}, ${asesor.estado || ''}`.trim();
   
+      const ahora = new Date();
+      const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
+      const fechaActual = ahora.toLocaleDateString('es-MX', opciones);
         const input = document.createElement('div');
         input.innerHTML = `
           <div style="width: 700px; margin: 0 auto; font-size: 15px;">
@@ -353,7 +372,7 @@ const Asesores = () => {
               <strong>OCTAVA.</strong> - No obstante, lo dispuesto, se podrá romper el carácter de confidencial para cualquier información cuando:
             </p>
             <p style="text-align: justify; margin-bottom: 16px;">
-              <strong>NOVENA.</strong> - Las obligaciones establecidas en este convenio para LA PARTE RECEPTORA, respecto a la confidencialidad de la “INFORMACIÓN CONFIDENCIAL” y al uso de esta, prevalecerán vigentes aun a la terminación de este instrumento y de la relación laboral. Leído en su completitud el presente contrato, y enteradas las partes de su contenido y alcances, lo firman en ESTADO DE MORELOS, ESTADO DE MORELOS a ________ de ________________de 2025.
+              <strong>NOVENA.</strong> - Las obligaciones establecidas en este convenio para LA PARTE RECEPTORA, respecto a la confidencialidad de la “INFORMACIÓN CONFIDENCIAL” y al uso de esta, prevalecerán vigentes aun a la terminación de este instrumento y de la relación laboral. Leído en su completitud el presente contrato, y enteradas las partes de su contenido y alcances, lo firman en ESTADO DE MORELOS, ESTADO DE MORELOS a ${fechaActual}.
             </p>
 
 
@@ -402,7 +421,8 @@ const Asesores = () => {
           const pageWidth = pdf.internal.pageSize.getWidth();
           const pageHeight = pdf.internal.pageSize.getHeight();
           const headerImage = '/img/logo.png';
-          const footerText = 'C. CUERNAVACA NO. 47 COND CUAHUNAHUAC  CUERNAVACA MORELOS 7772167527';
+          // const footerText = 'C. CUERNAVACA NO. 47 COND CUAHUNAHUAC  CUERNAVACA MORELOS 7772167527';
+          const footerText = asesor.direccion;
       
           for (let i = 1; i <= totalPages; i++) {
             pdf.setPage(i);
@@ -415,15 +435,26 @@ const Asesores = () => {
         }).save();
       };
 
+      const filteredAsesores = asesores.filter((asesor) =>
+        asesor.nombres.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
   return (
     <div style={{ padding: '20px' }}>
       <Typography variant="h4" gutterBottom>
         Asesores
       </Typography>
+      <input
+        type="text"
+        placeholder="Buscar asesor..."
+        className="border p-2 mb-4 w-full"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
       <TableContainer component={Paper}>
         <Table>
           <TableBody>
-            {asesores.map((asesor) => (
+          {filteredAsesores.map((asesor) => (
               <React.Fragment key={asesor.id_usuario}>
                 <TableRow>
                   <TableCell sx={{ ...commonStyles }}>Asesor:</TableCell>
@@ -467,6 +498,14 @@ const Asesores = () => {
                       onClick={() => openModal(asesor.id_usuario)}
                     >
                       Crear Usuario
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      sx={buttonStyles}
+                      onClick={() => handleDetallesClick(asesor)}
+                    >
+                      Ver Detalles
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -526,6 +565,28 @@ const Asesores = () => {
           </div>
         </div>
       </Modal>
+      {detalleAsesor && (
+        <div className="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="modal-content custom-modal p-4 rounded shadow-lg overflow-auto">
+            <h2 className="text-xl font-bold mb-4">Detalles del Asesor</h2>
+            <p className="whitespace-normal"><strong>Nombre:</strong> {detalleAsesor.nombrecompleto}</p>
+            <p className="whitespace-normal"><strong>CURP:</strong> {detalleAsesor.curp}</p>
+            <p className="whitespace-normal"><strong>NSS:</strong> {detalleAsesor.nss}</p>
+            <p className="whitespace-normal"><strong>Email:</strong> {detalleAsesor.email}</p>
+            <p className="whitespace-normal"><strong>RFC:</strong> {detalleAsesor.rfc}</p>
+            <p className="whitespace-normal"><strong>Teléfono:</strong> {detalleAsesor.telefono}</p>
+            <p className="whitespace-normal"><strong>Dirección:</strong> {detalleAsesor.direccioncompleta}</p>
+            <p className="whitespace-normal"><strong>A cargo de:</strong> {detalleAsesor.acargo}</p>
+            <p className="whitespace-normal"><strong>Oficina:</strong> {detalleAsesor.oficina}</p>
+            <button
+              className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-700 mt-4"
+              onClick={() => setDetalleAsesor(null)}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

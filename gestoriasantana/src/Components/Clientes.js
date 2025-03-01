@@ -396,7 +396,7 @@ const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
             {/* Renglón 4 */}
             <div className="flex justify-between items-center">
               <p className="font-bold">Asesor:</p>
-              <p>{cliente.id_asesor || "No asignado"}</p>
+              <p>{cliente.nombreasesor || "No asignado"}</p>
               <p className="font-bold">Status:</p>
               <p>{cliente.status}</p>
               <button 
