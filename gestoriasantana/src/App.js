@@ -35,7 +35,7 @@ function App() {
   const [showDetails, setShowDetails] = useState(false);
   const [cantidad, setCantidad] = useState('');
   const [honorarios, setHonorarios] = useState(0);
-  const { profile } = useContext(AuthContext); // Obtener el perfil del usuario desde el contexto
+  //const { profile } = useContext(AuthContext); // Obtener el perfil del usuario desde el contexto
 
   document.title = 'Gestoria Mago Santana';
 
