@@ -145,5 +145,21 @@ router.put('/cliente/:id/status', async (req, res) => {
   }
 });
 
+router.put('/cliente/:id/fecha_baja', async (req, res) => {
+  const { id } = req.params;
+  const { fecha_baja } = req.body;
+
+  try {
+    // Actualizar el campo fecha_baja del cliente
+    const updateQuery = `UPDATE clientes SET fecha_baja = $1 WHERE id_cliente = $2`;
+    await pool.query(updateQuery, [fecha_baja, id]);
+
+    res.json({ message: 'Fecha de baja actualizada correctamente' });
+  } catch (err) {
+    console.error('Error al actualizar la fecha de baja del cliente:', err.message);
+    res.status(500).send('Error del servidor');
+  }
+});
+
 
 module.exports = router;

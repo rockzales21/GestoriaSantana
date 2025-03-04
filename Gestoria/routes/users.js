@@ -99,11 +99,11 @@ router.get('/profile', async (req, res) => {
         const userId = verified.id_usuario;
 
         const userProfile = await pool.query(`
-            SELECT u.username, p.email, p.telefono, s.tel_oficina, s.oficina
+            SELECT u.username, p.email, p.telefono, s.tel_oficina, s.oficina, us.tipo
             FROM public.users u
             INNER JOIN public.usuarios us ON u.id_usuario = us.id_usuario
             INNER JOIN public.personas p ON p.id_persona = us.id_persona 
-            INNER JOIN public.sucursales s ON s.encargado = us.id_usuario
+            LEFT JOIN public.sucursales s ON s.encargado = us.id_usuario
             WHERE u.id_usuario = $1
         `, [userId]);
 

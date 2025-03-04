@@ -222,4 +222,26 @@ router.get('/detalle/:id', async (req, res) => {
 });
 
 
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Actualiza el campo status a 0 para "eliminar" el usuario
+    const result = await pool.query(
+      `UPDATE Usuarios SET status = 0 WHERE id_usuario = $1`,
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    res.json({ message: 'Usuario eliminado con éxito' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Error del servidor');
+  }
+});
+
+
 module.exports = router;
