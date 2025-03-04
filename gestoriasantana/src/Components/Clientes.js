@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import html2pdf from 'html2pdf.js';
 import CambiarStatus from "./Modales/CambiarStatus";
 import { toast } from 'react-toastify';
+import { AuthContext } from "./auth/AuthContext"; // Importar el contexto de autenticación
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Button } from '@mui/material'; // Importar componentes de Material-UI
+
 
 import { NumerosALetras } from 'numero-a-letras';
 
@@ -14,6 +17,9 @@ const Clientes = () => {
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
+  const { profile } = useContext(AuthContext); // Obtener el perfil del usuario desde el contexto
+  const [modalFechaBajaOpen, setModalFechaBajaOpen] = useState(false); // Definir el estado para el modal de fecha de baja
+
 
   useEffect(() => {
     const fetchClientes = async () => {
@@ -71,6 +77,65 @@ const Clientes = () => {
       setDetalleCliente(response.data);
     } catch (error) {
       console.error("Error al cargar los detalles del cliente:", error);
+    }
+  };
+
+  
+  const [fechaBaja, setFechaBaja] = useState("");
+  const [clienteSeleccionadoParaBaja, setClienteSeleccionadoParaBaja] = useState(null);
+
+  const handleOpenFechaBajaModal = (cliente) => {
+    setClienteSeleccionadoParaBaja(cliente);
+    setFechaBaja("");
+    setModalFechaBajaOpen(true);
+  };
+
+  const handleCloseFechaBajaModal = () => {
+    setClienteSeleccionadoParaBaja(null);
+    setModalFechaBajaOpen(false);
+  };
+
+  const handleConfirmFechaBaja = async () => {
+    if (!clienteSeleccionadoParaBaja || !fechaBaja) return;
+
+    try {
+      await axios.put(`https://gestoriasantana-production.up.railway.app/clientes/cliente/${clienteSeleccionadoParaBaja.id_cliente}/fecha_baja`, {
+      // const response = await axios.get(`http://localhost:3000/clientes/detalle/${cliente.id_cliente}`);
+
+        fecha_baja: fechaBaja
+      });
+
+      // Actualizar el estado local
+      setClientes((prevClientes) =>
+        prevClientes.map((c) =>
+          c.id_cliente === clienteSeleccionadoParaBaja.id_cliente ? { ...c, fecha_baja: fechaBaja } : c
+        )
+      );
+
+      toast.success('Fecha de baja actualizada correctamente', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        className: 'bg-green-500 text-white',
+      });
+
+      handleCloseFechaBajaModal();
+    } catch (error) {
+      console.error('Error al actualizar la fecha de baja del cliente:', error);
+      toast.error('Error al actualizar la fecha de baja del cliente', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        className: 'bg-red-500 text-white',
+      });
     }
   };
 
@@ -324,6 +389,7 @@ const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
   const handleConfirmStatusChange = async (cliente, nuevoStatus) => {
     try {
       await axios.put(`https://gestoriasantana-production.up.railway.app/cliente/${cliente.id_cliente}/status`, {
+    //await axios.put(`https://gestoriasantana-production.up.railway.app/cliente/${clienteSeleccionadoParaBaja.id_cliente}/fecha_baja`, {
           nuevoStatus
       });
 
@@ -399,13 +465,14 @@ const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
               <p>{cliente.nombreasesor || "No asignado"}</p>
               <p className="font-bold">Status:</p>
               <p>{cliente.status}</p>
+              {profile && profile.tipo === 3 && (
               <button 
                 className="bg-yellow-500 text-white py-1 px-4 rounded hover:bg-yellow-700 ml-2"
                 onClick={() => handleChangeStatus(cliente)}
               >
                 Cambiar Status
               </button>
-
+              )}
               <button
                 className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-700"
                 onClick={() => handleContratoClick(cliente)}
@@ -417,6 +484,12 @@ const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
                 onClick={() => handleDetallesClick(cliente)}
               >
                 Ver detalles
+              </button>
+              <button
+                className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-700 ml-2"
+                onClick={() => handleOpenFechaBajaModal(cliente)}
+              >
+                Fecha de Baja
               </button>
             </div>
           </div>
@@ -453,6 +526,37 @@ const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
     </div>
   </div>
 )}
+<Dialog
+        open={modalFechaBajaOpen}
+        onClose={handleCloseFechaBajaModal}
+        aria-labelledby="fecha-baja-dialog-title"
+        aria-describedby="fecha-baja-dialog-description"
+      >
+        <DialogTitle id="fecha-baja-dialog-title">{"Agregar Fecha de Baja"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="fecha-baja-dialog-description">
+            Por favor, selecciona la fecha de baja para el cliente.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="fecha_baja"
+            type="date"
+            fullWidth
+            variant="standard"
+            value={fechaBaja}
+            onChange={(e) => setFechaBaja(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseFechaBajaModal} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleConfirmFechaBaja} color="primary">
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

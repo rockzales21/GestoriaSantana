@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { BrowserRouter as Router, Route, Routes, Outlet } from 'react-router-dom';
 import Clientes from './Components/Clientes';
 import Asesores from './Components/Asesores';
@@ -27,6 +27,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaMoneyBillWave } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import { AuthContext } from "./Components/auth/AuthContext"; // Importar el contexto de autenticación
 import './App.css';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
   const [showDetails, setShowDetails] = useState(false);
   const [cantidad, setCantidad] = useState('');
   const [honorarios, setHonorarios] = useState(0);
+  const { profile } = useContext(AuthContext); // Obtener el perfil del usuario desde el contexto
 
   document.title = 'Gestoria Mago Santana';
 

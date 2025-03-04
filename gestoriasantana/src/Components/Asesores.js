@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableRow, Paper, Typography, Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DescriptionIcon from '@mui/icons-material/Description';
@@ -8,6 +8,10 @@ import Modal from 'react-modal';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from "axios";
 import html2pdf from 'html2pdf.js';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { AuthContext } from "./auth/AuthContext"; // Importar el contexto de autenticación
+
+
 
 const commonStyles = {
   bgcolor: 'background.paper',
@@ -32,6 +36,7 @@ const Asesores = () => {
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el término de búsqueda
   const [detalleAsesor, setDetalleAsesor] = useState(null); // Estado para los detalles del asesor
 
+  const { profile } = useContext(AuthContext); // Obtener el perfil del usuario desde el contexto
 
   const navigate = useNavigate();
 
@@ -150,6 +155,67 @@ const Asesores = () => {
       setDetalleAsesor(response.data);
     } catch (error) {
       console.error("Error al cargar los detalles del asesor:", error);
+    }
+  };
+
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  
+  const handleOpenConfirmDialog = (id) => {
+    setDeleteId(id);
+    setOpenConfirmDialog(true);
+  };
+  
+  const handleCloseConfirmDialog = () => {
+    setOpenConfirmDialog(false);
+    setDeleteId(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+  
+    try {
+      // const response = await axios.delete(`https://gestoriasantana-production.up.railway.app/usuarios/${deleteId}`);
+      const response = await axios.delete(`http://localhost:3000/usuarios/${deleteId}`);
+  
+      if (response.status === 200) {
+        toast.success('Usuario eliminado con éxito', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          className: 'bg-green-500 text-white',
+        });
+        setAsesores(asesores.filter(asesor => asesor.id_usuario !== deleteId));
+      } else {
+        toast.error('Error al eliminar el usuario', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          className: 'bg-red-500 text-white',
+        });
+      }
+    } catch (error) {
+      console.error('Error al eliminar el usuario:', error);
+      toast.error('Error al eliminar el usuario', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        className: 'bg-red-500 text-white',
+      });
+    } finally {
+      handleCloseConfirmDialog();
     }
   };
 
@@ -482,23 +548,7 @@ const Asesores = () => {
                     >
                       Contrato
                     </Button>
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      startIcon={<EditIcon />}
-                      sx={buttonStyles}
-                      onClick={() => handleEdit(asesor.id_usuario)}
-                    >
-                      Editar
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      sx={buttonStyles}
-                      onClick={() => openModal(asesor.id_usuario)}
-                    >
-                      Crear Usuario
-                    </Button>
+                    
                     <Button
                       variant="contained"
                       color="primary"
@@ -516,6 +566,41 @@ const Asesores = () => {
                   <TableCell>{asesor.email}</TableCell>
                   <TableCell>Status:</TableCell>
                   <TableCell>{asesor.status === 1 ? 'Activo' : 'Inactivo'}</TableCell>
+                  
+                  <TableCell sx={{ ...commonStyles }}>
+                  {profile && profile.tipo === 3 && (
+                    
+                  <Button
+                      variant="contained"
+                      color="secondary"
+                      startIcon={<EditIcon />}
+                      sx={buttonStyles}
+                      onClick={() => handleEdit(asesor.id_usuario)}
+                    >
+                      Editar
+                    </Button>
+                  )}
+                  {profile && profile.tipo === 3 && (
+                    <Button
+    variant="contained"
+    color="error"
+    sx={buttonStyles}
+    onClick={() => handleOpenConfirmDialog(asesor.id_usuario)}
+  >
+    Eliminar
+  </Button>
+                  )}
+                  {profile && profile.tipo === 3 && (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      sx={buttonStyles}
+                      onClick={() => openModal(asesor.id_usuario)}
+                    >
+                      Crear Usuario
+                    </Button>
+                  )}
+                  </TableCell>
                 </TableRow>
               </React.Fragment>
             ))}
@@ -587,6 +672,28 @@ const Asesores = () => {
           </div>
         </div>
       )}
+
+<Dialog
+  open={openConfirmDialog}
+  onClose={handleCloseConfirmDialog}
+  aria-labelledby="alert-dialog-title"
+  aria-describedby="alert-dialog-description"
+>
+  <DialogTitle id="alert-dialog-title">{"Confirmar eliminación"}</DialogTitle>
+  <DialogContent>
+    <DialogContentText id="alert-dialog-description">
+      ¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.
+    </DialogContentText>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleCloseConfirmDialog} color="primary">
+      Cancelar
+    </Button>
+    <Button onClick={handleConfirmDelete} color="error" autoFocus>
+      Eliminar
+    </Button>
+  </DialogActions>
+</Dialog>
     </div>
   );
 };
