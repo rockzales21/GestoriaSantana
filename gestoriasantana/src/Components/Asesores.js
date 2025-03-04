@@ -175,8 +175,8 @@ const Asesores = () => {
     if (!deleteId) return;
   
     try {
-      // const response = await axios.delete(`https://gestoriasantana-production.up.railway.app/usuarios/${deleteId}`);
-      const response = await axios.delete(`http://localhost:3000/usuarios/${deleteId}`);
+      const response = await axios.delete(`https://gestoriasantana-production.up.railway.app/usuarios/${deleteId}`);
+      // const response = await axios.delete(`http://localhost:3000/usuarios/${deleteId}`);
   
       if (response.status === 200) {
         toast.success('Usuario eliminado con éxito', {
