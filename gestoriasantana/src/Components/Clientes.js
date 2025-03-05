@@ -24,8 +24,8 @@ const Clientes = () => {
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        const response = await axios.get("https://gestoriasantana-production.up.railway.app/clientes/clientes");
-        // const response = await axios.get('http://localhost:3000/clientes/clientes');
+        // const response = await axios.get("https://gestoriasantana-production.up.railway.app/clientes/clientes");
+        const response = await axios.get('http://localhost:3000/clientes/clientes');
         // console.log('Response:', response.data);
         setClientes(response.data);
       } catch (error) {

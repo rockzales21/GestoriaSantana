@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { BrowserRouter as Router, Route, Routes, Outlet } from 'react-router-dom';
+import { Route, Routes, Outlet } from 'react-router-dom';
 import Clientes from './Components/Clientes';
 import Asesores from './Components/Asesores';
 import Afores from './Components/Afores';
@@ -16,26 +16,28 @@ import FechasTramites from './Components/FechasTramites';
 import LiquidacionesPendientes from './Components/LiquidacionesPendientes';
 import FiltroClientes from './Components/FiltroClientes';
 import Login from './Components/auth/Login';
-import { AuthProvider } from './Components/auth/AuthContext';
+import { AuthProvider, AuthContext } from './Components/auth/AuthContext';
 import PrivateRoute from './Components/auth/PrivateRoute';
 import Contrato from './Components/Contrato';
 import ContratoCliente from './Components/ContratoCliente';
 import Home from './pages/Home';
 import Header from './layout/Header';
 import Profile from './Components/Profile';
+import Cotizador from './Components/Cotizador';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaMoneyBillWave } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import { AuthContext } from "./Components/auth/AuthContext"; // Importar el contexto de autenticación
+
 import './App.css';
 
 function App() {
+  const { profile } = useContext(AuthContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [cantidad, setCantidad] = useState('');
   const [honorarios, setHonorarios] = useState(0);
-  const { profile } = useContext(AuthContext); // Obtener el perfil del usuario desde el contexto
+  //const { profile } = useContext(AuthContext); // Obtener el perfil del usuario desde el contexto
 
   document.title = 'Gestoria Mago Santana';
 
@@ -195,49 +197,49 @@ function App() {
 // };
 
 
-  return (
-    <Router>
-      <AuthProvider>
-        <ToastContainer position="top-center" autoClose={3000} />
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route element={<PrivateRoute />}>
-            <Route
-              path="/"
-              element={
-                <>
-                  <Header />
-                  <FloatingButton onClick={toggleModal} />
-                  <CotizadorModal isOpen={isModalOpen} onClose={toggleModal} />
-                  <Outlet />
-                </>
-              }
-            >
-              <Route index element={<Home />} />
-              <Route path="clientes" element={<Clientes />} />
-              <Route path="inventario" element={<Inventario />} />
-              <Route path="sucursales" element={<Sucursales />} />
-              <Route path="asesores" element={<Asesores />} />
-              <Route path="afores" element={<Afores />} />
-              <Route path="afores/:id" element={<AforeForm />} />
-              <Route path="crear-afore" element={<AforeForm />} />
-              <Route path="registrarAsesor" element={<RegistrarAsesor />} />
-              <Route path="asesores/editar/:id" element={<ActualizarAsesor />} />
-              <Route path="VisorSemanas" element={<VisorSemanas />} />
-              <Route path="FormularioTramite" element={<FormularioTramite />} />
-              <Route path="ReporteProduccion" element={<ReporteProduccion />} />
-              <Route path="FechasTramites" element={<FechasTramites />} />
-              <Route path="LiquidacionesPendientes" element={<LiquidacionesPendientes />} />
-              <Route path="FiltroClientes" element={<FiltroClientes />} />
-              <Route path="asesores/contrato/:id" element={<Contrato />} />
-              <Route path="clientes/contratoClientes/:id" element={<ContratoCliente />} />
-              <Route path="profile" element={<Profile />} />
-            </Route>
-          </Route>
-        </Routes>
-      </AuthProvider>
-    </Router>
-  );
+return (
+  <Routes>
+    <Route path="/login" element={<Login />} />
+    <Route element={<PrivateRoute />}>
+      {profile?.tipo === 1 ? (
+        <Route path="cotizador" element={<Cotizador />} />
+      ) : (
+        <Route
+          path="/"
+          element={
+            <>
+              <Header />
+              <FloatingButton onClick={toggleModal} />
+              <CotizadorModal isOpen={isModalOpen} onClose={toggleModal} />
+              <Outlet />
+            </>
+          }
+        >
+          <Route index element={<Home />} />
+          <Route path="clientes" element={<Clientes />} />
+          <Route path="inventario" element={<Inventario />} />
+          <Route path="sucursales" element={<Sucursales />} />
+          <Route path="asesores" element={<Asesores />} />
+          <Route path="afores" element={<Afores />} />
+          <Route path="afores/:id" element={<AforeForm />} />
+          <Route path="crear-afore" element={<AforeForm />} />
+          <Route path="registrarAsesor" element={<RegistrarAsesor />} />
+          <Route path="asesores/editar/:id" element={<ActualizarAsesor />} />
+          <Route path="VisorSemanas" element={<VisorSemanas />} />
+          <Route path="FormularioTramite" element={<FormularioTramite />} />
+          <Route path="ReporteProduccion" element={<ReporteProduccion />} />
+          <Route path="FechasTramites" element={<FechasTramites />} />
+          <Route path="LiquidacionesPendientes" element={<LiquidacionesPendientes />} />
+          <Route path="FiltroClientes" element={<FiltroClientes />} />
+          <Route path="asesores/contrato/:id" element={<Contrato />} />
+          <Route path="clientes/contratoClientes/:id" element={<ContratoCliente />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="cotizador" element={<Cotizador />} />
+        </Route>
+      )}
+    </Route>
+  </Routes>
+);
 }
 
 export default App;

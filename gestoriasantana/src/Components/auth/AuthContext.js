@@ -245,6 +245,9 @@ export const AuthProvider = ({ children }) => {
       });
       const data = await response.json();
       setProfile(data);
+      if (data.tipo === 1) {
+        navigate("/cotizador"); // Redirigir a la vista del cotizador si el usuario es de tipo 1
+      }
     } catch (error) {
       console.error("Error fetching profile:", error);
     }
