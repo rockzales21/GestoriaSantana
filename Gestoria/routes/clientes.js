@@ -161,5 +161,4 @@ router.put('/cliente/:id/fecha_baja', async (req, res) => {
   }
 });
 
-
 module.exports = router;
