@@ -21,22 +21,39 @@ const Clientes = () => {
   const [modalFechaBajaOpen, setModalFechaBajaOpen] = useState(false); // Definir el estado para el modal de fecha de baja
 
 
+  // useEffect(() => {
+  //   const fetchClientes = async () => {
+  //     try {
+  //       // const response = await axios.get("https://gestoriasantana-production.up.railway.app/clientes/clientes");
+  //       const response = await axios.get('http://localhost:3000/clientes/clientes');
+  //       // console.log('Response:', response.data);
+  //       setClientes(response.data);
+  //     } catch (error) {
+  //       console.error("Error al cargar los clientes:", error);
+  //     }
+  //   };
+
+  //   fetchClientes();
+  // }, []);
+
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        const response = await axios.get("https://gestoriasantana-production.up.railway.app/clientes/clientes");
-        // const response = await axios.get('http://localhost:3000/clientes/clientes');
-        // console.log('Response:', response.data);
+        const token = localStorage.getItem('token'); // Asumiendo que guardaste el token en localStorage
+        const response = await axios.get('https://gestoriasantana-production.up.railway.app/clientes/clientes', {
+        // const response = await axios.get('http://localhost:3000/clientes/clientes', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setClientes(response.data);
       } catch (error) {
         console.error("Error al cargar los clientes:", error);
       }
     };
-
+  
     fetchClientes();
   }, []);
-
-  
 
   const formatFecha = (fecha) => {
     if (!fecha) return "No disponible";
@@ -173,7 +190,7 @@ const Clientes = () => {
     var honorario = isNaN(honorarios) ? 0 : cliente.monto * honorarios;
     var aseguramiento = aseguramientoCalculo;
     var totalPagar = honorario + aseguramiento;
-    var totalCliente = cliente.monto - totalPagar;
+    var totalCliente = honorario + aseguramiento;
 
     honorario = honorario.toFixed(2);
     aseguramiento = aseguramiento.toFixed(2);
@@ -196,7 +213,7 @@ const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
           <strong>CONTRATO DE PRESTACIÓN DE SERVICIOS PROFESIONALES</strong>
         </h6>
         <p style="text-align: justify; margin-bottom: 16px;">
-          Que celebran, por una parte, el consultor financiero y de seguridad social <strong>Martha Margarita Santana Ceja</strong> quien en lo sucesivo se le denominara “El Profesionista”, y por otra parte <strong>${nombreCompleto}</strong> la quien e n lo sucesivo se le denominara como “El Cliente” y de manera conjunta como “Las Partes”, de conformidad con las declaraciones y clausulas.
+          Que celebran, por una parte, el consultor financiero y de seguridad social <strong>Martha Margarita Santana Ceja</strong> quien en lo sucesivo se le denominara “El Profesionista”, y por otra parte <strong>${nombreCompleto}</strong> la quien en lo sucesivo se le denominara como “El Cliente” y de manera conjunta como “Las Partes”, de conformidad con las declaraciones y clausulas.
         </p>
         <h6 style="text-align: justify; margin-bottom: 16px;">
           <strong>DECLARACIONES</strong>
@@ -388,7 +405,7 @@ const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
 
   const handleConfirmStatusChange = async (cliente, nuevoStatus) => {
     try {
-      await axios.put(`https://gestoriasantana-production.up.railway.app/cliente/${cliente.id_cliente}/status`, {
+      await axios.put(`https://gestoriasantana-production.up.railway.app/clientes/cliente/${cliente.id_cliente}/status`, {
     //await axios.put(`https://gestoriasantana-production.up.railway.app/cliente/${clienteSeleccionadoParaBaja.id_cliente}/fecha_baja`, {
           nuevoStatus
       });

@@ -17,9 +17,12 @@ const FiltroClientes = () => {
   useEffect(() => {
     const fetchAsesores = async () => {
       try {
-        //https://gestoriasantana-production.up.railway.app/
-        // const response = await axios.get("http://localhost:5000/usuarios/asesores");
-        const response = await axios.get("https://gestoriasantana-production.up.railway.app/usuarios/asesores");
+        const token = localStorage.getItem('token'); // Obtener el token de localStorage
+        const response = await axios.get("https://gestoriasantana-production.up.railway.app/usuarios/asesores", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setAsesores(response.data);
       } catch (error) {
         console.error("Error al cargar los asesores:", error);
@@ -31,20 +34,34 @@ const FiltroClientes = () => {
 
   const handleFilter = async (type) => {
     try {
-      // let url = "http://localhost:5000/clientes/clientes?";
+      const token = localStorage.getItem('token'); // Obtener el token de localStorage
       let url = "https://gestoriasantana-production.up.railway.app/clientes/clientes?";
+      // let url = "http://localhost:3000/clientes/clientes?";
+      // const response = await axios.get('http://localhost:3000/clientes/clientes', {
       if (type === "status") url += `status=${statusFilter}`;
       if (type === "semana") url += `semana=${semanaFilter.semana}&año=${semanaFilter.año}`;
       if (type === "mes") url += `mes=${mesFilter.mes}&año=${mesFilter.año}`;
       if (type === "asesor") url += `asesor=${asesorFilter}`;
       if (type === "nombre") url += `nombre=${nombreFilter}`;
 
-      const response = await axios.get(url);
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setClientes(response.data);
     } catch (error) {
       console.error("Error al filtrar clientes:", error);
     }
   };
+
+  // const formatFecha = (fecha) => {
+  //   if (!fecha) return "No disponible";
+  //   const opciones = { year: "numeric", month: "2-digit", day: "2-digit" };
+  //   return new Date(fecha).toLocaleDateString("es-MX", opciones);
+  // };
+
+  // const formatMonto = (monto) => `$${monto.toLocaleString("es-MX")}`;
 
   const formatFecha = (fecha) => {
     if (!fecha) return "No disponible";
@@ -52,7 +69,12 @@ const FiltroClientes = () => {
     return new Date(fecha).toLocaleDateString("es-MX", opciones);
   };
 
-  const formatMonto = (monto) => `$${monto.toLocaleString("es-MX")}`;
+  const formatMonto = (monto) => {
+    if (monto === null || monto === undefined) {
+      return "$0.00"; // Valor por defecto si monto es null o undefined
+    }
+    return `$${monto.toLocaleString("es-MX")}`;
+  };
 
 //     const handleNombreFilter = (nombre) => {
 //     setNombreFilter(nombre);
