@@ -44,11 +44,11 @@ router.post('/register', async (req, res) => {
             [username, hashedPassword, id_usuario]
         );
 
-        // Actualizar el campo tipo en la tabla usuarios
-        await pool.query(
-            'UPDATE usuarios SET tipo = 2 WHERE id_usuario = $1',
-            [id_usuario]
-        );
+        // // Actualizar el campo tipo en la tabla usuarios
+        // await pool.query(
+        //     'UPDATE usuarios SET tipo = 2 WHERE id_usuario = $1',
+        //     [id_usuario]
+        // );
 
         res.status(201).json({ message: 'Usuario registrado con éxito', user: newUser.rows[0] });
     } catch (error) {
@@ -57,6 +57,35 @@ router.post('/register', async (req, res) => {
 });
 
 // Ruta de login
+// router.post('/login', async (req, res) => {
+//     const { username, password } = req.body;
+
+//     try {
+//         // Buscar al usuario
+//         const user = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+
+//         if (user.rows.length === 0) {
+//             return res.status(400).json({ message: 'Usuario o contraseña incorrectos' });
+//         }
+
+//         // Verificar contraseña
+//         const validPassword = await bcrypt.compare(password, user.rows[0].password);
+//         if (!validPassword) {
+//             return res.status(400).json({ message: 'Usuario o contraseña incorrectos' });
+//         }
+
+//         // Crear token JWT con el id_usuario
+//         const token = jwt.sign(
+//             { id: user.rows[0].id, id_usuario: user.rows[0].id_usuario },
+//             JWT_SECRET,
+//             { expiresIn: '1h' }
+//         );
+
+//         res.json({ message: 'Inicio de sesión exitoso', token });
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// });
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
@@ -74,9 +103,12 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ message: 'Usuario o contraseña incorrectos' });
         }
 
-        // Crear token JWT con el id_usuario
+        // Obtener el tipo de usuario
+        const userType = await pool.query('SELECT tipo FROM usuarios WHERE id_usuario = $1', [user.rows[0].id_usuario]);
+
+        // Crear token JWT con el id_usuario y tipo
         const token = jwt.sign(
-            { id: user.rows[0].id, id_usuario: user.rows[0].id_usuario },
+            { id_usuario: user.rows[0].id_usuario, tipo: userType.rows[0].tipo },
             JWT_SECRET,
             { expiresIn: '1h' }
         );

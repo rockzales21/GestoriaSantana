@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const verifyToken = require('./middleware/verifyToken');
 
 router.get('/cliente/:id', async (req, res) => {
   const { id } = req.params;
@@ -80,15 +81,65 @@ router.get('/detalle/:id', async (req, res) => {
 });
 
 
-router.get('/clientes', async (req, res) => {
+// router.get('/clientes', async (req, res) => {
+//   const { status, semana, año, mes, asesor } = req.query;
+
+//   let query = `
+//     SELECT p.id_persona, c.id_cliente, 
+//     p.nombres || ' ' || p.apellido_p || ' ' || p.apellido_m AS nombre, 
+//     p.curp, p.nss, c.monto, id_afore, c.fecha_registro, 
+//     c.semanas_cotizadas, c.id_asesor, c.fecha_ultimo_retiro, 
+//     c.semanas_descontadas, c.status ,
+//     pAsesor.nombres || ' ' || pAsesor.apellido_p || ' ' || pAsesor.apellido_m AS nombreAsesor
+//     FROM Personas p 
+//     INNER JOIN Clientes c ON p.id_persona = c.id_persona
+//     INNER JOIN Usuarios u ON u.id_usuario = c.id_asesor
+//     INNER JOIN Personas pAsesor ON pAsesor.id_persona = u.id_persona 
+//   `;
+
+//   const conditions = [];
+//   const values = [];
+
+//   if (status) {
+//     values.push(status);
+//     conditions.push(`status = $${values.length}`);
+//   }
+//   if (semana && año) {
+//     values.push(semana, año);
+//     conditions.push(`EXTRACT(WEEK FROM fecha_registro) = $${values.length - 1} AND EXTRACT(YEAR FROM fecha_registro) = $${values.length}`);
+//   }
+//   if (mes && año) {
+//     values.push(mes, año);
+//     conditions.push(`EXTRACT(MONTH FROM fecha_registro) = $${values.length - 1} AND EXTRACT(YEAR FROM fecha_registro) = $${values.length}`);
+//   }
+//   if (asesor) {
+//     values.push(asesor);
+//     conditions.push(`id_asesor = $${values.length}`);
+//   }
+
+//   if (conditions.length > 0) {
+//     query += ` WHERE ${conditions.join(' AND ')}`;
+//   }
+
+//   try {
+//     const result = await pool.query(query, values);
+//     res.json(result.rows);
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Error del servidor');
+//   }
+// });
+router.get('/clientes', verifyToken, async (req, res) => {
   const { status, semana, año, mes, asesor } = req.query;
+  const userId = req.user.id_usuario; // Asumiendo que el middleware de autenticación agrega el ID del usuario a req.user
+  const userType = req.user.tipo; // Asumiendo que el middleware de autenticación agrega el tipo de usuario a req.user
 
   let query = `
     SELECT p.id_persona, c.id_cliente, 
     p.nombres || ' ' || p.apellido_p || ' ' || p.apellido_m AS nombre, 
     p.curp, p.nss, c.monto, id_afore, c.fecha_registro, 
     c.semanas_cotizadas, c.id_asesor, c.fecha_ultimo_retiro, 
-    c.semanas_descontadas, c.status ,
+    c.semanas_descontadas, c.status,
     pAsesor.nombres || ' ' || pAsesor.apellido_p || ' ' || pAsesor.apellido_m AS nombreAsesor
     FROM Personas p 
     INNER JOIN Clientes c ON p.id_persona = c.id_persona
@@ -114,6 +165,12 @@ router.get('/clientes', async (req, res) => {
   if (asesor) {
     values.push(asesor);
     conditions.push(`id_asesor = $${values.length}`);
+  }
+
+  // Filtrar por el ID del usuario si no es tipo 3 (administrador)
+  if (userType !== 3) {
+    values.push(userId);
+    conditions.push(`c.id_asesor = $${values.length}`);
   }
 
   if (conditions.length > 0) {
