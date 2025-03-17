@@ -70,7 +70,6 @@ const Clientes = () => {
 
   const handleDetallesClick = async (cliente) => {
     try {
-      // const response = await axios.get(`http://localhost:3000/clientes/detalle/${cliente.id_cliente}`);
       const response = await axios.get(`https://gestoriasantana-production.up.railway.app/clientes/detalle/${cliente.id_cliente}`);
       setDetalleCliente(response.data);
     } catch (error) {
