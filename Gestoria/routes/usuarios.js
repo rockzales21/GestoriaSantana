@@ -3,9 +3,37 @@ const router = express.Router();
 const pool = require('../db');
 const verifyToken = require('./middleware/verifyToken');
 
-router.use(verifyToken);
+// router.use(verifyToken);
 
-router.get('/', async (req, res) => {
+// router.get('/', async (req, res) => {
+//   const userId = req.user.id_usuario; // Asumiendo que el middleware de autenticación agrega el ID del usuario a req.user
+//   const userType = req.user.tipo; // Asumiendo que el middleware de autenticación agrega el tipo de usuario a req.user
+
+//   let query = `
+//     SELECT u.*, p.*, s.direccion 
+//     FROM Usuarios u 
+//     INNER JOIN Personas p ON p.id_persona = u.id_persona 
+//     INNER JOIN Usuarios uJefe ON u.jefe = uJefe.id_usuario
+//     INNER JOIN Personas pJefe ON pJefe.id_persona = uJefe.id_persona
+//     INNER JOIN Sucursales s ON s.encargado = pJefe.id_persona
+//   `;
+
+//   const values = [];
+//   if (userType !== 3) {
+//     query += ` WHERE u.jefe = $1`;
+//     values.push(userId);
+//   }
+
+//   try {
+//     const result = await pool.query(query, values);
+//     res.json(result.rows);
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Error del servidor');
+//   }
+// });
+
+router.get('/', verifyToken, async (req, res) => {
   const userId = req.user.id_usuario; // Asumiendo que el middleware de autenticación agrega el ID del usuario a req.user
   const userType = req.user.tipo; // Asumiendo que el middleware de autenticación agrega el tipo de usuario a req.user
 
