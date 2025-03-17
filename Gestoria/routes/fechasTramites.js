@@ -86,29 +86,4 @@ router.post('/semanas', async (req, res) => {
 });
 
 
-// router.post('/semanas', async (req, res) => {
-//   try {
-//     const { numero_semana, fecha_tramite, observaciones } = req.body;
-
-//     if (!numero_semana || numero_semana < 1 || numero_semana > 53) {
-//       return res.status(400).send('Número de semana inválido.');
-//     }
-
-//     if (fecha_tramite && isNaN(new Date(fecha_tramite).getTime())) {
-//       return res.status(400).send('Fecha de trámite inválida.');
-//     }
-
-//     await pool.query(
-//       `INSERT INTO fechas_tramites (numero_semana, fecha_tramite, observaciones)
-//        VALUES ($1, $2, $3)`,
-//       [numero_semana, fecha_tramite, observaciones]
-//     );
-
-//     res.status(200).send('Semana actualizada correctamente.');
-//   } catch (error) {
-//     console.error('Error al actualizar la semana:', error.message);
-//     res.status(500).send('Error al actualizar la semana.');
-//   }
-// });
-
 module.exports = router;

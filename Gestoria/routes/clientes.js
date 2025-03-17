@@ -58,7 +58,8 @@ router.get('/detalle/:id', async (req, res) => {
              s.oficina AS ZONA,
              pu.nombres || ' ' || pu.apellido_p || ' ' || pu.apellido_m AS ACTUALIZO,
              fecha_solucion,
-             observaciones
+             observaciones,
+             fecha_baja
       FROM public.Personas p
       INNER JOIN public.clientes c ON p.id_persona = c.id_persona
       INNER JOIN public.usuarios u ON u.id_usuario = c.id_asesor

@@ -1,10 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const verifyToken = require('./middleware/verifyToken');
+
+router.use(verifyToken);
 
 router.get('/', async (req, res) => {
+  const userId = req.user.id_usuario; // Asumiendo que el middleware de autenticación agrega el ID del usuario a req.user
+  const userType = req.user.tipo; // Asumiendo que el middleware de autenticación agrega el tipo de usuario a req.user
+
+  let query = `
+    SELECT u.*, p.*, s.direccion 
+    FROM Usuarios u 
+    INNER JOIN Personas p ON p.id_persona = u.id_persona 
+    INNER JOIN Usuarios uJefe ON u.jefe = uJefe.id_usuario
+    INNER JOIN Personas pJefe ON pJefe.id_persona = uJefe.id_persona
+    INNER JOIN Sucursales s ON s.encargado = pJefe.id_persona
+  `;
+
+  const values = [];
+  if (userType !== 3) {
+    query += ` WHERE u.jefe = $1`;
+    values.push(userId);
+  }
+
   try {
-    const result = await pool.query('SELECT * FROM Usuarios u INNER JOIN Personas p ON p.id_persona = u.id_persona');
+    const result = await pool.query(query, values);
     res.json(result.rows);
   } catch (err) {
     console.error(err.message);
@@ -84,7 +105,6 @@ router.get('/produccionSemana', async (req, res) => {
       GROUP BY DATE_PART('week', c.fecha_registro)
       ORDER BY semana
     `);
-    // WHERE DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
     res.json(result.rows);
   } catch (err) {
     console.error(err.message);
@@ -115,7 +135,6 @@ router.get('/produccionMes', async (req, res) => {
               GROUP BY DATE_PART('month', c.fecha_registro)
               ORDER BY DATE_PART('month', c.fecha_registro)
     `);
-    // WHERE DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
     res.json(result.rows);
   } catch (err) {
     console.error(err.message);
@@ -183,9 +202,6 @@ router.put('/:id', async (req, res) => {
       [calle, numero_interior, numero_exterior, colonia, status, tipo, id]
     );
 
-
-    // Puedes incluir otras actualizaciones específicas de Usuarios aquí
-
     // Finaliza la transacción
     await pool.query('COMMIT');
 
@@ -208,7 +224,8 @@ router.get('/detalle/:id', async (req, res) => {
               s.oficina
        FROM Usuarios u 
        INNER JOIN Personas p ON p.id_persona = u.id_persona 
-       INNER JOIN Personas pJefe ON pJefe.id_persona = u.jefe
+       INNER JOIN Usuarios uJefe ON u.jefe = uJefe.id_usuario
+       INNER JOIN Personas pJefe ON pJefe.id_persona = uJefe.id_persona
        INNER JOIN Sucursales s ON s.encargado = pJefe.id_persona
        WHERE u.id_usuario = $1`, [id]
     );
