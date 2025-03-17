@@ -1,12 +1,16 @@
 // import React, { useState } from 'react';
 import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from "axios";
 
 const FormularioTramite = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [tipo_tramite, setTipoTramite] = useState("");
-  const [asesores, setAsesores] = useState([]); 
-  const [afores, setAfores] = useState([]); 
+  const [asesores, setAsesores] = useState([]);
+  const [afores, setAfores] = useState([]);
   const [formData, setFormData] = useState({
     nombre: '',
     apellido_p: '',
@@ -74,9 +78,28 @@ const FormularioTramite = () => {
       }
     };
 
+    const fetchCliente = async () => {
+      try {
+        // const response = await axios.get(`https://gestoriasantana-production.up.railway.app/clientes/clienteInfoActualizacion/${id}`);
+        const response = await axios.get(`https://gestoriasantana-production.up.railway.app/clientes/clienteInfoActualizacion/${id}`);
+        // const response = await axios.get(`http://localhost:3000/clientes/clienteInfoActualizacion/${id}`);
+        const clienteData = response.data;
+        clienteData.infonavit = clienteData.infonavit ? "true" : "false"; // Convertir a cadena de texto
+        setFormData(clienteData);
+        setTipoTramite(clienteData.tipo_tramite);
+        console.log(clienteData);
+        console.log(clienteData.tipo_tramite);
+      } catch (error) {
+        console.error("Error al cargar los datos del cliente:", error);
+      }
+    };
+
     fetchAsesores();
     fetchAfores();
-  }, []);
+    if (id) {
+      fetchCliente();
+    }
+  }, [id]);
 
 
 
@@ -93,50 +116,53 @@ const FormularioTramite = () => {
     const value = e.target.value;
     setTipoTramite(value);
 
-
     let fecha_alta = null;
-let fecha_fin_tramite = null;
-let monto = formData.monto; // Mantener el valor actual por defecto
+    let fecha_fin_tramite = null;
+    let monto = formData.monto; // Mantener el valor actual por defecto
 
-if (value === "Activate") {
-  const today = new Date();
-  const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-  fecha_alta = nextMonth.toISOString(); // Convertimos a formato datetime
-  monto = 0; // Establecer el monto a 0 solo para "Activate"
-} else {
-  const today = new Date();
-  const sevenDaysLater = new Date(today);
-  sevenDaysLater.setDate(today.getDate() + 7); // Sumar 7 días a la fecha actual
-  fecha_alta = sevenDaysLater.toISOString(); // Convertimos a formato datetime
+    if (value === "Activate") {
+      const today = new Date();
+      const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+      fecha_alta = nextMonth.toISOString(); // Convertimos a formato datetime
+      monto = 0; // Establecer el monto a 0 solo para "Activate"
+    } else {
+      const today = new Date();
+      const sevenDaysLater = new Date(today);
+      sevenDaysLater.setDate(today.getDate() + 7); // Sumar 7 días a la fecha actual
+      fecha_alta = sevenDaysLater.toISOString(); // Convertimos a formato datetime
   
-  const fechaFinTramite = new Date(sevenDaysLater);
-  fechaFinTramite.setDate(fechaFinTramite.getDate() + 47); // Sumar 47 días a partir de fecha_alta
-  fecha_fin_tramite = fechaFinTramite.toISOString(); // Convertimos a formato datetime
-}
-
-setFormData({
-  ...formData,
-  tipo_tramite: value,
-  status: 
-    value === "Pensión" || value === "Negativa" || value === "Desempleo" || value === "Mejoravit" || value === "Creditos" || value === "PPR"
-      ? "Alta"
-      : value === "Activate"
-      ? "Activo"
-      : "",
-  fecha_alta, // Incluimos la fecha_alta si aplica
-  fecha_fin_tramite, // Incluimos la fecha_fin_tramite si aplica
-  monto,
-});
-
+      const fechaFinTramite = new Date(sevenDaysLater);
+      fechaFinTramite.setDate(fechaFinTramite.getDate() + 47); // Sumar 47 días a partir de fecha_alta
+      fecha_fin_tramite = fechaFinTramite.toISOString(); // Convertimos a formato datetime
+    }
+    
+    setFormData({
+      ...formData,
+      tipo_tramite: value,
+      status: 
+        value === "Pensión" || value === "Negativa" || value === "Desempleo" || value === "Mejoravit" || value === "Creditos" || value === "PPR"
+          ? "Alta"
+          : value === "Activate"
+          ? "Activo"
+          : "",
+      fecha_alta, // Incluimos la fecha_alta si aplica
+      fecha_fin_tramite, // Incluimos la fecha_fin_tramite si aplica
+      monto,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      //https://gestoriasantana-production.up.railway.app/
-      // const response = await fetch('http://localhost:3000/registrarCliente', {
-        const response = await fetch('https://gestoriasantana-production.up.railway.app/registrarCliente', {
-        method: 'POST',
+      const url = id
+        // ? `https://gestoriasantana-production.up.railway.app/clientes/cliente/${id}`
+        ? `https://gestoriasantana-production.up.railway.app/clientes/cliente/${id}`
+        // ? `http://localhost:3000/clientes/cliente/${id}`
+        : 'https://gestoriasantana-production.up.railway.app/registrarCliente';
+      const method = id ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -145,59 +171,57 @@ setFormData({
 
       const data = await response.json();
       if (response.ok) {
-        // alert('Cliente registrado correctamente');
         toast.success("Formulario enviado con éxito.");
         setFormData({
           nombre: '',
-    apellido_p: '',
-    apellido_m: '',
-    curp: '',
-    nss: '',
-    rfc: '',
-    email: '',
-    semanas_cotizadas: '',
-    semanas_descontadas: '',
-    direccion: '',
-    ciudad: '',
-    estado: '',
-    telefono: '',
-    infonavit: '',
-    codigo_postal: '',
-    monto: '',
-    id_asesor: "",
-    id_afore: "",
-    fechaFinalizacion: '',
-    fecha_ultimo_retiro: '',
-    fecha_ultima_baja: '',
-    fecha_solucion: '',
-    salario: '',
-    empleo: '',
-    forma_pago: '',
-    observaciones: '',
-    nombresTestigo1: '',
-    apellido_pTestigo1: '',
-    apellido_mTestigo1: '',
-    parentescoTestigo1: '',
-    telefonoTestigo1: '',
-    nombresTestigo2: '',
-    apellido_pTestigo2: '',
-    apellido_mTestigo2: '',
-    parentescoTestigo2: '',
-    telefonoTestigo2: '',
-    status: "",
-    fecha_alta: '',
-    fecha_fin_tramite: '',
+          apellido_p: '',
+          apellido_m: '',
+          curp: '',
+          nss: '',
+          rfc: '',
+          email: '',
+          semanas_cotizadas: '',
+          semanas_descontadas: '',
+          direccion: '',
+          ciudad: '',
+          estado: '',
+          telefono: '',
+          infonavit: '',
+          codigo_postal: '',
+          monto: '',
+          id_asesor: "",
+          id_afore: "",
+          fechaFinalizacion: '',
+          fecha_ultimo_retiro: '',
+          fecha_ultima_baja: '',
+          fecha_solucion: '',
+          salario: '',
+          empleo: '',
+          forma_pago: '',
+          observaciones: '',
+          nombresTestigo1: '',
+          apellido_pTestigo1: '',
+          apellido_mTestigo1: '',
+          parentescoTestigo1: '',
+          telefonoTestigo1: '',
+          nombresTestigo2: '',
+          apellido_pTestigo2: '',
+          apellido_mTestigo2: '',
+          parentescoTestigo2: '',
+          telefonoTestigo2: '',
+          status: "",
+          fecha_alta: '',
+          fecha_fin_tramite: '',
         });
+        navigate('/clientes');
       } else {
-        // alert('Error al registrar el cleinte: ' + data.msg);
         toast.error("Error al registrar al cliente.");
       }
     } catch (error) {
-      // console.error('Error:', error);
       toast.error("Error al registrar al cliente.");
     }
   };
-
+  
   return (
     // <form className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
     <form onSubmit={handleSubmit} className="max-w-3xl mx-auto p-6">
@@ -210,6 +234,7 @@ setFormData({
           name="tipo_tramite"
           className="mt-2 w-full p-2 border border-gray-300 rounded-md"
           value={tipo_tramite}
+          required
           onChange={handleTipoTramiteChange}
         >
           <option value="">Seleccione un tipo de trámite</option>
@@ -237,18 +262,6 @@ setFormData({
           Nombres:
         </label>
       </div>
-
-      {/* <div className="mb-4">
-        <label htmlFor="apellidoP" className="block text-gray-700">Apellido</label>
-        <input
-          type="text"
-          id="apellidoP"
-          name="apellidoP"
-          className="mt-2 w-full p-2 border border-gray-300 rounded-md"
-          value={formData.apellidoP}
-          onChange={handleChange}
-        />
-      </div> */}
 
       {/* Apellido Paterno y Apellido Materno */}
       <div className="grid grid-cols-2 gap-4 mb-6">
@@ -384,7 +397,7 @@ setFormData({
           id="id_asesor"
           name="id_asesor"
           className="block w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          value={formData.asesor} // Cambiado a formData
+          value={formData.id_asesor} // Cambiado a formData
           required
           onChange={handleChange} // Cambiado a handleChange
           >
@@ -402,7 +415,7 @@ setFormData({
           id="id_afore"
           name="id_afore"
           className="block w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          value={formData.afore} // Cambiado a formData
+          value={formData.id_afore} // Cambiado a formData
           required
           onChange={handleChange} // Cambiado a handleChange
           >
@@ -529,7 +542,7 @@ setFormData({
                 id="fecha_ultimo_retiro"
                 name="fecha_ultimo_retiro"
                 className="mt-2 w-full p-2 border border-gray-300 rounded-md"
-                value={formData.fecha_ultimo_retiro}
+                value={formData.fecha_ultimo_retiro ? formData.fecha_ultimo_retiro.split('T')[0] : ''}
                 onChange={handleChange}
               />
             </div>
@@ -541,7 +554,7 @@ setFormData({
                 id="fecha_ultima_baja"
                 name="fecha_ultima_baja"
                 className="mt-2 w-full p-2 border border-gray-300 rounded-md"
-                value={formData.fecha_ultima_baja}
+                value={formData.fecha_ultima_baja ? formData.fecha_ultima_baja.split('T')[0] : ''}
                 required
                 onChange={handleChange}
               />
@@ -569,7 +582,7 @@ setFormData({
                 id="fecha_solucion"
                 name="fecha_solucion"
                 className="mt-2 w-full p-2 border border-gray-300 rounded-md"
-                value={formData.fecha_solucion}
+                value={formData.fecha_solucion ? formData.fecha_solucion.split('T')[0] : ''}
                 required
                 onChange={handleChange}
               />
@@ -628,13 +641,12 @@ setFormData({
           </div>
         </>
       )}
-
-<h3 className="text-lg font-semibold mt-4">Referencias</h3>
-
-<div className="grid grid-cols-2 gap-8 mb-6">
-  {/* Testigo 1 */}
-  <div class>
-    <h4 className="text-md font-semibold">1.-</h4>
+      <h3 className="text-lg font-semibold mt-4">Referencias</h3>
+{!id && (
+  <div className="grid grid-cols-2 gap-8 mb-6">
+    {/* Testigo 1 */}
+    <div>
+      <h4 className="text-md font-semibold">1.-</h4>
       <div className="relative z-0 mb-6 w-full group">
         <input
           type="text"
@@ -686,8 +698,8 @@ setFormData({
           name="parentescoTestigo1"
           className="block w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           required
-          value={formData.parentescoTestigo1} // Cambiado a formData
-          onChange={handleChange} // Cambiado a handleChange
+          value={formData.parentescoTestigo1}
+          onChange={handleChange}
           >
             <option value="">Seleccione el parentesco</option>
             <option value="esposo">Esposo(a)</option>
@@ -696,7 +708,6 @@ setFormData({
             <option value="trabajo">Trabajo</option>
             <option value="otro">Otro</option>
           </select>
-
         </div>
         <div className="relative z-0 w-full group">
           <input
@@ -712,11 +723,10 @@ setFormData({
           Telefono:</label>
         </div>
       </div>
-      </div>
-      {/* Repite este mismo bloque para apellido_pTestigo1, apellido_mTestigo1, parentescoTestigo1, telefonoTestigo1 */}
+    </div>
 
-      {/* Testigo 2 */}
-      <div>
+    {/* Testigo 2 */}
+    <div>
       <h4 className="text-md font-semibold">2.-</h4>
       <div className="relative z-0 mb-6 w-full group">
         <input
@@ -767,9 +777,9 @@ setFormData({
           id="parentescoTestigo2"
           name="parentescoTestigo2"
           className="block w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          value={formData.parentescoTestigo2} // Cambiado a formData
+          value={formData.parentescoTestigo2}
           required
-          onChange={handleChange} // Cambiado a handleChange
+          onChange={handleChange}
           >
             <option value="">Seleccione el parentesco</option>
             <option value="esposo">Esposo(a)</option>
@@ -778,7 +788,6 @@ setFormData({
             <option value="trabajo">Trabajo</option>
             <option value="otro">Otro</option>
           </select>
-
         </div>
         <div className="relative z-0 w-full group">
           <input
@@ -794,10 +803,9 @@ setFormData({
           Telefono:</label>
         </div>
       </div>
-      {/* Repite este bloque para apellido_pTestigo2, apellido_mTestigo2, parentescoTestigo2, telefonoTestigo2 */}
-      </div>
     </div>
-
+  </div>
+)}
     <div className="relative z-0 mb-6 w-full group">
         <input
           type="text"
@@ -817,8 +825,14 @@ setFormData({
         type="submit"
         className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-md"
       >
-        Enviar
+        {id ? 'Actualizar' : 'Enviar'}
       </button>
+      {/* <button
+        type="submit"
+        className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-md"
+      >
+        Enviar 
+       </button> */}
       <ToastContainer />
     </form>
   );

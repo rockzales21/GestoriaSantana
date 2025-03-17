@@ -227,6 +227,7 @@ return (
           <Route path="asesores/editar/:id" element={<ActualizarAsesor />} />
           <Route path="VisorSemanas" element={<VisorSemanas />} />
           <Route path="FormularioTramite" element={<FormularioTramite />} />
+          <Route path="editarCliente/:id" element={<FormularioTramite />} />
           <Route path="ReporteProduccion" element={<ReporteProduccion />} />
           <Route path="FechasTramites" element={<FechasTramites />} />
           <Route path="LiquidacionesPendientes" element={<LiquidacionesPendientes />} />

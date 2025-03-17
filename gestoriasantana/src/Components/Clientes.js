@@ -21,21 +21,6 @@ const Clientes = () => {
   const [modalFechaBajaOpen, setModalFechaBajaOpen] = useState(false); // Definir el estado para el modal de fecha de baja
 
 
-  // useEffect(() => {
-  //   const fetchClientes = async () => {
-  //     try {
-  //       // const response = await axios.get("https://gestoriasantana-production.up.railway.app/clientes/clientes");
-  //       const response = await axios.get('http://localhost:3000/clientes/clientes');
-  //       // console.log('Response:', response.data);
-  //       setClientes(response.data);
-  //     } catch (error) {
-  //       console.error("Error al cargar los clientes:", error);
-  //     }
-  //   };
-
-  //   fetchClientes();
-  // }, []);
-
   useEffect(() => {
     const fetchClientes = async () => {
       try {
@@ -68,10 +53,6 @@ const Clientes = () => {
     return `$${monto.toLocaleString("es-MX")}`;
   };
 
-  // const handleDetallesClick = (cliente) => {
-  //   navigate(`/clientes/contratoClientes/${cliente.id_cliente}`, { state: { cliente } });
-  // };
-  // const handleDetallesClick = async (cliente) => {
   const handleContratoClick = async (cliente) => {
     try {
       const response = await axios.get(`https://gestoriasantana-production.up.railway.app/clientes/cliente/${cliente.id_cliente}`);
@@ -95,6 +76,12 @@ const Clientes = () => {
     } catch (error) {
       console.error("Error al cargar los detalles del cliente:", error);
     }
+  };
+
+  const handleEditClick = (cliente) => {
+    console.log("Cliente seleccionado para editar:", cliente);
+    // navigate(`/editarCliente/${cliente.id_cliente}`, { state: { cliente } });
+    navigate(`/editarCliente/${cliente.id_cliente}`);
   };
 
   
@@ -490,6 +477,11 @@ const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
                 Cambiar Status
               </button>
               )}
+              <button
+              className="bg-yellow-500 text-white py-1 px-4 rounded hover:bg-yellow-700 ml-2"
+              onClick={() => handleEditClick(cliente)}>
+                Editar
+              </button>
               <button
                 className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-700"
                 onClick={() => handleContratoClick(cliente)}

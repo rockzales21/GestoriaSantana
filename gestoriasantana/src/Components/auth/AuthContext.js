@@ -21,7 +21,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await fetch("https://gestoriasantana-production.up.railway.app/users/profile", {
         // const response = await fetch("http://localhost:3000/users/profile", {
-        // const response = await axios.get('http://localhost:5000/afores');
         headers: { Authorization: token },
       });
       const data = await response.json();
