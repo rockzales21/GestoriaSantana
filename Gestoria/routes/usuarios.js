@@ -43,7 +43,7 @@ router.get('/', verifyToken, async (req, res) => {
     INNER JOIN Personas p ON p.id_persona = u.id_persona 
     INNER JOIN Usuarios uJefe ON u.jefe = uJefe.id_usuario
     INNER JOIN Personas pJefe ON pJefe.id_persona = uJefe.id_persona
-    INNER JOIN Sucursales s ON s.encargado = pJefe.id_persona
+    INNER JOIN Sucursales s ON s.encargado = uJefe.id_usuario
   `;
 
   const values = [];
@@ -194,8 +194,9 @@ router.get('/:id', async (req, res) => {
     const result = await pool.query(
       `SELECT u.*, p.*,s.direccion FROM Usuarios u 
        INNER JOIN Personas p ON p.id_persona = u.id_persona 
-       INNER JOIN Personas pJefe ON pJefe.id_persona = u.jefe
-       INNER JOIN Sucursales s ON s.encargado = pJefe.id_persona
+       INNER JOIN Usuarios uJefe ON u.jefe = uJefe.id_usuario
+       INNER JOIN Personas pJefe ON pJefe.id_persona = uJefe.id_persona
+       INNER JOIN Sucursales s ON s.encargado = uJefe.id_usuario
        WHERE u.id_usuario = $1`, [id]
     );
     if (result.rows.length === 0) {
@@ -254,7 +255,7 @@ router.get('/detalle/:id', async (req, res) => {
        INNER JOIN Personas p ON p.id_persona = u.id_persona 
        INNER JOIN Usuarios uJefe ON u.jefe = uJefe.id_usuario
        INNER JOIN Personas pJefe ON pJefe.id_persona = uJefe.id_persona
-       INNER JOIN Sucursales s ON s.encargado = pJefe.id_persona
+       INNER JOIN Sucursales s ON s.encargado = uJefe.id_usuario
        WHERE u.id_usuario = $1`, [id]
     );
     if (result.rows.length === 0) {
