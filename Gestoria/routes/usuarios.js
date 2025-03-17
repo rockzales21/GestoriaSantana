@@ -62,6 +62,7 @@ router.get('/produccionYear', async (req, res) => {
       FROM  Usuarios u 
       INNER JOIN Personas p ON p.id_persona = u.id_persona
       INNER JOIN clientes c ON c.id_asesor = u.id_usuario
+      WHERE DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
       GROUP BY p.nombres || ' ' || p.apellido_p || ' ' || p.apellido_m
       ORDER BY COUNT(c.id_cliente)
     `);
@@ -79,7 +80,7 @@ router.get('/produccionSemana', async (req, res) => {
       DATE_PART('week', c.fecha_registro) AS semana,
       COUNT(c.id_cliente) AS total_clientes
       FROM clientes c
-      WHERE DATE_PART('year', c.fecha_registro) = 2024
+      WHERE DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
       GROUP BY DATE_PART('week', c.fecha_registro)
       ORDER BY semana
     `);
@@ -110,7 +111,7 @@ router.get('/produccionMes', async (req, res) => {
               END AS mes,
               COUNT(c.id_cliente) AS total_clientes
               FROM clientes c
-              WHERE DATE_PART('year', c.fecha_registro) = 2024
+              WHERE DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
               GROUP BY DATE_PART('month', c.fecha_registro)
               ORDER BY DATE_PART('month', c.fecha_registro)
     `);

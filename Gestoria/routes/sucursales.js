@@ -39,12 +39,25 @@ router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const { oficina, encargado, tel_oficina, email, direccion, telefonoencargado } = req.body;
   try {
+    await pool.query('BEGIN');
+
     const result = await pool.query(
       'UPDATE Sucursales SET oficina = $1, encargado = $2, tel_oficina = $3, email = $4, direccion = $5, celular = $6 WHERE id_sucursal = $7 RETURNING *',
       [oficina, encargado, tel_oficina, email, direccion, telefonoencargado, id]
     );
+
+    if (encargado) {
+      await pool.query(
+        'UPDATE Usuarios SET tipo = 2 WHERE id_usuario = $1',
+        [encargado]
+      );
+    }
+
+    await pool.query('COMMIT');
+
     res.json(result.rows[0]);
   } catch (err) {
+    await pool.query('ROLLBACK');
     console.error(err.message);
     res.status(500).send('Error del servidor');
   }
