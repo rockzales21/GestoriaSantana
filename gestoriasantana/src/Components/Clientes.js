@@ -42,7 +42,7 @@ const Clientes = () => {
 
   const formatFecha = (fecha) => {
     if (!fecha) return "No disponible";
-    const opciones = { year: "numeric", month: "2-digit", day: "2-digit" };
+    const opciones = { year: "numeric", month: "long", day: "numeric" };
     return new Date(fecha).toLocaleDateString("es-MX", opciones);
   };
 
@@ -494,12 +494,14 @@ const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
               >
                 Ver detalles
               </button>
+              {profile && profile.tipo === 3 && (
               <button
                 className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-700 ml-2"
                 onClick={() => handleOpenFechaBajaModal(cliente)}
               >
                 Fecha de Baja
               </button>
+              )}
             </div>
           </div>
         ))}
@@ -526,6 +528,7 @@ const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
       <p className="whitespace-normal"><strong>Actualizó:</strong> {detalleCliente.actualizo}</p>
       <p className="whitespace-normal"><strong>Fecha de solución:</strong> {formatFecha(detalleCliente.fecha_solucion)}</p>
       <p className="whitespace-normal"><strong>Observaciones:</strong> {detalleCliente.observaciones}</p>
+      <p className="whitespace-normal"><strong>Fecha de baja:</strong> {detalleCliente.fecha_baja ? formatFecha(detalleCliente.fecha_baja) : "No hay fecha de baja"}</p>
       <button
         className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-700 mt-4"
         onClick={() => setDetalleCliente(null)}

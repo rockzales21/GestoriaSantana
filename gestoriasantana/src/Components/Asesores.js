@@ -39,21 +39,25 @@ const Asesores = () => {
   const { profile } = useContext(AuthContext); // Obtener el perfil del usuario desde el contexto
 
   const navigate = useNavigate();
-
+  
   useEffect(() => {
-    fetch('https://gestoriasantana-production.up.railway.app/usuarios')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Error al obtener los asesores');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setAsesores(data);
-      })
-      .catch((error) => {
+    const fetchAsesores = async () => {
+      try {
+        const token = localStorage.getItem('token'); // Asumiendo que guardaste el token en localStorage
+        // const response = await axios.get('http://localhost:3000/clientes/clientes', {
+          // const response = await axios.get('http://localhost:3000/usuarios', {
+        const response = await axios.get('https://gestoriasantana-production.up.railway.app/usuarios', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setAsesores(response.data);
+      } catch (error) {
         console.error('Error al obtener los asesores:', error);
-      });
+      }
+    };
+  
+    fetchAsesores();
   }, []);
 
   const handleEdit = (id) => {
@@ -551,7 +555,7 @@ const Asesores = () => {
                     
                     <Button
                       variant="contained"
-                      color="primary"
+                      color="success"
                       sx={buttonStyles}
                       onClick={() => handleDetallesClick(asesor)}
                     >

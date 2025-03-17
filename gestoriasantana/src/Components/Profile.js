@@ -23,8 +23,7 @@ const Profile = () => {
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 max-w-lg mx-auto mt-10">
-      <h1 className="text-2xl font-bold mb-4 text-gray-800">Perfil de Usuario</h1>
-      <p className="text-lg text-gray-700 mb-2">{getTipoUsuario(profile.tipo)}</p>
+      <h1 className="text-2xl font-bold mb-4 text-gray-800">{getTipoUsuario(profile.tipo)}</h1>
       <p className="text-lg text-gray-700 mb-2"><strong className="text-gray-900">Nombre de usuario:</strong> {profile.username}</p>
       <p className="text-lg text-gray-700 mb-2"><strong className="text-gray-900">Email:</strong> {profile.email}</p>
       <p className="text-lg text-gray-700 mb-2"><strong className="text-gray-900">Teléfono:</strong> {profile.telefono}</p>

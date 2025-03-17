@@ -827,12 +827,6 @@ const FormularioTramite = () => {
       >
         {id ? 'Actualizar' : 'Enviar'}
       </button>
-      {/* <button
-        type="submit"
-        className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-md"
-      >
-        Enviar 
-       </button> */}
       <ToastContainer />
     </form>
   );

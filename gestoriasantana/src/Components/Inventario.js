@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { FaPlus, FaEdit } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
+import { AuthContext } from "./auth/AuthContext";
 import 'react-toastify/dist/ReactToastify.css';
 
 const Inventario = () => {
   const [inventario, setInventario] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const { profile } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     id_item: null,
     sku: '',
@@ -126,7 +128,9 @@ const Inventario = () => {
             <th className="py-2 px-4 border-b">Status</th>
             <th className="py-2 px-4 border-b">Cantidad</th>
             <th className="py-2 px-4 border-b">Observaciones</th>
+            {profile && profile.tipo === 3 && (
             <th className="py-2 px-4 border-b">Acciones</th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -141,12 +145,14 @@ const Inventario = () => {
               <td className="py-2 px-4 border-b">{item.cantidad}</td>
               <td className="py-2 px-4 border-b">{item.observaciones}</td>
               <td className="py-2 px-4 border-b">
+              {profile && profile.tipo === 3 && (
                 <button
                   onClick={() => openEditModal(item)}
                   className="text-yellow-500"
                 >
                   <FaEdit />
                 </button>
+              )}
               </td>
             </tr>
           ))}

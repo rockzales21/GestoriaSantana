@@ -17,32 +17,6 @@ const buttonStyles = {
   marginRight: '8px',
 };
 
-// const Contrato = () => {
-//   const { id } = useParams();
-//   const [asesor, setAsesor] = useState(null);
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     // Cambia esto por tu URL real para obtener los datos del asesor
-//     fetch(`https://gestoriasantana-production.up.railway.app/usuarios/${id}`)
-//       .then((response) => {
-//         if (!response.ok) {
-//           throw new Error('Error al obtener el asesor');
-//         }
-//         return response.json();
-//       })
-//       .then((data) => {
-//         setAsesor(data);
-//       })
-//       .catch((error) => {
-//         console.error('Error al obtener el asesor:', error);
-//       });
-//   }, [id]);
-
-//   if (!asesor) {
-//     return <Typography>Cargando contrato...</Typography>;
-//   }
-
 
 function Contrato() {
   const { id } = useParams(); // Obtienes el id del asesor desde la URL
