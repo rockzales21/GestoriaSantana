@@ -9,8 +9,7 @@ const LiquidacionesPendientes = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        //https://gestoriasantana-production.up.railway.app/
-        // const response = await axios.get('http://localhost:5000/liquidaciones/pendientes');
+        // const response = await axios.get('http://localhost:3000/liquidaciones/pendientes');
         const response = await axios.get('https://gestoriasantana-production.up.railway.app/liquidaciones/pendientes');
         setData(response.data);
 

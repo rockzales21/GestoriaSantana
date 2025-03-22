@@ -414,94 +414,138 @@ const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4 text-center">Lista de Clientes</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center">LISTA DE CLIENTES</h1>
 
       <input
         type="text"
-        placeholder="Buscar cliente..."
+        placeholder="BUSCAR CLIENTE..."
         className="border p-2 mb-4 w-full"
         value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
+        onChange={(e) => setSearchTerm(e.target.value.toUpperCase())}
       />
 
-
       <div className="grid gap-4">
-      {filteredClientes.map((cliente) => (
+        {filteredClientes.map((cliente) => (
           <div
             key={cliente.id_cliente}
             className="border rounded-lg p-4 shadow-md bg-white"
           >
             {/* Renglón 1 */}
-            <div className="flex justify-between mb-2">
-              <p className="font-bold">Cliente:</p>
-              <p>{cliente.nombre}</p>
-              <p className="font-bold">CURP:</p>
-              <p>{cliente.curp}</p>
-              <p className="font-bold">NSS:</p>
-              <p>{cliente.nss}</p>
+            <div className="flex flex-wrap mb-2 gap-4 justify-center">
+              <div className="flex items-center flex-grow">
+                <p className="font-bold">CLIENTE:</p>
+                <p className="ml-1">{cliente.nombre.toUpperCase()}</p>
+              </div>
+              <div className="flex items-center flex-grow">
+                <p className="font-bold">CURP:</p>
+                <p className="ml-1">{cliente.curp.toUpperCase()}</p>
+              </div>
+              <div className="flex items-center flex-grow">
+                <p className="font-bold">NSS:</p>
+                <p className="ml-1">{cliente.nss.toUpperCase()}</p>
+              </div>
             </div>
 
             {/* Renglón 2 */}
-            <div className="flex justify-between mb-2">
-              <p className="font-bold">Monto:</p>
-              <p>{formatMonto(cliente.monto)}</p>
-              <p className="font-bold">Fecha de trámite:</p>
-              <p>{formatFecha(cliente.fecha_registro)}</p>
-              <p className="font-bold">Fecha de último retiro:</p>
-              <p>{formatFecha(cliente.fecha_ultimo_retiro)}</p>
+
+            <div className="flex flex-wrap mb-2 gap-4 justify-center">
+            {cliente.tipo_tramite && cliente.tipo_tramite != "Activate" && (
+              <div className="flex items-center flex-grow">
+                <p className="font-bold">MONTO:</p>
+                <p className="ml-1">{formatMonto(cliente.monto).toUpperCase()}</p>
+              </div>
+            )}
+              <div className="flex items-center flex-grow">
+                <p className="font-bold">FECHA DE TRÁMITE:</p>
+                <p className="ml-2">{formatFecha(cliente.fecha_registro).toUpperCase()}</p>
+              </div>
+              <div className="flex items-center flex-grow">
+                <p className="font-bold">FECHA DE ÚLTIMO RETIRO:</p>
+                <p className="ml-2">{formatFecha(cliente.fecha_ultimo_retiro).toUpperCase()}</p>
+              </div>
             </div>
 
             {/* Renglón 3 */}
-            <div className="flex justify-between mb-2">
-              <p className="font-bold">Semanas cotizadas:</p>
-              <p>{cliente.semanas_cotizadas}</p>
-              <p className="font-bold">Semanas descontadas:</p>
-              <p>{cliente.semanas_descontadas}</p>
-              <p className="font-bold">Afore:</p>
-              <p>{cliente.id_afore || "No asignado"}</p>
-              
+            <div className="flex flex-wrap mb-2 gap-4 justify-center">
+              <div className="flex items-center flex-grow">
+                <p className="font-bold">SEMANAS COTIZADAS:</p>
+                <p className="ml-2">{cliente.semanas_cotizadas.toString().toUpperCase()}</p>
+              </div>
+              <div className="flex items-center flex-grow">
+                <p className="font-bold">SEMANAS DESCONTADAS:</p>
+                <p className="ml-2">{cliente.semanas_descontadas.toString().toUpperCase()}</p>
+              </div>
+              <div className="flex items-center flex-grow">
+                <p className="font-bold">AFORE:</p>
+                <p className="ml-2">{(cliente.nombreafore || "NO ASIGNADO").toUpperCase()}</p>
+              </div>
+              <div className="flex items-center flex-grow">
+                <p className="font-bold">TIPO DE TRÁMITE:</p>
+                <p className="ml-2">{(cliente.tipo_tramite || "NO ASIGNADO").toUpperCase()}</p>
+              </div>
             </div>
 
             {/* Renglón 4 */}
-            <div className="flex justify-between items-center">
-              <p className="font-bold">Asesor:</p>
-              <p>{cliente.nombreasesor || "No asignado"}</p>
-              <p className="font-bold">Status:</p>
-              <p>{cliente.status}</p>
-              {profile && profile.tipo === 3 && (
-              <button 
-                className="bg-yellow-500 text-white py-1 px-4 rounded hover:bg-yellow-700 ml-2"
-                onClick={() => handleChangeStatus(cliente)}
-              >
-                Cambiar Status
-              </button>
-              )}
+            <div className="flex flex-wrap mb-2 gap-4 justify-center">
+              <div className="flex items-center flex-grow">
+              <p className="font-bold">ASESOR:</p>
+              <p className="ml-2">{(cliente.nombreasesor || "NO ASIGNADO").toUpperCase()}</p>
+              </div>
+              <div className="flex items-center flex-grow">
+              <p className="font-bold">STATUS:</p>
+              <p className="ml-2">{cliente.status.toUpperCase()}</p>
+              </div>
+              <div className="flex items-center flex-grow">
               <button
-              className="bg-yellow-500 text-white py-1 px-4 rounded hover:bg-yellow-700 ml-2"
-              onClick={() => handleEditClick(cliente)}>
-                Editar
+                className="bg-yellow-500 text-white py-1 px-4 rounded hover:bg-yellow-700 ml-2"
+                onClick={() => handleEditClick(cliente)}
+              >
+                EDITAR
               </button>
+              </div>
+              <div className="flex items-center flex-grow">
               <button
                 className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-700"
                 onClick={() => handleContratoClick(cliente)}
               >
-                Contrato
+                CONTRATO
               </button>
+              </div>
+              <div className="flex items-center flex-grow">
               <button
                 className="bg-green-500 text-white py-1 px-4 rounded hover:bg-green-700 ml-2"
                 onClick={() => handleDetallesClick(cliente)}
               >
-                Ver detalles
+                VER DETALLES
               </button>
-              {profile && profile.tipo === 3 && (
-              <button
-                className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-700 ml-2"
-                onClick={() => handleOpenFechaBajaModal(cliente)}
-              >
-                Fecha de Baja
-              </button>
-              )}
+              </div>
             </div>
+
+            
+            {profile && profile.tipo === 3 && (
+            <div className="flex flex-wrap mb-2 gap-4 justify-center">
+              <div className="flex items-center flex-grow">
+
+                <button 
+                  className="bg-yellow-500 text-white py-1 px-4 rounded hover:bg-yellow-700 ml-2"
+                  onClick={() => handleChangeStatus(cliente)}
+                >
+                  CAMBIAR STATUS
+                </button>
+              
+
+
+              
+                <button
+                  className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-700 ml-2"
+                  onClick={() => handleOpenFechaBajaModal(cliente)}
+                >
+                  FECHA DE BAJA
+                </button>
+              
+              </div>
+            </div>
+            )}
           </div>
         ))}
       </div>
@@ -512,41 +556,41 @@ const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
         cliente={clienteSeleccionado}
       />
       {detalleCliente && (
-  <div className="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-    <div className="modal-content custom-modal p-4 rounded shadow-lg overflow-auto">
-      <h2 className="text-xl font-bold mb-4">Detalles del Cliente</h2>
-      <p className="whitespace-normal"><strong>Nombre:</strong> {detalleCliente.nombre}</p>
-      <p className="whitespace-normal"><strong>CURP:</strong> {detalleCliente.curp}</p>
-      <p className="whitespace-normal"><strong>NSS:</strong> {detalleCliente.nss}</p>
-      <p className="whitespace-normal"><strong>Email:</strong> {detalleCliente.email}</p>
-      <p className="whitespace-normal"><strong>RFC:</strong> {detalleCliente.rfc}</p>
-      <p className="whitespace-normal"><strong>Teléfono:</strong> {detalleCliente.telefono}</p>
-      <p className="whitespace-normal"><strong>Dirección:</strong> {detalleCliente.direccioncompleta}</p>
-      <p className="whitespace-normal"><strong>Status:</strong> {detalleCliente.status}</p>
-      <p className="whitespace-normal"><strong>Zona:</strong> {detalleCliente.zona}</p>
-      <p className="whitespace-normal"><strong>Actualizó:</strong> {detalleCliente.actualizo}</p>
-      <p className="whitespace-normal"><strong>Fecha de solución:</strong> {formatFecha(detalleCliente.fecha_solucion)}</p>
-      <p className="whitespace-normal"><strong>Observaciones:</strong> {detalleCliente.observaciones}</p>
-      <p className="whitespace-normal"><strong>Fecha de baja:</strong> {detalleCliente.fecha_baja ? formatFecha(detalleCliente.fecha_baja) : "No hay fecha de baja"}</p>
-      <button
-        className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-700 mt-4"
-        onClick={() => setDetalleCliente(null)}
-      >
-        Cerrar
-      </button>
-    </div>
-  </div>
-)}
-<Dialog
+        <div className="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="modal-content custom-modal p-4 rounded shadow-lg overflow-auto">
+            <h2 className="text-xl font-bold mb-4">DETALLES DEL CLIENTE</h2>
+            <p className="whitespace-normal"><strong>NOMBRE:</strong> {detalleCliente.nombre.toUpperCase()}</p>
+            <p className="whitespace-normal"><strong>CURP:</strong> {detalleCliente.curp.toUpperCase()}</p>
+            <p className="whitespace-normal"><strong>NSS:</strong> {detalleCliente.nss.toUpperCase()}</p>
+            <p className="whitespace-normal"><strong>EMAIL:</strong> {detalleCliente.email.toUpperCase()}</p>
+            <p className="whitespace-normal"><strong>RFC:</strong> {detalleCliente.rfc.toUpperCase()}</p>
+            <p className="whitespace-normal"><strong>TELÉFONO:</strong> {detalleCliente.telefono.toUpperCase()}</p>
+            <p className="whitespace-normal"><strong>DIRECCIÓN:</strong> {detalleCliente.direccioncompleta.toUpperCase()}</p>
+            <p className="whitespace-normal"><strong>STATUS:</strong> {detalleCliente.status.toUpperCase()}</p>
+            <p className="whitespace-normal"><strong>ZONA:</strong> {detalleCliente.zona.toUpperCase()}</p>
+            <p className="whitespace-normal"><strong>ACTUALIZÓ:</strong> {detalleCliente.actualizo.toUpperCase()}</p>
+            <p className="whitespace-normal"><strong>FECHA DE SOLUCIÓN:</strong> {formatFecha(detalleCliente.fecha_solucion).toUpperCase()}</p>
+            <p className="whitespace-normal"><strong>OBSERVACIONES:</strong> {detalleCliente.observaciones.toUpperCase()}</p>
+            <p className="whitespace-normal"><strong>FECHA DE BAJA:</strong> {detalleCliente.fecha_baja ? formatFecha(detalleCliente.fecha_baja).toUpperCase() : "NO HAY FECHA DE BAJA"}</p>
+            <button
+              className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-700 mt-4"
+              onClick={() => setDetalleCliente(null)}
+            >
+              CERRAR
+            </button>
+          </div>
+        </div>
+      )}
+      <Dialog
         open={modalFechaBajaOpen}
         onClose={handleCloseFechaBajaModal}
         aria-labelledby="fecha-baja-dialog-title"
         aria-describedby="fecha-baja-dialog-description"
       >
-        <DialogTitle id="fecha-baja-dialog-title">{"Agregar Fecha de Baja"}</DialogTitle>
+        <DialogTitle id="fecha-baja-dialog-title">{"AGREGAR FECHA DE BAJA"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="fecha-baja-dialog-description">
-            Por favor, selecciona la fecha de baja para el cliente.
+            POR FAVOR, SELECCIONA LA FECHA DE BAJA PARA EL CLIENTE.
           </DialogContentText>
           <TextField
             autoFocus
@@ -561,10 +605,10 @@ const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseFechaBajaModal} color="primary">
-            Cancelar
+            CANCELAR
           </Button>
           <Button onClick={handleConfirmFechaBaja} color="primary">
-            Confirmar
+            CONFIRMAR
           </Button>
         </DialogActions>
       </Dialog>
@@ -573,4 +617,3 @@ const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
 };
 
 export default Clientes;
-

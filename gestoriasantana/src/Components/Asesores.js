@@ -44,7 +44,6 @@ const Asesores = () => {
     const fetchAsesores = async () => {
       try {
         const token = localStorage.getItem('token'); // Asumiendo que guardaste el token en localStorage
-        // const response = await axios.get('http://localhost:3000/clientes/clientes', {
           // const response = await axios.get('http://localhost:3000/usuarios', {
         const response = await axios.get('https://gestoriasantana-production.up.railway.app/usuarios', {
           headers: {
@@ -238,7 +237,7 @@ const Asesores = () => {
       input.innerHTML = `
         <div style="width: 700px; margin: 0 auto; font-size: 18px;">
           <h6 style="text-align: justify; margin-bottom: 16px;">
-            <strong>CONTRATO DE COMISIÓN MERCANTIL, QUE CELEBRAN, POR UNA PARTE: LA NEGOCIACIÓN “M SANTANA ASESORIAS” REPRESENTADA POR: MARTHA MARGARITA SANTANA CEJA, LA CUAL SERÁ DESIGNADA EN EL CURSO DE ESTE CONTRATO COMO “LA COMITENTE” Y POR LA OTRA PARTE {nombreCompletoMayus} A QUIEN SE LE DESIGNARÁ COMO “LA COMISIONISTA”, QUIENES HACEN LAS SIGUIENTES:</strong>
+            <strong>CONTRATO DE COMISIÓN MERCANTIL, QUE CELEBRAN, POR UNA PARTE: LA NEGOCIACIÓN “M SANTANA ASESORIAS” REPRESENTADA POR: MARTHA MARGARITA SANTANA CEJA, LA CUAL SERÁ DESIGNADA EN EL CURSO DE ESTE CONTRATO COMO “LA COMITENTE” Y POR LA OTRA PARTE ${nombreCompleto} A QUIEN SE LE DESIGNARÁ COMO “LA COMISIONISTA”, QUIENES HACEN LAS SIGUIENTES:</strong>
           </h6>
           <h6 style="text-align: justify; margin-bottom: 16px;">
             <strong>DECLARACIONES</strong>
@@ -527,12 +526,12 @@ const Asesores = () => {
           {filteredAsesores.map((asesor) => (
               <React.Fragment key={asesor.id_usuario}>
                 <TableRow>
-                  <TableCell sx={{ ...commonStyles }}>Asesor:</TableCell>
-                  <TableCell sx={{ ...commonStyles }}>{asesor.nombres}</TableCell>
-                  <TableCell sx={{ ...commonStyles }}>CURP:</TableCell>
-                  <TableCell sx={{ ...commonStyles }}>{asesor.curp}</TableCell>
-                  <TableCell sx={{ ...commonStyles }}>NSS:</TableCell>
-                  <TableCell sx={{ ...commonStyles }}>{asesor.nss}</TableCell>
+                  <TableCell sx={{ ...commonStyles }} className="uppercase"><strong>Asesor:</strong></TableCell>
+                  <TableCell sx={{ ...commonStyles }} className="uppercase">{asesor.nombres}</TableCell>
+                  <TableCell sx={{ ...commonStyles }} className="uppercase"><strong>CURP:</strong></TableCell>
+                  <TableCell sx={{ ...commonStyles }} className="uppercase">{asesor.curp}</TableCell>
+                  <TableCell sx={{ ...commonStyles }} className="uppercase"><strong>NSS:</strong></TableCell>
+                  <TableCell sx={{ ...commonStyles }} className="uppercase">{asesor.nss}</TableCell>
                   <TableCell sx={{ ...commonStyles }}>
                     {/* <Button
                       variant="contained"
@@ -564,13 +563,12 @@ const Asesores = () => {
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell>Teléfono:</TableCell>
-                  <TableCell>{asesor.telefono}</TableCell>
-                  <TableCell>Email:</TableCell>
-                  <TableCell>{asesor.email}</TableCell>
-                  <TableCell>Status:</TableCell>
-                  <TableCell>{asesor.status === 1 ? 'Activo' : 'Inactivo'}</TableCell>
-                  
+                <TableCell className="uppercase"><strong>Teléfono:</strong></TableCell>
+                  <TableCell className="uppercase">{asesor.telefono}</TableCell>
+                  <TableCell className="uppercase"><strong>Email:</strong></TableCell>
+                  <TableCell className="uppercase">{asesor.email}</TableCell>
+                  <TableCell className="uppercase"><strong>Status:</strong></TableCell>
+                  <TableCell className="uppercase">{asesor.status === 1 ? 'Activo' : 'Inactivo'}</TableCell>
                   <TableCell sx={{ ...commonStyles }}>
                   {profile && profile.tipo === 3 && (
                     
