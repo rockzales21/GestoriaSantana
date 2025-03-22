@@ -88,17 +88,34 @@ router.get('/clientes', verifyToken, async (req, res) => {
   const userType = req.user.tipo; // Asumiendo que el middleware de autenticación agrega el tipo de usuario a req.user
 
   let query = `
+  SELECT p.id_persona, c.id_cliente, 
+    p.nombres || ' ' || p.apellido_p || ' ' || p.apellido_m AS nombre, 
+    p.curp, p.nss, c.monto, c.id_afore, a.nombre AS nombreAfore, c.fecha_registro, 
+    c.semanas_cotizadas, c.id_asesor, c.fecha_ultimo_retiro, 
+    c.semanas_descontadas, c.status,
+    pAsesor.nombres || ' ' || pAsesor.apellido_p || ' ' || pAsesor.apellido_m AS nombreAsesor,
+    c.tipo_tramite
+    FROM Personas p 
+    INNER JOIN Clientes c ON p.id_persona = c.id_persona
+    INNER JOIN Usuarios u ON u.id_usuario = c.id_asesor
+    INNER JOIN Personas pAsesor ON pAsesor.id_persona = u.id_persona 
+    INNER JOIN Afores a ON a.id_afore = c.id_afore
+  `;
+
+
+  /*let query = `
     SELECT p.id_persona, c.id_cliente, 
     p.nombres || ' ' || p.apellido_p || ' ' || p.apellido_m AS nombre, 
     p.curp, p.nss, c.monto, id_afore, c.fecha_registro, 
     c.semanas_cotizadas, c.id_asesor, c.fecha_ultimo_retiro, 
     c.semanas_descontadas, c.status,
-    pAsesor.nombres || ' ' || pAsesor.apellido_p || ' ' || pAsesor.apellido_m AS nombreAsesor
+    pAsesor.nombres || ' ' || pAsesor.apellido_p || ' ' || pAsesor.apellido_m AS nombreAsesor,
+    c.tipo_tramite
     FROM Personas p 
     INNER JOIN Clientes c ON p.id_persona = c.id_persona
     INNER JOIN Usuarios u ON u.id_usuario = c.id_asesor
     INNER JOIN Personas pAsesor ON pAsesor.id_persona = u.id_persona 
-  `;
+  `;*/
 
   const conditions = [];
   const values = [];
