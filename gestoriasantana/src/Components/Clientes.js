@@ -6,6 +6,7 @@ import CambiarStatus from "./Modales/CambiarStatus";
 import { toast } from 'react-toastify';
 import { AuthContext } from "./auth/AuthContext"; // Importar el contexto de autenticación
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Button } from '@mui/material'; // Importar componentes de Material-UI
+import { getISOWeek, parseISO } from 'date-fns'; // Asegúrate de instalar date-fns: npm install date-fns
 
 
 import { NumerosALetras } from 'numero-a-letras';
@@ -40,11 +41,30 @@ const Clientes = () => {
     fetchClientes();
   }, []);
 
+  // const formatFecha = (fecha) => {
+  //   if (!fecha) return "No disponible";
+  //   const opciones = { year: "numeric", month: "long", day: "numeric" };
+  //   return new Date(fecha).toLocaleDateString("es-MX", opciones);
+  // };
+
   const formatFecha = (fecha) => {
     if (!fecha) return "No disponible";
-    const opciones = { year: "numeric", month: "long", day: "numeric" };
-    return new Date(fecha).toLocaleDateString("es-MX", opciones);
-  };
+    const opciones = { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" };
+    const fechaUTC = new Date(fecha);
+    console.log('Fecha:', fecha);
+    console.log('Fecha UTC:', fechaUTC);
+    console.log('Fecha mostrada:', fechaUTC.toLocaleDateString("es-MX", opciones));
+    return fechaUTC.toLocaleDateString("es-MX", opciones);
+
+    // if (!fecha) return "No disponible";
+    // const opciones = { year: "numeric", month: "long", day: "numeric" };
+    // console.log('Fecha:', fecha);
+    // const fechaUTC = new Date(fecha);
+    // console.log('Fecha UTC:', fechaUTC);
+    // console.log('Fecha UTC:', fechaUTC.toLocaleDateString("es-MX", opciones));
+    // return fechaUTC.toLocaleDateString("es-MX", opciones);
+
+};
 
   const formatMonto = (monto) => {
     if (monto === null || monto === undefined) {
@@ -370,7 +390,6 @@ const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       const headerImage = '/img/logo.png';
-      // const footerText = 'C. CUERNAVACA NO. 47 COND CUAHUNAHUAC  CUERNAVACA MORELOS 7772167527';
       const footerText = cliente.direccion_sucursal;
   
       for (let i = 1; i <= totalPages; i++) {
@@ -407,11 +426,48 @@ const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
     }
   };
 
+  const [statusFilter, setStatusFilter] = useState(""); // Nuevo estado para el filtro de estatus
+  const [weekFilter, setWeekFilter] = useState(""); // Estado para la semana seleccionada
+  const [yearFilter, setYearFilter] = useState(""); // Estado para el año seleccionado
+  const [monthFilter, setMonthFilter] = useState(""); // Nuevo estado para el filtro de mes
+  const [asesorFilter, setAsesorFilter] = useState(""); // Nuevo estado para el filtro de asesor
 
-  const filteredClientes = clientes.filter((cliente) =>
-    cliente.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredClientes = clientes.filter((cliente) => {
+    const matchesSearch = cliente.nombre.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "" || cliente.status.toLowerCase() === statusFilter.toLowerCase();
+  
+    // Filtrar por semana, año, mes y asesor
+    const fechaTramite = cliente.fecha_registro ? parseISO(cliente.fecha_registro) : null;
+    const weekOfYear = fechaTramite ? getISOWeek(fechaTramite) : null;
+    const yearOfTramite = fechaTramite ? fechaTramite.getFullYear() : null;
+    const monthOfTramite = fechaTramite ? fechaTramite.getMonth() + 1 : null; // Los meses en JavaScript son 0-indexados
+  
+    const matchesWeek = weekFilter === "" || weekOfYear === parseInt(weekFilter);
+    const matchesYear = yearFilter === "" || yearOfTramite === parseInt(yearFilter);
+    const matchesMonth = monthFilter === "" || monthOfTramite === parseInt(monthFilter);
+    const matchesAsesor = asesorFilter === "" || (cliente.nombreasesor || "").toLowerCase() === asesorFilter.toLowerCase();
+  
+    return matchesSearch && matchesStatus && matchesWeek && matchesYear && matchesMonth && matchesAsesor;
+  });
+  
 
+  // const filteredClientes = clientes.filter((cliente) => {
+  //   const matchesSearch = cliente.nombre.toLowerCase().includes(searchTerm.toLowerCase());
+  //   const matchesStatus = statusFilter === "" || cliente.status.toLowerCase() === statusFilter.toLowerCase();
+
+  //   // Filtrar por semana, año y mes
+  //   const fechaTramite = cliente.fecha_registro ? parseISO(cliente.fecha_registro) : null;
+  //   const weekOfYear = fechaTramite ? getISOWeek(fechaTramite) : null;
+  //   const yearOfTramite = fechaTramite ? fechaTramite.getFullYear() : null;
+  //   const monthOfTramite = fechaTramite ? fechaTramite.getMonth() + 1 : null; // Los meses en JavaScript son 0-indexados
+
+  //   const matchesWeek = weekFilter === "" || weekOfYear === parseInt(weekFilter);
+  //   const matchesYear = yearFilter === "" || yearOfTramite === parseInt(yearFilter);
+  //   const matchesMonth = monthFilter === "" || monthOfTramite === parseInt(monthFilter);
+
+  //   return matchesSearch && matchesStatus && matchesWeek && matchesYear && matchesMonth;
+  // });
+  
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4 text-center">LISTA DE CLIENTES</h1>
@@ -423,6 +479,79 @@ const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value.toUpperCase())}
       />
+
+<select
+        className="border p-2"
+        value={statusFilter}
+        onChange={(e) => setStatusFilter(e.target.value)}
+      >
+        <option value="">TODOS LOS ESTATUS</option>
+        <option value="alta">ALTA</option>
+        <option value="en espera">EN ESPERA</option>
+        <option value="en tramite">EN TRÁMITE</option>
+        <option value="liquidado">LIQUIDADO</option>
+        <option value="fallido">FALLIDO</option>
+        <option value="activo">ACTIVO</option>
+        <option value="inactivo">INACTIVO</option>
+        {/* Agrega más opciones según los estatus disponibles */}
+      </select>
+
+      {/* Filtro por semana */}
+      <select
+        className="border p-2"
+        value={weekFilter}
+        onChange={(e) => setWeekFilter(e.target.value)}
+      >
+        <option value="">TODAS LAS SEMANAS</option>
+        {Array.from({ length: 52 }, (_, i) => (
+          <option key={i + 1} value={i + 1}>
+            SEMANA {i + 1}
+          </option>
+        ))}
+      </select>
+      {/* Filtro por mes */}
+    <select
+      className="border p-2"
+      value={monthFilter}
+      onChange={(e) => setMonthFilter(e.target.value)}
+    >
+      <option value="">TODOS LOS MESES</option>
+      {Array.from({ length: 12 }, (_, i) => (
+        <option key={i + 1} value={i + 1}>
+          {new Date(0, i).toLocaleString("es-MX", { month: "long" }).toUpperCase()}
+        </option>
+      ))}
+    </select>
+
+      {/* Filtro por año */}
+      <select
+        className="border p-2"
+        value={yearFilter}
+        onChange={(e) => setYearFilter(e.target.value)}
+      >
+        <option value="">TODOS LOS AÑOS</option>
+        {Array.from({ length: 5 }, (_, i) => {
+          const year = new Date().getFullYear() - i;
+          return (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          );
+        })}
+      </select>
+
+      <select
+      className="border p-2"
+      value={asesorFilter}
+      onChange={(e) => setAsesorFilter(e.target.value)}
+    >
+      <option value="">TODOS LOS ASESORES</option>
+      {[...new Set(clientes.map((cliente) => cliente.nombreasesor || "NO ASIGNADO"))].map((asesor, index) => (
+        <option key={index} value={asesor}>
+          {asesor.toUpperCase()}
+        </option>
+      ))}
+    </select>
 
       <div className="grid gap-4">
         {filteredClientes.map((cliente) => (

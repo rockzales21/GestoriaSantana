@@ -48,14 +48,15 @@ const Header = () => {
             <NavItem
               text="Clientes"
               dropdownItems={[
-                { to: '/FiltroClientes', text: 'Trámites' },
+                // { to: '/FiltroClientes', text: 'Trámites' },
+                { to: '/Clientes', text: 'Trámites' },
                 { to: '/ReporteProduccion', text: 'Ingresos' },
                 { to: '/FechasTramites', text: 'Fechas de tramite' },
               ]}
               className="text-xl"
             />
             <NavItem to="/FormularioTramite" text="Altas" className="text-xl" />
-            <NavItem to="/Clientes" text="Clientes" className="text-xl" />
+            {/* <NavItem to="/Clientes" text="Clientes" className="text-xl" /> */}
             <NavItem to="/LiquidacionesPendientes" text="Liquidaciones" className="text-xl" />
             <NavItem
               text="Asesores"
