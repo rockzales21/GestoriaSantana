@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { AuthContext } from "./auth/AuthContext"; // Importar el contexto de autenticación
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Button } from '@mui/material'; // Importar componentes de Material-UI
 import { getISOWeek, parseISO } from 'date-fns'; // Asegúrate de instalar date-fns: npm install date-fns
+import { FaFilter, FaTimes } from 'react-icons/fa'; // Importar los íconos necesarios
 
 
 import { NumerosALetras } from 'numero-a-letras';
@@ -449,7 +450,9 @@ const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
   
     return matchesSearch && matchesStatus && matchesWeek && matchesYear && matchesMonth && matchesAsesor;
   });
-  
+
+  const [showFilters, setShowFilters] = useState(true); // Estado para controlar la visibilidad de los filtros
+
 
   // const filteredClientes = clientes.filter((cliente) => {
   //   const matchesSearch = cliente.nombre.toLowerCase().includes(searchTerm.toLowerCase());
@@ -472,86 +475,126 @@ const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4 text-center">LISTA DE CLIENTES</h1>
 
-      <input
-        type="text"
-        placeholder="BUSCAR CLIENTE..."
-        className="border p-2 mb-4 w-full"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value.toUpperCase())}
-      />
-
-<select
-        className="border p-2"
-        value={statusFilter}
-        onChange={(e) => setStatusFilter(e.target.value)}
+      {/* Botón para mostrar/ocultar filtros */}
+      <div className="flex justify-end mb-4">
+      <button
+        className="bg-blue-500 text-white py-2 px-4 rounded flex items-center gap-2 hover:bg-blue-700 transition-all"
+        onClick={() => setShowFilters(!showFilters)}
       >
-        <option value="">TODOS LOS ESTATUS</option>
-        <option value="alta">ALTA</option>
-        <option value="en espera">EN ESPERA</option>
-        <option value="en tramite">EN TRÁMITE</option>
-        <option value="liquidado">LIQUIDADO</option>
-        <option value="fallido">FALLIDO</option>
-        <option value="activo">ACTIVO</option>
-        <option value="inactivo">INACTIVO</option>
-        {/* Agrega más opciones según los estatus disponibles */}
-      </select>
+        {showFilters ? <FaTimes /> : <FaFilter />} {/* Cambiar ícono dinámicamente */}
+        {showFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
+      </button>
+      </div>
+      {/* Filtros */}
+      {/* Contenedor de filtros */}
+      {showFilters && (
+        <div className="bg-gray-100 p-4 rounded-lg shadow-md mb-6 transition-all">
+          <h2 className="text-lg font-bold mb-4 text-gray-700">Filtros</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Filtro de búsqueda */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Buscar Cliente</label>
+              <input
+              type="text"
+              placeholder="Escribe el nombre del cliente..."
+              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value.toUpperCase())}
+              />
+          </div>
 
-      {/* Filtro por semana */}
-      <select
-        className="border p-2"
-        value={weekFilter}
-        onChange={(e) => setWeekFilter(e.target.value)}
-      >
-        <option value="">TODAS LAS SEMANAS</option>
-        {Array.from({ length: 52 }, (_, i) => (
-          <option key={i + 1} value={i + 1}>
-            SEMANA {i + 1}
-          </option>
-        ))}
-      </select>
-      {/* Filtro por mes */}
-    <select
-      className="border p-2"
-      value={monthFilter}
-      onChange={(e) => setMonthFilter(e.target.value)}
-    >
-      <option value="">TODOS LOS MESES</option>
-      {Array.from({ length: 12 }, (_, i) => (
-        <option key={i + 1} value={i + 1}>
-          {new Date(0, i).toLocaleString("es-MX", { month: "long" }).toUpperCase()}
-        </option>
-      ))}
-    </select>
+          {/* Filtro de estatus */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Estatus</label>
+            <select
+              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="">Todos los estatus</option>
+              <option value="alta">Alta</option>
+              <option value="en espera">En espera</option>
+              <option value="en tramite">En trámite</option>
+              <option value="liquidado">Liquidado</option>
+              <option value="fallido">Fallido</option>
+              <option value="activo">Activo</option>
+              <option value="inactivo">Inactivo</option>
+            </select>
+          </div>
 
-      {/* Filtro por año */}
-      <select
-        className="border p-2"
-        value={yearFilter}
-        onChange={(e) => setYearFilter(e.target.value)}
-      >
-        <option value="">TODOS LOS AÑOS</option>
-        {Array.from({ length: 5 }, (_, i) => {
-          const year = new Date().getFullYear() - i;
-          return (
-            <option key={year} value={year}>
-              {year}
-            </option>
-          );
-        })}
-      </select>
+          {/* Filtro de semana */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Semana</label>
+            <select
+              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={weekFilter}
+              onChange={(e) => setWeekFilter(e.target.value)}
+            >
+              <option value="">Todas las semanas</option>
+              {Array.from({ length: 52 }, (_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  Semana {i + 1}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      <select
-      className="border p-2"
-      value={asesorFilter}
-      onChange={(e) => setAsesorFilter(e.target.value)}
-    >
-      <option value="">TODOS LOS ASESORES</option>
-      {[...new Set(clientes.map((cliente) => cliente.nombreasesor || "NO ASIGNADO"))].map((asesor, index) => (
-        <option key={index} value={asesor}>
-          {asesor.toUpperCase()}
-        </option>
-      ))}
-    </select>
+          {/* Filtro de mes */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Mes</label>
+            <select
+              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={monthFilter}
+              onChange={(e) => setMonthFilter(e.target.value)}
+            >
+              <option value="">Todos los meses</option>
+              {Array.from({ length: 12 }, (_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  {new Date(0, i).toLocaleString("es-MX", { month: "long" }).toUpperCase()}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Filtro de año */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Año</label>
+            <select
+              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={yearFilter}
+              onChange={(e) => setYearFilter(e.target.value)}
+            >
+              <option value="">Todos los años</option>
+              {Array.from({ length: 5 }, (_, i) => {
+                const year = new Date().getFullYear() - i;
+                return (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          {/* Filtro de asesor */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Asesor</label>
+            <select
+              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={asesorFilter}
+              onChange={(e) => setAsesorFilter(e.target.value)}
+            >
+              <option value="">Todos los asesores</option>
+              {[...new Set(clientes.map((cliente) => cliente.nombreasesor || "No asignado"))].map((asesor, index) => (
+                <option key={index} value={asesor}>
+                  {asesor.toUpperCase()}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+    )}
 
       <div className="grid gap-4">
         {filteredClientes.map((cliente) => (
