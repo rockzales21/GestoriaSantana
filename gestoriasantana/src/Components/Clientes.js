@@ -21,14 +21,15 @@ const Clientes = () => {
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
   const { profile } = useContext(AuthContext); // Obtener el perfil del usuario desde el contexto
   const [modalFechaBajaOpen, setModalFechaBajaOpen] = useState(false); // Definir el estado para el modal de fecha de baja
+  const apiUrl = process.env.REACT_APP_API_URL_PROD; // O REACT_APP_API_URL_TEST según el entorno
 
 
   useEffect(() => {
     const fetchClientes = async () => {
       try {
         const token = localStorage.getItem('token'); // Asumiendo que guardaste el token en localStorage
-        const response = await axios.get('https://gestoriasantana-production.up.railway.app/clientes/clientes', {
-        // const response = await axios.get('http://localhost:3000/clientes/clientes', {
+
+          const response = await axios.get(`${apiUrl}/clientes/clientes`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -42,11 +43,6 @@ const Clientes = () => {
     fetchClientes();
   }, []);
 
-  // const formatFecha = (fecha) => {
-  //   if (!fecha) return "No disponible";
-  //   const opciones = { year: "numeric", month: "long", day: "numeric" };
-  //   return new Date(fecha).toLocaleDateString("es-MX", opciones);
-  // };
 
   const formatFecha = (fecha) => {
     if (!fecha) return "No disponible";
@@ -56,15 +52,6 @@ const Clientes = () => {
     console.log('Fecha UTC:', fechaUTC);
     console.log('Fecha mostrada:', fechaUTC.toLocaleDateString("es-MX", opciones));
     return fechaUTC.toLocaleDateString("es-MX", opciones);
-
-    // if (!fecha) return "No disponible";
-    // const opciones = { year: "numeric", month: "long", day: "numeric" };
-    // console.log('Fecha:', fecha);
-    // const fechaUTC = new Date(fecha);
-    // console.log('Fecha UTC:', fechaUTC);
-    // console.log('Fecha UTC:', fechaUTC.toLocaleDateString("es-MX", opciones));
-    // return fechaUTC.toLocaleDateString("es-MX", opciones);
-
 };
 
   const formatMonto = (monto) => {
@@ -76,13 +63,8 @@ const Clientes = () => {
 
   const handleContratoClick = async (cliente) => {
     try {
-      const response = await axios.get(`https://gestoriasantana-production.up.railway.app/clientes/cliente/${cliente.id_cliente}`);
-      // const response = await axios.get(`http://localhost:3000/clientes/cliente/${cliente.id_cliente}`);
-        console.log('Response:', response.data);
+      const response = await axios.get(`${apiUrl}/clientes/cliente/${cliente.id_cliente}`);
       const clienteData = response.data;
-
-      
-      
       generatePDF(clienteData);
     } catch (error) {
       console.error("Error al cargar los detalles del cliente:", error);
@@ -91,7 +73,7 @@ const Clientes = () => {
 
   const handleDetallesClick = async (cliente) => {
     try {
-      const response = await axios.get(`https://gestoriasantana-production.up.railway.app/clientes/detalle/${cliente.id_cliente}`);
+      const response = await axios.get(`${apiUrl}/clientes/detalle/${cliente.id_cliente}`);
       setDetalleCliente(response.data);
     } catch (error) {
       console.error("Error al cargar los detalles del cliente:", error);

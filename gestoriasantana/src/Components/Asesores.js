@@ -229,6 +229,7 @@ const Asesores = () => {
       asesor.numeroInterior ? ' #' + asesor.numeroInterior : ''
     }, ${asesor.ciudad || ''}, ${asesor.estado || ''}`.trim();
 
+    
     const ahora = new Date();
     const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
     const fechaActual = ahora.toLocaleDateString('es-MX', opciones);
@@ -244,7 +245,7 @@ const Asesores = () => {
           </h6>
 
           <p style="text-align: justify; margin-bottom: 16px;">
-            <strong>I.-</strong> Declara <strong>LA COMITENTE “M SANTANA ASESORIAS” representada por la M en A. Martha Margarita Santana Ceja</strong>, ser un nombre para efectos comerciales, dedicada a las actividades de servicios de consultoría en administración, dada de alta ante el SAT con REGISTRO FEDERAL DE CONTRIBUYENTES SACM710414QL1 y tener su domicilio en Calle Cuernavaca #47 Condominios Cuauhnáhuac CP 62430, Cuernavaca Morelos.
+            <strong>I.-</strong> Declara <strong>LA COMITENTE “M SANTANA ASESORIAS” representada por la M en A. MARTHA MARGARITA SANTANA CEJA</strong>, ser un nombre para efectos comerciales, dedicada a las actividades de servicios de consultoría en administración, dada de alta ante el SAT con REGISTRO FEDERAL DE CONTRIBUYENTES SACM710414QL1 y tener su domicilio en Calle Cuernavaca #47 Condominios Cuauhnáhuac CP 62430, Cuernavaca Morelos.
           </p>
           <p style="text-align: justify; margin-bottom: 16px;">
             <strong>II.-</strong> Declara <strong>LA COMISIONISTA ${nombreCompleto}</strong> y tener su domicilio en <strong>C. ${domicilioCompleto}, CP ${asesor.codigo_postal}</strong>.
@@ -300,7 +301,7 @@ const Asesores = () => {
               _____________________________
             </p>
             <p style="font-size: 16px;">
-              M en A Martha Margarita Santana Ceja
+              M en A MARTHA MARGARITA SANTANA CEJA
             </p>
           </div>
           <div style="text-align: right;">
@@ -384,7 +385,7 @@ const Asesores = () => {
               <strong>CONTRATO DE CONFIDENCIALIDAD</strong>
             </h6>
             <p style="text-align: justify; margin-bottom: 16px;">
-              DENOMINADO COMO “EL CONTRATO” QUE CELEBRA POR UNA PARTE LA M en A <strong>Martha Margarita Santana Ceja</strong> DENOMINADO EN LO SUCESIVO COMO “LA PARTE EMISORA”, Y POR LA OTRA PARTE LA C. <strong>${nombreCompleto}</strong>: EN LO SUCESIVO LLAMADO COMO “LA PARTE RECEPTORA”; AL TENOR DE LAS SIGUIENTES DECLARACIONES Y CLÁUSULAS: 
+              DENOMINADO COMO “EL CONTRATO” QUE CELEBRA POR UNA PARTE LA M en A <strong>MARTHA MARGARITA SANTANA CEJA</strong> DENOMINADO EN LO SUCESIVO COMO “LA PARTE EMISORA”, Y POR LA OTRA PARTE LA C. <strong>${nombreCompleto}</strong>: EN LO SUCESIVO LLAMADO COMO “LA PARTE RECEPTORA”; AL TENOR DE LAS SIGUIENTES DECLARACIONES Y CLÁUSULAS: 
             </p>
 
             <h6 style="text-align: justify; margin-bottom: 16px;">
@@ -392,7 +393,7 @@ const Asesores = () => {
             </h6>
   
             <p style="text-align: justify; margin-bottom: 16px;">
-              <strong>I.-</strong> LA M en A <strong>Martha Margarita Santana Ceja</strong>, denominada en lo adelante como “EL EMISOR”, manifiesta ser mayor de edad, con domicilio en la calle Cuernavaca no.  47 condominios Cuauhnáhuac CP 62430, del municipio de Cuernavaca, Estado de Morelos, identificándose con CURP SACM710414MMNNJR02 y credencial de elector con folio 0045015314261.
+              <strong>I.-</strong> LA M en A <strong>MARTHA MARGARITA SANTANA CEJA</strong>, denominada en lo adelante como “EL EMISOR”, manifiesta ser mayor de edad, con domicilio en la calle Cuernavaca no.  47 condominios Cuauhnáhuac CP 62430, del municipio de Cuernavaca, Estado de Morelos, identificándose con CURP SACM710414MMNNJR02 y credencial de elector con folio 0045015314261.
             </p>
             <p style="text-align: justify; margin-bottom: 16px;">
               <strong>II.-</strong> La <strong>${nombreCompleto}</strong>, denominado en lo adelante como “LA PARTE RECEPTORA”, manifiesta ser mayor de edad, con domicilio en <strong>C. ${domicilioCompleto}, CP ${asesor.codigo_postal}</strong>. Identificándose con de elector con folio ___________________. CURP: ${asesor.curp} y credencial.

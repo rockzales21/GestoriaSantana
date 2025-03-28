@@ -11,14 +11,15 @@ const ActualizarAsesor = () => {
     colonia: '', codigo_postal: '', ciudad: '', estado: '', status: '', tipo: ''
   });
   const [message, setMessage] = useState('');
+  const apiUrl = process.env.REACT_APP_API_URL_PROD; // Cambia a REACT_APP_API_URL_TEST si estás en pruebas
+
 
   useEffect(() => {
     // Carga los datos actuales del asesor para editar
     const fetchUserData = async () => {
       try {
-        // const response = await fetch(`http://localhost:5000/usuarios/${id}`);
-        const response = await fetch(`https://gestoriasantana-production.up.railway.app/usuarios/${id}`);
-        //https://gestoriasantana-production.up.railway.app/
+        const response = await fetch(`${apiUrl}/usuarios/${id}`);
+        // const response = await fetch(`https://gestoriasantana-production.up.railway.app/usuarios/${id}`);
         const data = await response.json();
         if (response.ok) {
           setFormData(data);
@@ -43,8 +44,9 @@ const ActualizarAsesor = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // const response = await fetch(`http://localhost:5000/usuarios/${id}`, {
-        const response = await fetch(`https://gestoriasantana-production.up.railway.app/usuarios/${id}`, {
+      // const response = await fetch(`https://gestoriasantana-production.up.railway.app/usuarios/${id}`, {
+      const response = await fetch(`${apiUrl}/usuarios/${id}`, {
+
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

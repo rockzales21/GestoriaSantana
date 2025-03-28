@@ -7,6 +7,7 @@ function AforeList() {
   const [afores, setAfores] = useState([]);
   const navigate = useNavigate();
   const { profile } = useContext(AuthContext);
+  const apiUrl = process.env.REACT_APP_API_URL_PROD; // Cambia a REACT_APP_API_URL_TEST si estás en pruebas
 
   useEffect(() => {
     fetchAfores();
@@ -14,9 +15,8 @@ function AforeList() {
 
   const fetchAfores = async () => {
     try {
-      //https://gestoriasantana-production.up.railway.app/
-      // const response = await axios.get('http://localhost:5000/afores');
-      const response = await axios.get('https://gestoriasantana-production.up.railway.app/afores');
+      // const response = await axios.get('https://gestoriasantana-production.up.railway.app/afores');
+      const response = await axios.get(`${apiUrl}/afores`);
       setAfores(response.data);
     } catch (error) {
       console.error('Error al obtener los afores:', error);

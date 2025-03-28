@@ -7,6 +7,8 @@ import 'react-toastify/dist/ReactToastify.css';
 function AforeForm() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const apiUrl = process.env.REACT_APP_API_URL_PROD; // Cambia a REACT_APP_API_URL_TEST si estás en pruebas
+
 
   const [formData, setFormData] = useState({
     nombre: '',
@@ -23,9 +25,8 @@ function AforeForm() {
 
   const fetchAfore = async () => {
     try {
-      //https://gestoriasantana-production.up.railway.app/
-      // const response = await axios.get(`http://localhost:5000/afores/${id}`);
-      const response = await axios.get(`https://gestoriasantana-production.up.railway.app/afores/${id}`);
+      // const response = await axios.get(`https://gestoriasantana-production.up.railway.app/afores/${id}`);
+      const response = await axios.get(`${apiUrl}/afores/${id}`);
       const { nombre, link, telefono } = response.data;
       setFormData({ nombre, link, telefono, imagen: null });
     } catch (error) {
@@ -51,22 +52,17 @@ function AforeForm() {
 
     try {
       if (id) {
-        //https://gestoriasantana-production.up.railway.app/
-        // await axios.put(`http://localhost:5000/afores/${id}`, data);
-        await axios.put(`https://gestoriasantana-production.up.railway.app/afores/${id}`, data);
-        // alert('Afore actualizado correctamente');
+        // await axios.put(`https://gestoriasantana-production.up.railway.app/afores/${id}`, data);
+        await axios.put(`${apiUrl}/afores/${id}`, data);
         toast.success("Afore actualizado correctamente.");
       } else {
-        // await axios.post('http://localhost:5000/afores', data);
-        await axios.post('https://gestoriasantana-production.up.railway.app/afores', data);
-        // alert('Afore creado correctamente');
+        // await axios.post('https://gestoriasantana-production.up.railway.app/afores', data);
+        await axios.post(`${apiUrl}/afores`, data);
         toast.success("Afore creado correctamente.");
       }
       navigate('/afores');
     } catch (error) {
       toast.error('Error al guardar el afore:', error);
-      // console.error('Error al guardar el afore:', error);
-      // alert('Ocurrió un error');
     }
   };
 
