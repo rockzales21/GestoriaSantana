@@ -102,45 +102,14 @@ router.get('/clientes', verifyToken, async (req, res) => {
     INNER JOIN Afores a ON a.id_afore = c.id_afore
   `;
 
-
-  /*let query = `
-    SELECT p.id_persona, c.id_cliente, 
-    p.nombres || ' ' || p.apellido_p || ' ' || p.apellido_m AS nombre, 
-    p.curp, p.nss, c.monto, id_afore, c.fecha_registro, 
-    c.semanas_cotizadas, c.id_asesor, c.fecha_ultimo_retiro, 
-    c.semanas_descontadas, c.status,
-    pAsesor.nombres || ' ' || pAsesor.apellido_p || ' ' || pAsesor.apellido_m AS nombreAsesor,
-    c.tipo_tramite
-    FROM Personas p 
-    INNER JOIN Clientes c ON p.id_persona = c.id_persona
-    INNER JOIN Usuarios u ON u.id_usuario = c.id_asesor
-    INNER JOIN Personas pAsesor ON pAsesor.id_persona = u.id_persona 
-  `;*/
-
   const conditions = [];
   const values = [];
 
-  if (status) {
-    values.push(status);
-    conditions.push(`status = $${values.length}`);
-  }
-  if (semana && año) {
-    values.push(semana, año);
-    conditions.push(`EXTRACT(WEEK FROM fecha_registro) = $${values.length - 1} AND EXTRACT(YEAR FROM fecha_registro) = $${values.length}`);
-  }
-  if (mes && año) {
-    values.push(mes, año);
-    conditions.push(`EXTRACT(MONTH FROM fecha_registro) = $${values.length - 1} AND EXTRACT(YEAR FROM fecha_registro) = $${values.length}`);
-  }
-  if (asesor) {
-    values.push(asesor);
-    conditions.push(`id_asesor = $${values.length}`);
-  }
 
   // Filtrar por el ID del usuario si no es tipo 3 (administrador)
   if (userType !== 3) {
     values.push(userId);
-    conditions.push(`c.id_asesor = $${values.length}`);
+    conditions.push(`c.id_asesor = $${values.length} OR u.jefe = $${values.length}`);
   }
 
   if (conditions.length > 0) {
