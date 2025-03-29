@@ -7,12 +7,12 @@ import 'react-toastify/dist/ReactToastify.css';
 const FechasTramites = () => {
     const [semanas, setSemanas] = useState([]);
     const { profile } = useContext(AuthContext); // Obtener el perfil del usuario desde el contexto
+    const apiUrl = process.env.REACT_APP_API_URL_PROD; // O REACT_APP_API_URL_TEST según el entorno
 
     useEffect(() => {
         const fetchSemanas = async () => {
-            //https://gestoriasantana-production.up.railway.app/
-            // const response = await axios.get('http://localhost:5000/fechasTramites/semanas');
-            const response = await axios.get('https://gestoriasantana-production.up.railway.app/fechasTramites/semanas');
+            // const response = await axios.get('https://gestoriasantana-production.up.railway.app/fechasTramites/semanas');
+            const response = await axios.get(`${apiUrl}/fechasTramites/semanas`);
             const semanasConFormato = response.data.map((semana) => ({
                 ...semana,
                 fecha_tramite: semana.fecha_tramite ? semana.fecha_tramite.split('T')[0] : '', // Extrae solo la fecha
@@ -33,19 +33,15 @@ const FechasTramites = () => {
         const { numero_semana, fecha_tramite, observaciones } = semanas[index];
         
         try {
-            //https://gestoriasantana-production.up.railway.app/
-            // const response = await axios.post('http://localhost:5000/fechasTramites/semanas', { numero_semana, fecha_tramite, observaciones });
-            const response = await axios.post('https://gestoriasantana-production.up.railway.app/fechasTramites/semanas', { numero_semana, fecha_tramite, observaciones });
+            // const response = await axios.post('https://gestoriasantana-production.up.railway.app/fechasTramites/semanas', { numero_semana, fecha_tramite, observaciones });
+            const response = await axios.post(`${apiUrl}/fechasTramites/semanas`, { numero_semana, fecha_tramite, observaciones });
 
             if (response.data.message.includes("Semana guardada correctamente.")) {
-                // alert('Semana guardada correctamente.');
                 toast.success("Semana guardada correctamente.");
             } else {
-                // alert('Semana actualizada correctamente.');
                 toast.success("Semana actualizada correctamente.");
             }
         } catch (error) {
-            // alert('Error al guardar la semana.');
             toast.error("Error al guardar la semana.");
         }
     };

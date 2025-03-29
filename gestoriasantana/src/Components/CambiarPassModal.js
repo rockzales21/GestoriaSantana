@@ -7,6 +7,7 @@ const CambiarPassModal = ({ onClose }) => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const apiUrl = process.env.REACT_APP_API_URL_PROD; // Cambia a REACT_APP_API_URL_TEST si estás en pruebas
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,8 +17,8 @@ const CambiarPassModal = ({ onClose }) => {
     }
 
     try {
-      const response = await fetch("https://gestoriasantana-production.up.railway.app/users/change-password", {
-        // const response = await fetch("http://localhost:3000/users/change-password", {
+      // const response = await fetch("https://gestoriasantana-production.up.railway.app/users/change-password", {
+        const response = await fetch(`${apiUrl}/users/change-password`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

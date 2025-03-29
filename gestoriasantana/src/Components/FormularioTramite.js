@@ -53,13 +53,16 @@ const FormularioTramite = () => {
     fecha_fin_tramite: '',
   });
 
+  const apiUrl = process.env.REACT_APP_API_URL_PROD; // O REACT_APP_API_URL_TEST según el entorno
+
 
   useEffect(() => {
     const fetchAsesores = async () => {
       try {
         //https://gestoriasantana-production.up.railway.app/
         // const response = await fetch("http://localhost:5000/usuarios/asesores");
-        const response = await fetch("https://gestoriasantana-production.up.railway.app/usuarios/asesores");
+        // const response = await fetch("https://gestoriasantana-production.up.railway.app/usuarios/asesores");
+        const response = await fetch(`${apiUrl}/usuarios/asesores`);
         const data = await response.json();
         setAsesores(data);
       } catch (error) {
@@ -70,7 +73,8 @@ const FormularioTramite = () => {
     const fetchAfores = async () => {
       try {
         // const response = await fetch("http://localhost:5000/afores/afores");
-        const response = await fetch("https://gestoriasantana-production.up.railway.app/afores/afores");
+        // const response = await fetch("https://gestoriasantana-production.up.railway.app/afores/afores");
+        const response = await fetch(`${apiUrl}/afores/afores`);
         const data = await response.json();
         setAfores(data);
       } catch (error) {
@@ -81,8 +85,7 @@ const FormularioTramite = () => {
     const fetchCliente = async () => {
       try {
         // const response = await axios.get(`https://gestoriasantana-production.up.railway.app/clientes/clienteInfoActualizacion/${id}`);
-        const response = await axios.get(`https://gestoriasantana-production.up.railway.app/clientes/clienteInfoActualizacion/${id}`);
-        // const response = await axios.get(`http://localhost:3000/clientes/clienteInfoActualizacion/${id}`);
+        const response = await fetch(`${apiUrl}/clientes/clienteInfoActualizacion/${id}`);
         const clienteData = response.data;
         clienteData.infonavit = clienteData.infonavit ? "true" : "false"; // Convertir a cadena de texto
         setFormData(clienteData);
@@ -156,9 +159,11 @@ const FormularioTramite = () => {
     try {
       const url = id
         // ? `https://gestoriasantana-production.up.railway.app/clientes/cliente/${id}`
-        ? `https://gestoriasantana-production.up.railway.app/clientes/cliente/${id}`
+        // ? `https://gestoriasantana-production.up.railway.app/clientes/cliente/${id}`
+        ? `${apiUrl}/clientes/cliente/${id}`
         // ? `http://localhost:3000/clientes/cliente/${id}`
-        : 'https://gestoriasantana-production.up.railway.app/registrarCliente';
+        // : 'https://gestoriasantana-production.up.railway.app/registrarCliente';
+        : `${apiUrl}/registrarCliente`;
       const method = id ? 'PUT' : 'POST';
 
       const response = await fetch(url, {

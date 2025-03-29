@@ -19,13 +19,14 @@ const Inventario = () => {
     observaciones: '',
   });
 
+  const apiUrl = process.env.REACT_APP_API_URL_PROD; // Cambia a REACT_APP_API_URL_TEST si estás en pruebas
+
   // Obtener datos del inventario
   useEffect(() => {
     const fetchInventario = async () => {
       try {
-        //https://gestoriasantana-production.up.railway.app/
-        // const response = await fetch('http://localhost:5000/inventario');
-        const response = await fetch('https://gestoriasantana-production.up.railway.app/inventario');
+        // const response = await fetch('https://gestoriasantana-production.up.railway.app/inventario');
+        const response = await fetch(`${apiUrl}/inventario`);
         const data = await response.json();
         setInventario(data);
       } catch (error) {
@@ -55,8 +56,10 @@ const Inventario = () => {
       //   : 'http://localhost:5000/inventario';
 
       const endpoint = isEditing
-         ? `https://gestoriasantana-production.up.railway.app/inventario/${formData.id_item}`
-         : 'https://gestoriasantana-production.up.railway.app/inventario';
+        //  ? `https://gestoriasantana-production.up.railway.app/inventario/${formData.id_item}`
+        ? `${apiUrl}/inventario/${formData.id_item}`
+        //  : 'https://gestoriasantana-production.up.railway.app/inventario';
+        : `${apiUrl}/inventario`;
       const response = await fetch(endpoint, {
         method,
         headers: { 'Content-Type': 'application/json' },

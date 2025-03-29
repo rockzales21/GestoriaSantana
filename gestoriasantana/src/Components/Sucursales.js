@@ -20,11 +20,14 @@ const Sucursales = () => {
     telefonoencargado: '',
   });
 
+  const apiUrl = process.env.REACT_APP_API_URL_PROD; // Cambia a REACT_APP_API_URL_TEST si estás en pruebas
+
   // Obtener datos de sucursales
   useEffect(() => {
     const fetchSucursales = async () => {
       try {
-        const response = await fetch('https://gestoriasantana-production.up.railway.app/sucursales');
+        // const response = await fetch('https://gestoriasantana-production.up.railway.app/sucursales');
+        const response = await fetch(`${apiUrl}/sucursales`);
         const data = await response.json();
         setSucursales(data);
       } catch (error) {
@@ -34,7 +37,8 @@ const Sucursales = () => {
 
     const fetchAsesores = async () => {
       try {
-        const response = await fetch('https://gestoriasantana-production.up.railway.app/usuarios/encargados');
+        // const response = await fetch('https://gestoriasantana-production.up.railway.app/usuarios/encargados');
+        const response = await fetch(`${apiUrl}/usuarios/encargados`);
         const data = await response.json();
         setAsesores(data);
       } catch (error) {
@@ -61,8 +65,10 @@ const Sucursales = () => {
     try {
       const method = isEditing ? 'PUT' : 'POST';
       const endpoint = isEditing
-        ? `https://gestoriasantana-production.up.railway.app/sucursales/${formData.id_sucursal}`
-        : 'https://gestoriasantana-production.up.railway.app/sucursales';
+        // ? `https://gestoriasantana-production.up.railway.app/sucursales/${formData.id_sucursal}`
+        ? `${apiUrl}/sucursales/${formData.id_sucursal}`
+        // : 'https://gestoriasantana-production.up.railway.app/sucursales';
+        : `${apiUrl}/sucursales`;
 
       const response = await fetch(endpoint, {
         method,

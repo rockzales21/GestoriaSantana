@@ -5,11 +5,13 @@ const Cotizador = () => {
   const [inputValue, setInputValue] = useState('');
   const [honorarios, setHonorarios] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
+  const apiUrl = process.env.REACT_APP_API_URL_PROD; // O REACT_APP_API_URL_TEST según el entorno
 
   useEffect(() => {
     const fetchHonorarios = async () => {
       try {
-        const response = await fetch('https://gestoriasantana-production.up.railway.app/honorarios');
+        // const response = await fetch('https://gestoriasantana-production.up.railway.app/honorarios');
+        const response = await fetch(`${apiUrl}/honorarios`);
         const data = await response.json();
         if (response.ok) {
           setHonorarios(parseFloat(data.monto));

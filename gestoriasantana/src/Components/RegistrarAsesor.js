@@ -34,6 +34,8 @@ const RegistrarAsesor = () => {
     telefonoTestigo2: '',
   });
 
+  const apiUrl = process.env.REACT_APP_API_URL_PROD; // Cambia a REACT_APP_API_URL_TEST si estás en pruebas
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -54,7 +56,8 @@ const RegistrarAsesor = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch('https://gestoriasantana-production.up.railway.app/registrarAsesor', {
+      // const response = await fetch('https://gestoriasantana-production.up.railway.app/registrarAsesor', {
+      const response = await fetch(`${apiUrl}/registrarAsesor`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

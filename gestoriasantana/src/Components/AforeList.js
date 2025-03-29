@@ -45,7 +45,8 @@ function AforeList() {
           >
             {/* Mostrar imagen del Afore */}
 <img
-  src={`https://gestoriasantana-production.up.railway.app/imagenes/afores/${afore.id_afore}.png`} // Ruta a la imagen
+  src={`${apiUrl}/imagenes/afores/${afore.id_afore}.png`} // Ruta a la imagen
+  //src={`https://gestoriasantana-production.up.railway.app/imagenes/afores/${afore.id_afore}.png`} // Ruta a la imagen
   alt={`Imagen de ${afore.nombre}`}
   className="w-full h-48 object-contain" // Cambiar a object-contain aquí
 />

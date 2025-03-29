@@ -1,16 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
+
 const LiquidacionesPendientes = () => {
     const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalSum, setTotalSum] = useState(0);
+  const navigate = useNavigate();
+  const apiUrl = process.env.REACT_APP_API_URL_PROD; // O REACT_APP_API_URL_TEST según el entorno
+  const apiTest = process.env.REACT_APP_API_URL_TEST; // Para pruebas, si es necesario
+  //REACT_APP_API_URL_TEST
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const response = await axios.get('http://localhost:3000/liquidaciones/pendientes');
-        const response = await axios.get('https://gestoriasantana-production.up.railway.app/liquidaciones/pendientes');
+        // const response = await axios.get('https://gestoriasantana-production.up.railway.app/liquidaciones/pendientes');
+        // const response = await axios.get(`${apiUrl}/liquidaciones/pendientes`);
+        // const response = await axios.get(`${apiTest}/liquidaciones/pendientes`);
+        const token = localStorage.getItem('token'); // Recuperar el token del almacenamiento local
+      if (!token) {
+        navigate('/login'); // Redirigir al inicio de sesión si no hay token
+        return;
+      }
+
+        const response = await axios.get(`${apiUrl}/liquidaciones/pendientes`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Incluir el token en el encabezado
+          },
+        });
         setData(response.data);
 
         // Calcular la suma de los totales
@@ -30,7 +49,7 @@ const LiquidacionesPendientes = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold text-center mb-4">Liquidaciones Pendientes</h1>
+      <h1 className="text-2xl font-bold text-center mb-4">Liquidaciones</h1>
 
       {/* Mostrar la suma total */}
       <div className="text-lg font-semibold text-gray-700 text-center mb-6">

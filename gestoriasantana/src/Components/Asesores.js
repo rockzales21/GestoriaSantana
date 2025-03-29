@@ -40,12 +40,18 @@ const Asesores = () => {
 
   const navigate = useNavigate();
   
+  const apiUrl = process.env.REACT_APP_API_URL_PROD; // Cambia a REACT_APP_API_URL_TEST si estás en pruebas
+
+  
   useEffect(() => {
     const fetchAsesores = async () => {
       try {
         const token = localStorage.getItem('token'); // Asumiendo que guardaste el token en localStorage
           // const response = await axios.get('http://localhost:3000/usuarios', {
-        const response = await axios.get('https://gestoriasantana-production.up.railway.app/usuarios', {
+          //      const response = await axios.get(`${apiUrl}/afores`);
+
+        // const response = await axios.get('https://gestoriasantana-production.up.railway.app/usuarios', {
+        const response = await axios.get(`${apiUrl}/usuarios`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -77,7 +83,8 @@ const Asesores = () => {
   const handleCreateUser = async () => {
     if (username && password) {
       try {
-        const response = await fetch('https://gestoriasantana-production.up.railway.app/users/register', {
+        // const response = await fetch('https://gestoriasantana-production.up.railway.app/users/register', {
+        const response = await fetch(`${apiUrl}/users/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -140,8 +147,8 @@ const Asesores = () => {
 
   const handleContratoClick = async (asesor) => {
     try {
-      const response = await axios.get(`https://gestoriasantana-production.up.railway.app/usuarios/${asesor.id_usuario}`);
-      // const response = await axios.get(`http://localhost:3000/usuarios/${asesor.id_usuario}`);
+      // const response = await axios.get(`https://gestoriasantana-production.up.railway.app/usuarios/${asesor.id_usuario}`);
+      const response = await axios.get(`${apiUrl}/usuarios/${asesor.id_usuario}`);
 
       const asesorData = response.data;
       generatePDF(asesorData);
@@ -153,8 +160,8 @@ const Asesores = () => {
 
   const handleDetallesClick = async (asesor) => {
     try {
-      const response = await axios.get(`https://gestoriasantana-production.up.railway.app/usuarios/detalle/${asesor.id_usuario}`);
-      // const response = await axios.get(`http://localhost:3000/usuarios/detalle/${asesor.id_usuario}`);
+      // const response = await axios.get(`https://gestoriasantana-production.up.railway.app/usuarios/detalle/${asesor.id_usuario}`);
+      const response = await axios.get(`${apiUrl}/usuarios/detalle/${asesor.id_usuario}`);
       setDetalleAsesor(response.data);
     } catch (error) {
       console.error("Error al cargar los detalles del asesor:", error);
@@ -178,8 +185,8 @@ const Asesores = () => {
     if (!deleteId) return;
   
     try {
-      const response = await axios.delete(`https://gestoriasantana-production.up.railway.app/usuarios/${deleteId}`);
-      // const response = await axios.delete(`http://localhost:3000/usuarios/${deleteId}`);
+      // const response = await axios.delete(`https://gestoriasantana-production.up.railway.app/usuarios/${deleteId}`);
+      const response = await axios.delete(`${apiUrl}/usuarios/${deleteId}`);
   
       if (response.status === 200) {
         toast.success('Usuario eliminado con éxito', {
@@ -534,15 +541,6 @@ const Asesores = () => {
                   <TableCell sx={{ ...commonStyles }} className="uppercase"><strong>NSS:</strong></TableCell>
                   <TableCell sx={{ ...commonStyles }} className="uppercase">{asesor.nss}</TableCell>
                   <TableCell sx={{ ...commonStyles }}>
-                    {/* <Button
-                      variant="contained"
-                      color="primary"
-                      startIcon={<DescriptionIcon />}
-                      sx={buttonStyles}
-                      onClick={() => navigate(`/asesores/contrato/${asesor.id_usuario}`)}
-                    >
-                      Contrato
-                    </Button> */}
                     <Button
                       variant="contained"
                       color="primary"

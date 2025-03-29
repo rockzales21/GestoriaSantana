@@ -18,8 +18,6 @@ import FiltroClientes from './Components/FiltroClientes';
 import Login from './Components/auth/Login';
 import { AuthProvider, AuthContext } from './Components/auth/AuthContext';
 import PrivateRoute from './Components/auth/PrivateRoute';
-import Contrato from './Components/Contrato';
-import ContratoCliente from './Components/ContratoCliente';
 import Home from './pages/Home';
 import Header from './layout/Header';
 import Profile from './Components/Profile';
@@ -232,8 +230,6 @@ return (
           <Route path="FechasTramites" element={<FechasTramites />} />
           <Route path="LiquidacionesPendientes" element={<LiquidacionesPendientes />} />
           <Route path="FiltroClientes" element={<FiltroClientes />} />
-          <Route path="asesores/contrato/:id" element={<Contrato />} />
-          <Route path="clientes/contratoClientes/:id" element={<ContratoCliente />} />
           <Route path="profile" element={<Profile />} />
           <Route path="cotizador" element={<Cotizador />} />
         </Route>

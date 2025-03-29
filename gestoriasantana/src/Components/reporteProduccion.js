@@ -6,31 +6,61 @@ const ProduccionTables = () => {
   const [weekData, setWeekData] = useState([]);
   const [totalClientesAnio, setTotalClientesAnio] = useState(null); // Para el total de clientes por año
   const [loading, setLoading] = useState(true);
-
+  const apiUrl = process.env.REACT_APP_API_URL_PROD; // Cambia a REACT_APP_API_URL_TEST si estás en pruebas
+  const apiTestUrl = process.env.REACT_APP_API_URL_TEST; // Cambia a REACT_APP_API_URL_PROD si estás en producción
   useEffect(() => {
     const fetchData = async () => {
       try {
-        //https://gestoriasantana-production.up.railway.app/
+        const token = localStorage.getItem("token"); // Obtener el token del almacenamiento local
+        if (!token) {
+          console.error("No se encontró el token de autenticación.");
+          setLoading(false);
+          return;
+        }
+
+        const headers = {
+          Authorization: `Bearer ${token}`, // Incluir el token en los encabezados
+        };
+
         // Obtener producción por año
-        // const yearResponse = await fetch("http://localhost:5000/usuarios/produccionYear");
-        const yearResponse = await fetch("https://gestoriasantana-production.up.railway.app/usuarios/produccionYear");
+        const yearResponse = await fetch(`${apiUrl}/usuarios/produccionYear`, { headers });
         const yearResult = await yearResponse.json();
         setYearData(yearResult);
 
         // Obtener producción por mes
-        const monthResponse = await fetch("https://gestoriasantana-production.up.railway.app/usuarios/produccionMes");
+        const monthResponse = await fetch(`${apiUrl}/usuarios/produccionMes`, { headers });
         const monthResult = await monthResponse.json();
         setMonthData(monthResult);
 
         // Obtener producción por semana
-        const weekResponse = await fetch("https://gestoriasantana-production.up.railway.app/usuarios/produccionSemana");
+        const weekResponse = await fetch(`${apiUrl}/usuarios/produccionSemana`, { headers });
         const weekResult = await weekResponse.json();
         setWeekData(weekResult);
 
         // Obtener total de clientes por año
-        const totalClientesResponse = await fetch("https://gestoriasantana-production.up.railway.app/usuarios/produccionAnio");
+        const totalClientesResponse = await fetch(`${apiUrl}/usuarios/produccionAnio`, { headers });
         const totalClientesResult = await totalClientesResponse.json();
         setTotalClientesAnio(totalClientesResult[0]?.total_clientes || "No disponible"); // Asignamos el valor o mensaje
+
+        // // Obtener producción por año
+        // const yearResponse = await fetch(`${apiUrl}/usuarios/produccionYear`);
+        // const yearResult = await yearResponse.json();
+        // setYearData(yearResult);
+
+        // // Obtener producción por mes
+        // const monthResponse = await fetch(`${apiUrl}/usuarios/produccionMes`);
+        // const monthResult = await monthResponse.json();
+        // setMonthData(monthResult);
+
+        // // Obtener producción por semana
+        // const weekResponse = await fetch(`${apiUrl}/usuarios/produccionSemana`);
+        // const weekResult = await weekResponse.json();
+        // setWeekData(weekResult);
+
+        // // Obtener total de clientes por año
+        // const totalClientesResponse = await fetch(`${apiUrl}/usuarios/produccionAnio`);
+        // const totalClientesResult = await totalClientesResponse.json();
+        // setTotalClientesAnio(totalClientesResult[0]?.total_clientes || "No disponible"); // Asignamos el valor o mensaje
 
         setLoading(false);
       } catch (error) {
@@ -110,7 +140,7 @@ const ProduccionTables = () => {
                 yearData,
                 [
                   { header: "Asesor", field: "nombre" },
-                  { header: "Total Año", field: "count" },
+                  { header: "Total Año", field: "total_clientes" },
                 ],
                 "Producción por Año"
               )}
