@@ -84,9 +84,11 @@ const FormularioTramite = () => {
 
     const fetchCliente = async () => {
       try {
-        // const response = await axios.get(`https://gestoriasantana-production.up.railway.app/clientes/clienteInfoActualizacion/${id}`);
         const response = await fetch(`${apiUrl}/clientes/clienteInfoActualizacion/${id}`);
-        const clienteData = response.data;
+        if (!response.ok) {
+          throw new Error(`Error en la solicitud: ${response.statusText}`);
+        }
+        const clienteData = await response.json(); // Aquí obtenemos los datos correctamente
         clienteData.infonavit = clienteData.infonavit ? "true" : "false"; // Convertir a cadena de texto
         setFormData(clienteData);
         setTipoTramite(clienteData.tipo_tramite);
@@ -94,6 +96,7 @@ const FormularioTramite = () => {
         console.log(clienteData.tipo_tramite);
       } catch (error) {
         console.error("Error al cargar los datos del cliente:", error);
+        toast.error("No se pudieron cargar los datos del cliente.");
       }
     };
 
