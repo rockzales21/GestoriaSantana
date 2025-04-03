@@ -252,7 +252,7 @@ router.put('/cliente/:id', async (req, res) => {
       codigo_postal, ciudad, estado, semanas_cotizadas, semanas_descontadas, 
       id_asesor, id_afore, direccion, infonavit, observaciones, tipo_tramite, 
       fecha_ultimo_retiro, monto, fecha_ultima_baja, fecha_solucion, fecha_alta,
-      fecha_fin_tramite, salario, empleo, forma_pago
+      fecha_fin_tramite, salario, empleo, forma_pago, fecha_registro
     } = req.body;
 
     // Validación de datos
@@ -282,8 +282,8 @@ router.put('/cliente/:id', async (req, res) => {
           direccion = $5, infonavit = $6, observaciones = $7, tipo_tramite = $8, 
           fecha_ultimo_retiro = $9, monto = $10, fecha_ultima_baja = $11, fecha_solucion = $12, 
           fecha_alta = $13, fecha_fin_tramite = $14, salario = $15, empleo = $16, 
-          forma_pago = $17 WHERE id_cliente = $18`,
-        [semanas_cotizadas, semanas_descontadas, id_asesor, id_afore, direccion, infonavit || null, observaciones || null, tipo_tramite, fecha_ultimo_retiro || null, monto || null, fecha_ultima_baja || null, fecha_solucion || null, fecha_alta || null, fecha_fin_tramite || null, salario || null, empleo || null, forma_pago || null, id]
+          forma_pago = $17, fecha_registro = $18 WHERE id_cliente = $19`,
+        [semanas_cotizadas, semanas_descontadas, id_asesor, id_afore, direccion, infonavit || null, observaciones || null, tipo_tramite, fecha_ultimo_retiro || null, monto || null, fecha_ultima_baja || null, fecha_solucion || null, fecha_alta || null, fecha_fin_tramite || null, salario || null, empleo || null, forma_pago || null, fecha_registro || null, id]
       );
     } catch (err) {
       await client.query('ROLLBACK');
