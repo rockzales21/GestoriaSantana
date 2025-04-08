@@ -146,7 +146,7 @@ const Clientes = () => {
   const generatePDF = (cliente) => {
     const fetchHonorarios = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/clientes/detalle/honorarios`);
+        const response = await axios.get(`${apiUrl}/honorarios`);
         const data = await response.json();
         if (response.ok) {
           setHonorarios(parseFloat(data.monto));
