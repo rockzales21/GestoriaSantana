@@ -48,9 +48,6 @@ const Clientes = () => {
     if (!fecha) return "No disponible";
     const opciones = { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" };
     const fechaUTC = new Date(fecha);
-    console.log('Fecha:', fecha);
-    console.log('Fecha UTC:', fechaUTC);
-    console.log('Fecha mostrada:', fechaUTC.toLocaleDateString("es-MX", opciones));
     return fechaUTC.toLocaleDateString("es-MX", opciones);
 };
 
@@ -143,20 +140,41 @@ const Clientes = () => {
 
   const [honorarios, setHonorarios] = useState(0);
 
-  const generatePDF = (cliente) => {
+  const generatePDF = async (cliente) => {
+    // const fetchHonorarios = async () => {
+    //   try {
+    //     const response = await axios.get(`${apiUrl}/honorarios`);
+    //     const data = await response.json();
+    //     if (response.ok) {
+    //       console.log('Valor:', parseFloat(data.monto));
+    //       setHonorarios(parseFloat(data.monto));
+
+    //     } else {
+    //       toast.error('Error al cargar el monto de honorarios');
+    //     }
+    //   } catch (error) {
+    //     toast.error('Error al cargar el monto de honorarios');
+    //   }
+    // };
     const fetchHonorarios = async () => {
       try {
         const response = await axios.get(`${apiUrl}/honorarios`);
-        const data = await response.json();
-        if (response.ok) {
-          setHonorarios(parseFloat(data.monto));
+        if (response.status === 200) {
+          console.log('Valor:', parseFloat(response.data.monto));
+          setHonorarios(parseFloat(response.data.monto));
+          return parseFloat(response.data.monto); // Devuelve el valor de los honorarios
         } else {
           toast.error('Error al cargar el monto de honorarios');
+          return 0; // Valor por defecto en caso de error
         }
       } catch (error) {
         toast.error('Error al cargar el monto de honorarios');
+        return 0; // Valor por defecto en caso de error
       }
     };
+  
+    // Espera a que se obtengan los honorarios
+    const honorariosObtenidos = await fetchHonorarios();
 
     const ahora = new Date();
     const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
@@ -165,9 +183,8 @@ const Clientes = () => {
 
     console.log('Monto:', cliente.monto);
 
-    fetchHonorarios();
     let aseguramientoCalculo = cliente.monto < 15000 ? 1500 : cliente.monto < 25000 ? 1700 : 2000;
-    var honorario = isNaN(honorarios) ? 0 : cliente.monto * honorarios;
+    var honorario = isNaN(honorariosObtenidos) ? 0 : cliente.monto * honorariosObtenidos;
     var aseguramiento = aseguramientoCalculo;
     var totalPagar = honorario + aseguramiento;
     var totalCliente = honorario + aseguramiento;
@@ -175,6 +192,10 @@ const Clientes = () => {
     honorario = honorario.toFixed(2);
     aseguramiento = aseguramiento.toFixed(2);
     totalCliente = totalCliente.toFixed(2);
+
+    console.log('Honorario:', honorario);
+    console.log('Aseguramiento:', aseguramiento);
+    console.log('Total a pagar:', totalPagar);
     
     const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
   
