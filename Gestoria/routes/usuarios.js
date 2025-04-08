@@ -44,6 +44,7 @@ router.get('/', verifyToken, async (req, res) => {
     INNER JOIN Usuarios uJefe ON u.jefe = uJefe.id_usuario
     INNER JOIN Personas pJefe ON pJefe.id_persona = uJefe.id_persona
     INNER JOIN Sucursales s ON s.encargado = uJefe.id_usuario
+    WHERE u.status = 1
   `;
 
   const values = [];
@@ -67,6 +68,7 @@ router.get('/asesores', async (req, res) => {
       SELECT id_usuario, nombres || ' ' || apellido_p || ' ' || apellido_m AS nombre
       FROM Usuarios u 
       INNER JOIN Personas p ON p.id_persona = u.id_persona
+      WHERE u.status = 1
     `);
     res.json(result.rows);
   } catch (err) {
@@ -82,6 +84,7 @@ router.get('/encargados', async (req, res) => {
       FROM Usuarios u 
       INNER JOIN Personas p ON p.id_persona = u.id_persona
       INNER JOIN public.users us ON us.id_usuario = u.id_usuario
+      WHERE u.status = 1
     `);
     res.json(result.rows);
   } catch (err) {
@@ -96,6 +99,7 @@ router.get('/asesores2', async (req, res) => {
       SELECT id_usuario, nombres || ' ' || apellido_p || ' ' || apellido_m AS nombre
       FROM Usuarios u 
       INNER JOIN Personas p ON p.id_persona = u.id_persona
+      WHERE u.status = 1
     `);
     res.json(result.rows);
   } catch (err) {
@@ -147,7 +151,8 @@ router.get('/produccionYear', verifyToken, async (req, res) => {
       INNER JOIN 
         clientes c ON c.id_asesor = u.id_usuario
       WHERE 
-        DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
+        u.status = 1
+        AND DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
         ${conditions}
       GROUP BY 
         p.nombres || ' ' || p.apellido_p || ' ' || p.apellido_m
@@ -204,7 +209,8 @@ router.get('/produccionSemana', verifyToken, async (req, res) => {
       INNER JOIN 
         usuarios u ON c.id_asesor = u.id_usuario
       WHERE 
-        DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
+        u.status = 1
+        AND DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
         ${conditions}
       GROUP BY 
         DATE_PART('week', c.fecha_registro)
@@ -286,7 +292,8 @@ router.get('/produccionMes', verifyToken, async (req, res) => {
       INNER JOIN 
         usuarios u ON c.id_asesor = u.id_usuario
       WHERE 
-        DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
+        u.status = 1
+        AND DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
         ${conditions}
       GROUP BY 
         DATE_PART('month', c.fecha_registro)
@@ -341,7 +348,8 @@ router.get('/produccionAnio', verifyToken, async (req, res) => {
       INNER JOIN 
         usuarios u ON c.id_asesor = u.id_usuario
       WHERE 
-        DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
+        u.status = 1
+        AND DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
         ${conditions}
     `;
 
