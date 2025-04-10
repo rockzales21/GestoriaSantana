@@ -303,5 +303,24 @@ router.put('/cliente/:id', async (req, res) => {
   }
 });
 
+router.delete('/cliente/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Eliminar el cliente de la tabla Clientes
+    const deleteQuery = `DELETE FROM Clientes WHERE id_cliente = $1`;
+    const result = await pool.query(deleteQuery, [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Cliente no encontrado' });
+    }
+
+    res.json({ message: 'Cliente eliminado correctamente' });
+  } catch (err) {
+    console.error('Error al eliminar el cliente:', err.message);
+    res.status(500).send('Error del servidor');
+  }
+});
+
 
 module.exports = router;
