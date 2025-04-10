@@ -8,6 +8,7 @@ import { AuthContext } from "./auth/AuthContext"; // Importar el contexto de aut
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Button } from '@mui/material'; // Importar componentes de Material-UI
 import { getISOWeek, parseISO } from 'date-fns'; // Asegúrate de instalar date-fns: npm install date-fns
 import { FaFilter, FaTimes } from 'react-icons/fa'; // Importar los íconos necesarios
+import { FaTrash } from 'react-icons/fa'; // Importar el ícono de la papelera
 
 
 import { NumerosALetras } from 'numero-a-letras';
@@ -22,7 +23,7 @@ const Clientes = () => {
   const { profile } = useContext(AuthContext); // Obtener el perfil del usuario desde el contexto
   const [modalFechaBajaOpen, setModalFechaBajaOpen] = useState(false); // Definir el estado para el modal de fecha de baja
   const apiUrl = process.env.REACT_APP_API_URL_PROD; // O REACT_APP_API_URL_TEST según el entorno
-
+  const apiTest = process.env.REACT_APP_API_URL_TEST; // O REACT_APP_API_URL_PROD según el entorno
 
   useEffect(() => {
     const fetchClientes = async () => {
@@ -466,6 +467,46 @@ const Clientes = () => {
   //   return matchesSearch && matchesStatus && matchesWeek && matchesYear && matchesMonth;
   // });
   
+  const handleDeleteClick = async (cliente) => {
+    const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar al cliente ${cliente.nombre}?`);
+    if (!confirmDelete) return;
+  
+    try {
+      const token = localStorage.getItem('token'); // Asumiendo que usas autenticación con token
+      await axios.delete(`${apiUrl}/clientes/cliente/${cliente.id_cliente}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      // Actualizar la lista de clientes localmente
+      setClientes((prevClientes) => prevClientes.filter((c) => c.id_cliente !== cliente.id_cliente));
+  
+      toast.success('Cliente eliminado correctamente', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        className: 'bg-green-500 text-white',
+      });
+    } catch (error) {
+      console.error('Error al eliminar el cliente:', error);
+      toast.error('Error al eliminar el cliente', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        className: 'bg-red-500 text-white',
+      });
+    }
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4 text-center">LISTA DE CLIENTES</h1>
@@ -686,6 +727,15 @@ const Clientes = () => {
                 VER DETALLES
               </button>
               </div>
+
+              <div className="flex items-center flex-grow">
+  <button
+    className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-700 ml-2 flex items-center justify-center"
+    onClick={() => handleDeleteClick(cliente)}
+  >
+    <FaTrash size={16} /> {/* Ícono de papelera */}
+  </button>
+</div>
             </div>
 
             
