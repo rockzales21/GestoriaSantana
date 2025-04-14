@@ -22,7 +22,7 @@ const LiquidacionesPendientes = () => {
         return;
       }
 
-        const response = await axios.get(`${apiTest}/liquidaciones/pendientes`, {
+        const response = await axios.get(`${apiUrl}/liquidaciones/pendientes`, {
           headers: {
             Authorization: `Bearer ${token}`, // Incluir el token en el encabezado
           },

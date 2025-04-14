@@ -48,7 +48,7 @@ const Asesores = () => {
     const fetchAsesores = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${apiTest}/usuarios`, {
+        const response = await axios.get(`${apiUrl}/usuarios`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
