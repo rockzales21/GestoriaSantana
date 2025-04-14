@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Route, Routes, Outlet } from 'react-router-dom';
+import { Route, Routes, Outlet, useLocation } from 'react-router-dom';
 import Clientes from './Components/Clientes';
 import Asesores from './Components/Asesores';
 import Afores from './Components/Afores';
@@ -26,8 +26,11 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaMoneyBillWave } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import { AnimatePresence } from 'framer-motion';
+import PageTransition from './Components/PageTransition';
 
 import './App.css';
+import { use } from 'react';
 
 function App() {
   const { profile } = useContext(AuthContext);
@@ -35,6 +38,7 @@ function App() {
   const [showDetails, setShowDetails] = useState(false);
   const [cantidad, setCantidad] = useState('');
   const [honorarios, setHonorarios] = useState(0);
+  const location = useLocation(); // Obtener la ubicación actual
   //const { profile } = useContext(AuthContext); // Obtener el perfil del usuario desde el contexto
 
   document.title = 'Gestoria Mago Santana';
@@ -147,95 +151,59 @@ function App() {
       </div>
     );
   };
-//   const CotizadorModal = ({ isOpen, onClose }) => {
-//     const [inputValue, setInputValue] = useState('');
-//     const [showDetails, setShowDetails] = useState(false);
-  
-
-//     if (!isOpen) return null;
-
-//   const total = parseFloat(inputValue) || 0; // Asegurar que sea un número válido
-//   let aseguramientoCalculo = total < 15000 ? 1500 : total < 25000 ? 1700 : 2000;
-//   const honorario = isNaN(honorarios) ? 0 : total * honorarios; // Evitar NaN
-//   const aseguramiento = aseguramientoCalculo;
-//   const totalPagar = honorario + aseguramiento;
-//     const totalCliente = total - totalPagar;
-
-//   return (
-//     <div className="fixed bottom-4 right-4 bg-white p-6 rounded-lg shadow-lg w-80 z-50">
-//       <h2 className="text-lg font-semibold mb-4">Cotizador</h2>
-//       {!showDetails ? (
-//         <input
-//           type="number"
-//           value={inputValue}
-//           onChange={(e) => setInputValue(e.target.value)}
-//           onKeyDown={(e) => {
-//             if (e.key === 'Enter') {
-//               setShowDetails(true);
-//             }
-//           }}
-//           className="border border-gray-300 p-2 rounded w-full mb-4"
-//           placeholder="Cantidad a retirar"
-//           autoFocus
-//         />
-//       ) : (
-//         <div className="results text-justify">
-//           <p>Cantidad total: {formatoPesos(total)}</p>
-//           <p>Honorarios: {formatoPesos(honorario)}</p>
-//           <p>Aseguramiento: {formatoPesos(aseguramiento)}</p>
-//           <p>Total: {formatoPesos(totalPagar)}</p>
-//           <p>Cliente: {formatoPesos(totalCliente)}</p>
-//         </div>
-//       )}
-//       <button onClick={onClose} className="text-red-500 font-bold mt-4">
-//         Cerrar
-//       </button>
-//     </div>
-//   );
-// };
-
 
 return (
   <Routes>
-    <Route path="/login" element={<Login />} />
-    <Route element={<PrivateRoute />}>
-      {profile?.tipo === 1 ? (
-        <Route path="cotizador" element={<Cotizador />} />
-      ) : (
-        <Route
-          path="/"
-          element={
-            <>
-              <Header />
-              <FloatingButton onClick={toggleModal} />
-              <CotizadorModal isOpen={isModalOpen} onClose={toggleModal} />
-              <Outlet />
-            </>
-          }
-        >
-          <Route index element={<Home />} />
-          <Route path="clientes" element={<Clientes />} />
-          <Route path="inventario" element={<Inventario />} />
-          <Route path="sucursales" element={<Sucursales />} />
-          <Route path="asesores" element={<Asesores />} />
-          <Route path="afores" element={<Afores />} />
-          <Route path="afores/:id" element={<AforeForm />} />
-          <Route path="crear-afore" element={<AforeForm />} />
-          <Route path="registrarAsesor" element={<RegistrarAsesor />} />
-          <Route path="asesores/editar/:id" element={<ActualizarAsesor />} />
-          <Route path="VisorSemanas" element={<VisorSemanas />} />
-          <Route path="FormularioTramite" element={<FormularioTramite />} />
-          <Route path="editarCliente/:id" element={<FormularioTramite />} />
-          <Route path="ReporteProduccion" element={<ReporteProduccion />} />
-          <Route path="FechasTramites" element={<FechasTramites />} />
-          <Route path="LiquidacionesPendientes" element={<LiquidacionesPendientes />} />
-          <Route path="FiltroClientes" element={<FiltroClientes />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="cotizador" element={<Cotizador />} />
-        </Route>
-      )}
-    </Route>
-  </Routes>
+      <Route path="/login" element={<Login />} />
+      <Route element={<PrivateRoute />}>
+        {profile?.tipo === 1 ? (
+          <Route path="cotizador" element={
+            <PageTransition>
+              <Cotizador />
+            </PageTransition>
+          } />
+        ) : (
+          <Route
+  path="/"
+  element={
+    <>
+      <Header />
+      <FloatingButton onClick={toggleModal} />
+      <CotizadorModal isOpen={isModalOpen} onClose={toggleModal} />
+      {/* Solo Outlet animado */}
+      <div style={{ position: "relative", minHeight: "80vh" }}>
+        <AnimatePresence mode="wait">
+          <PageTransition key={location.pathname}>
+            <Outlet />
+          </PageTransition>
+        </AnimatePresence>
+      </div>
+    </>
+  }
+>
+            <Route index element={<Home />} />
+            <Route path="clientes" element={<Clientes />} />
+            <Route path="inventario" element={<Inventario />} />
+            <Route path="sucursales" element={<Sucursales />} />
+            <Route path="asesores" element={<Asesores />} />
+            <Route path="afores" element={<Afores />} />
+            <Route path="afores/:id" element={<AforeForm />} />
+            <Route path="crear-afore" element={<AforeForm />} />
+            <Route path="registrarAsesor" element={<RegistrarAsesor />} />
+            <Route path="asesores/editar/:id" element={<ActualizarAsesor />} />
+            <Route path="VisorSemanas" element={<VisorSemanas />} />
+            <Route path="FormularioTramite" element={<FormularioTramite />} />
+            <Route path="editarCliente/:id" element={<FormularioTramite />} />
+            <Route path="ReporteProduccion" element={<ReporteProduccion />} />
+            <Route path="FechasTramites" element={<FechasTramites />} />
+            <Route path="LiquidacionesPendientes" element={<LiquidacionesPendientes />} />
+            <Route path="FiltroClientes" element={<FiltroClientes />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="cotizador" element={<Cotizador />} />
+          </Route>
+        )}
+      </Route>
+    </Routes>
 );
 }
 

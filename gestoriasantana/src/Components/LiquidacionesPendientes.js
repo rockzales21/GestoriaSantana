@@ -16,16 +16,13 @@ const LiquidacionesPendientes = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const response = await axios.get('https://gestoriasantana-production.up.railway.app/liquidaciones/pendientes');
-        // const response = await axios.get(`${apiUrl}/liquidaciones/pendientes`);
-        // const response = await axios.get(`${apiTest}/liquidaciones/pendientes`);
         const token = localStorage.getItem('token'); // Recuperar el token del almacenamiento local
       if (!token) {
         navigate('/login'); // Redirigir al inicio de sesión si no hay token
         return;
       }
 
-        const response = await axios.get(`${apiUrl}/liquidaciones/pendientes`, {
+        const response = await axios.get(`${apiTest}/liquidaciones/pendientes`, {
           headers: {
             Authorization: `Bearer ${token}`, // Incluir el token en el encabezado
           },
@@ -37,7 +34,14 @@ const LiquidacionesPendientes = () => {
         setTotalSum(sum.toFixed(3)); // Redondear a 3 decimales
         setLoading(false);
       } catch (err) {
+        console.error('Error fetching data:', err);
+
+      // Manejar el caso de 404
+      if (err.response && err.response.status === 404) {
+        setError('Sin liquidaciones');
+      } else {
         setError('Error al cargar los datos.');
+      }
         setLoading(false);
       }
     };

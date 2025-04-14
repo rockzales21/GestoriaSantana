@@ -60,12 +60,17 @@ const FormularioTramite = () => {
   useEffect(() => {
     const fetchAsesores = async () => {
       try {
-        //https://gestoriasantana-production.up.railway.app/
-        // const response = await fetch("http://localhost:5000/usuarios/asesores");
-        // const response = await fetch("https://gestoriasantana-production.up.railway.app/usuarios/asesores");
-        const response = await fetch(`${apiUrl}/usuarios/asesores`);
-        const data = await response.json();
-        setAsesores(data);
+        const token = localStorage.getItem('token');
+        // const response = await fetch(`${apiUrlTest}/usuarios/asesores`);
+        const response = await axios.get(`${apiUrlTest}/usuarios/asesores`, {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            });
+        // const data = await response.json();
+        // setAsesores(data);
+        setAsesores(response.data);
+        
       } catch (error) {
         console.error("Error al cargar asesores:", error);
       }
@@ -73,8 +78,6 @@ const FormularioTramite = () => {
 
     const fetchAfores = async () => {
       try {
-        // const response = await fetch("http://localhost:5000/afores/afores");
-        // const response = await fetch("https://gestoriasantana-production.up.railway.app/afores/afores");
         const response = await fetch(`${apiUrl}/afores/afores`);
         const data = await response.json();
         setAfores(data);

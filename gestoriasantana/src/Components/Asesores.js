@@ -41,17 +41,14 @@ const Asesores = () => {
   const navigate = useNavigate();
   
   const apiUrl = process.env.REACT_APP_API_URL_PROD; // Cambia a REACT_APP_API_URL_TEST si estás en pruebas
+  const apiTest = process.env.REACT_APP_API_URL_TEST; // Cambia a REACT_APP_API_URL_PROD si estás en producción
 
   
   useEffect(() => {
     const fetchAsesores = async () => {
       try {
-        const token = localStorage.getItem('token'); // Asumiendo que guardaste el token en localStorage
-          // const response = await axios.get('http://localhost:3000/usuarios', {
-          //      const response = await axios.get(`${apiUrl}/afores`);
-
-        // const response = await axios.get('https://gestoriasantana-production.up.railway.app/usuarios', {
-        const response = await axios.get(`${apiUrl}/usuarios`, {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${apiTest}/usuarios`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
