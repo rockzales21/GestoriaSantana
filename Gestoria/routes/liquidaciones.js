@@ -16,7 +16,7 @@ router.get('/pendientes', verifyToken, async (req, res) => {
     // Filtrar por el ID del usuario si no es tipo 3 (administrador)
     if (userType !== 3) {
       values.push(userId);
-      conditions = `AND (c.id_asesor = $${values.length} OR u.jefe = $${values.length})`;
+      conditions = ` AND (c.id_asesor = $${values.length} OR u.jefe = $${values.length})`;
     }
 
     const query = `
@@ -51,6 +51,7 @@ router.get('/pendientes', verifyToken, async (req, res) => {
         honorarios_cte h ON true
       INNER JOIN 
         clientes_aseguramiento ca ON c.id_cliente = ca.id_cliente
+      INNER JOIN Usuarios u ON u.id_usuario = c.id_asesor
       WHERE DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
       ${conditions}
       ORDER BY 
@@ -58,7 +59,11 @@ router.get('/pendientes', verifyToken, async (req, res) => {
     `;
     
     
-    const result = await pool.query(query);
+    const result = await pool.query(query, values);
+    if (result.rowCount === 0) {
+      return res.status(404).send('No se encontraron resultados');
+    }
+
     res.json(result.rows);
   } catch (err) {
     console.error('Error ejecutando la consulta:', err.message);

@@ -3,36 +3,6 @@ const router = express.Router();
 const pool = require('../db');
 const verifyToken = require('./middleware/verifyToken');
 
-// router.use(verifyToken);
-
-// router.get('/', async (req, res) => {
-//   const userId = req.user.id_usuario; // Asumiendo que el middleware de autenticación agrega el ID del usuario a req.user
-//   const userType = req.user.tipo; // Asumiendo que el middleware de autenticación agrega el tipo de usuario a req.user
-
-//   let query = `
-//     SELECT u.*, p.*, s.direccion 
-//     FROM Usuarios u 
-//     INNER JOIN Personas p ON p.id_persona = u.id_persona 
-//     INNER JOIN Usuarios uJefe ON u.jefe = uJefe.id_usuario
-//     INNER JOIN Personas pJefe ON pJefe.id_persona = uJefe.id_persona
-//     INNER JOIN Sucursales s ON s.encargado = pJefe.id_persona
-//   `;
-
-//   const values = [];
-//   if (userType !== 3) {
-//     query += ` WHERE u.jefe = $1`;
-//     values.push(userId);
-//   }
-
-//   try {
-//     const result = await pool.query(query, values);
-//     res.json(result.rows);
-//   } catch (err) {
-//     console.error(err.message);
-//     res.status(500).send('Error del servidor');
-//   }
-// });
-
 router.get('/', verifyToken, async (req, res) => {
   const userId = req.user.id_usuario; // Asumiendo que el middleware de autenticación agrega el ID del usuario a req.user
   const userType = req.user.tipo; // Asumiendo que el middleware de autenticación agrega el tipo de usuario a req.user
@@ -49,7 +19,7 @@ router.get('/', verifyToken, async (req, res) => {
 
   const values = [];
   if (userType !== 3) {
-    query += ` WHERE u.jefe = $1`;
+    query += ` AND (u.jefe = $1 OR u.id_usuario = $1) `;
     values.push(userId);
   }
 
@@ -62,20 +32,32 @@ router.get('/', verifyToken, async (req, res) => {
   }
 });
 
-router.get('/asesores', async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT id_usuario, nombres || ' ' || apellido_p || ' ' || apellido_m AS nombre
+router.get('/asesores', verifyToken, async (req, res) => {
+  const userId = req.user.id_usuario; // Asumiendo que el middleware de autenticación agrega el ID del usuario a req.user
+  const userType = req.user.tipo; // Asumiendo que el middleware de autenticación agrega el tipo de usuario a req.user
+  
+    let query = `
+    SELECT id_usuario, nombres || ' ' || apellido_p || ' ' || apellido_m AS nombre
       FROM Usuarios u 
       INNER JOIN Personas p ON p.id_persona = u.id_persona
       WHERE u.status = 1
-    `);
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Error del servidor');
-  }
-});
+    `;
+
+    const values = [];
+    if (userType !== 3) {
+      query += ` AND (u.jefe = $1 OR u.id_usuario = $1) `;
+      values.push(userId);
+    }
+
+    try {
+      const result = await pool.query(query, values);
+      res.json(result.rows);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Error del servidor');
+    }
+
+  });
 
 router.get('/encargados', async (req, res) => {
   try {
@@ -92,39 +74,6 @@ router.get('/encargados', async (req, res) => {
     res.status(500).send('Error del servidor');
   }
 });
-
-router.get('/asesores2', async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT id_usuario, nombres || ' ' || apellido_p || ' ' || apellido_m AS nombre
-      FROM Usuarios u 
-      INNER JOIN Personas p ON p.id_persona = u.id_persona
-      WHERE u.status = 1
-    `);
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Error del servidor');
-  }
-});
-
-// router.get('/produccionYear', async (req, res) => {
-//   try {
-//     const result = await pool.query(`
-//       SELECT p.nombres || ' ' || p.apellido_p || ' ' || p.apellido_m AS nombre, COUNT(c.id_cliente)
-//       FROM  Usuarios u 
-//       INNER JOIN Personas p ON p.id_persona = u.id_persona
-//       INNER JOIN clientes c ON c.id_asesor = u.id_usuario
-//       WHERE DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
-//       GROUP BY p.nombres || ' ' || p.apellido_p || ' ' || p.apellido_m
-//       ORDER BY COUNT(c.id_cliente)
-//     `);
-//     res.json(result.rows);
-//   } catch (err) {
-//     console.error(err.message);
-//     res.status(500).send('Error del servidor');
-//   }
-// });
 
 router.get('/produccionYear', verifyToken, async (req, res) => {
   const userId = req.user.id_usuario; // ID del usuario autenticado
@@ -168,23 +117,6 @@ router.get('/produccionYear', verifyToken, async (req, res) => {
   }
 });
 
-// router.get('/produccionSemana', async (req, res) => {
-//   try {
-//     const result = await pool.query(`
-//       SELECT 
-//       DATE_PART('week', c.fecha_registro) AS semana,
-//       COUNT(c.id_cliente) AS total_clientes
-//       FROM clientes c
-//       WHERE DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
-//       GROUP BY DATE_PART('week', c.fecha_registro)
-//       ORDER BY semana
-//     `);
-//     res.json(result.rows);
-//   } catch (err) {
-//     console.error(err.message);
-//     res.status(500).send('Error del servidor');
-//   }
-// });
 
 router.get('/produccionSemana', verifyToken, async (req, res) => {
   const userId = req.user.id_usuario; // ID del usuario autenticado
@@ -226,35 +158,6 @@ router.get('/produccionSemana', verifyToken, async (req, res) => {
   }
 });
 
-// router.get('/produccionMes', async (req, res) => {
-//   try {
-//     const result = await pool.query(`
-//       SELECT CASE 
-//               WHEN DATE_PART('month', c.fecha_registro) = 1 THEN 'Enero'
-//               WHEN DATE_PART('month', c.fecha_registro) = 2 THEN 'Febrero'
-//               WHEN DATE_PART('month', c.fecha_registro) = 3 THEN 'Marzo'
-//               WHEN DATE_PART('month', c.fecha_registro) = 4 THEN 'Abril'
-//               WHEN DATE_PART('month', c.fecha_registro) = 5 THEN 'Mayo'
-//               WHEN DATE_PART('month', c.fecha_registro) = 6 THEN 'Junio'
-//               WHEN DATE_PART('month', c.fecha_registro) = 7 THEN 'Julio'
-//               WHEN DATE_PART('month', c.fecha_registro) = 8 THEN 'Agosto'
-//               WHEN DATE_PART('month', c.fecha_registro) = 9 THEN 'Septiembre'
-//               WHEN DATE_PART('month', c.fecha_registro) = 10 THEN 'Octubre'
-//               WHEN DATE_PART('month', c.fecha_registro) = 11 THEN 'Noviembre'
-//               WHEN DATE_PART('month', c.fecha_registro) = 12 THEN 'Diciembre'
-//               END AS mes,
-//               COUNT(c.id_cliente) AS total_clientes
-//               FROM clientes c
-//               WHERE DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
-//               GROUP BY DATE_PART('month', c.fecha_registro)
-//               ORDER BY DATE_PART('month', c.fecha_registro)
-//     `);
-//     res.json(result.rows);
-//   } catch (err) {
-//     console.error(err.message);
-//     res.status(500).send('Error del servidor');
-//   }
-// });
 
 router.get('/produccionMes', verifyToken, async (req, res) => {
   const userId = req.user.id_usuario; // ID del usuario autenticado
@@ -309,22 +212,6 @@ router.get('/produccionMes', verifyToken, async (req, res) => {
   }
 });
 
-// router.get('/produccionAnio', async (req, res) => {
-//   try {
-//     const result = await pool.query(`
-//       SELECT 
-//     COUNT(c.id_cliente) AS total_clientes
-// FROM 
-//     clientes c
-// WHERE 
-//     DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
-//     `);
-//     res.json(result.rows);
-//   } catch (err) {
-//     console.error(err.message);
-//     res.status(500).send('Error del servidor');
-//   }
-// });
 
 router.get('/produccionAnio', verifyToken, async (req, res) => {
   const userId = req.user.id_usuario; // ID del usuario autenticado
