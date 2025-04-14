@@ -62,7 +62,7 @@ const FormularioTramite = () => {
       try {
         const token = localStorage.getItem('token');
         // const response = await fetch(`${apiUrlTest}/usuarios/asesores`);
-        const response = await axios.get(`${apiUrlTest}/usuarios/asesores`, {
+        const response = await axios.get(`${apiUrl}/usuarios/asesores`, {
               headers: {
                 Authorization: `Bearer ${token}`
               }
