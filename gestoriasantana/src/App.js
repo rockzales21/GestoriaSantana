@@ -84,9 +84,10 @@ function App() {
   const FloatingButton = ({ onClick }) => (
     <button
       onClick={onClick}
-      className="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition"
+      aria-label="Abrir cotizador"
+      className="fixed bottom-6 right-6 bg-gradient-to-tr from-green-500 to-emerald-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 hover:from-green-600 hover:to-emerald-700 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-green-300 z-[100]"
     >
-      <FaMoneyBillWave size={24} />
+      <FaMoneyBillWave size={28} />
     </button>
   );
 
@@ -109,43 +110,85 @@ function App() {
     const totalCliente = total - totalPagar;
   
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-        <div className="bg-white p-6 rounded-lg shadow-lg w-80">
-          <h2 className="text-lg font-semibold mb-4">Cotizador</h2>
+      <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/60 backdrop-blur-sm">
+        <div
+          className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 relative animate-fadeIn"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="cotizador-title"
+        >
+          <button
+            onClick={() => {
+              setShowDetails(false);
+              setInputValue('');
+              onClose();
+            }}
+            className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition"
+            aria-label="Cerrar"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <h2 id="cotizador-title" className="text-2xl font-bold mb-6 text-emerald-700 text-center">Cotizador</h2>
           {!showDetails ? (
             <input
               type="number"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  setShowDetails(true);
-                }
+                if (e.key === 'Enter') setShowDetails(true);
               }}
-              className="border border-gray-300 p-2 rounded w-full mb-4"
+              className="border border-emerald-300 focus:border-emerald-500 focus:ring-emerald-200 focus:ring-2 p-3 rounded-lg w-full mb-6 text-lg transition"
               placeholder="Cantidad a retirar"
               autoFocus
+              min={0}
             />
           ) : (
-            <div className="results text-justify">
-              <p><strong>Cantidad total:</strong> {formatoPesos(total)}</p>
-              <p><strong>Honorarios:</strong> {formatoPesos(honorario)}</p>
-              <p><strong>Aseguramiento:</strong> {formatoPesos(aseguramiento)}</p>
-              <p><strong>Total a pagar:</strong> {formatoPesos(totalPagar)}</p>
-              <p><strong>Cliente recibe:</strong> {formatoPesos(totalCliente)}</p>
+            <div className="grid grid-cols-2 border border-emerald-200 rounded-lg overflow-hidden text-gray-700 text-base">
+              <div className="col-span-2 grid grid-cols-2 divide-x divide-emerald-200">
+                <div className="py-2 px-3 border-b border-emerald-200 font-semibold bg-emerald-50">Cantidad total:</div>
+                <div className="py-2 px-3 border-b border-emerald-200 bg-emerald-50 text-right">{formatoPesos(total)}</div>
+              </div>
+              <div className="col-span-2 grid grid-cols-2 divide-x divide-emerald-200">
+                <div className="py-2 px-3 border-b border-emerald-200 font-semibold">Honorarios:</div>
+                <div className="py-2 px-3 border-b border-emerald-200 text-right">{formatoPesos(honorario)}</div>
+              </div>
+              <div className="col-span-2 grid grid-cols-2 divide-x divide-emerald-200">
+                <div className="py-2 px-3 border-b border-emerald-200 font-semibold">Aseguramiento:</div>
+                <div className="py-2 px-3 border-b border-emerald-200 text-right">{formatoPesos(aseguramiento)}</div>
+              </div>
+              <div className="col-span-2 grid grid-cols-2 divide-x divide-emerald-200">
+                <div className="py-2 px-3 border-b border-emerald-200 font-semibold">Total a pagar:</div>
+                <div className="py-2 px-3 border-b border-emerald-200 text-right">{formatoPesos(totalPagar)}</div>
+              </div>
+              <div className="col-span-2 grid grid-cols-2 divide-x divide-emerald-200">
+                <div className="py-2 px-3 font-semibold text-emerald-700 bg-emerald-50">Cliente recibe:</div>
+                <div className="py-2 px-3 font-bold text-emerald-700 bg-emerald-50 text-right">{formatoPesos(totalCliente)}</div>
+              </div>
             </div>
           )}
-          <div className="flex justify-end mt-4">
-            <button
-              onClick={() => {
-                setShowDetails(false);
-                setInputValue('');
-                onClose();
-              }}
-              className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition"
-            >
-              Cerrar
-            </button>
+          <div className="flex justify-end mt-8">
+            {!showDetails ? (
+              <button
+                onClick={() => setShowDetails(true)}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition"
+                disabled={!inputValue}
+              >
+                Calcular
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  setShowDetails(false);
+                  setInputValue('');
+                  onClose();
+                }}
+                className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-lg shadow transition"
+              >
+                Cerrar
+              </button>
+            )}
           </div>
         </div>
       </div>
