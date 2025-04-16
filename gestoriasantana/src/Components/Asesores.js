@@ -1,9 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { Stack, Tooltip, IconButton } from '@mui/material'; // Cambia Button por IconButton y agrega Tooltip
+import DeleteIcon from '@mui/icons-material/Delete'; // Agrega este import
+import PersonAddIcon from '@mui/icons-material/PersonAdd'; // Agrega este import
+import InfoIcon from '@mui/icons-material/Info'; // Agrega este import
 import { Table, TableBody, TableCell, TableContainer, TableRow, Paper, Typography, Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DescriptionIcon from '@mui/icons-material/Description';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import Modal from 'react-modal';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from "axios";
@@ -26,7 +33,26 @@ const buttonStyles = {
   minWidth: '100px',  // Establece un ancho mínimo para todos los botones
   marginRight: '8px', // Añade un margen entre los botones
 };
+const buttonIconStyles = {
+  color: '#1976d2', // color primario MUI
+  '&:hover': { color: '#1565c0', backgroundColor: '#e3f2fd' },
+  fontSize: 24,
+  padding: 1,
+};
 
+const buttonIconDanger = {
+  color: '#d32f2f',
+  '&:hover': { color: '#b71c1c', backgroundColor: '#ffebee' },
+  fontSize: 24,
+  padding: 1,
+};
+
+const buttonIconSuccess = {
+  color: '#388e3c',
+  '&:hover': { color: '#1b5e20', backgroundColor: '#e8f5e9' },
+  fontSize: 24,
+  padding: 1,
+};
 const Asesores = () => {
   const [asesores, setAsesores] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -39,11 +65,23 @@ const Asesores = () => {
   const { profile } = useContext(AuthContext); // Obtener el perfil del usuario desde el contexto
 
   const navigate = useNavigate();
-  
+
   const apiUrl = process.env.REACT_APP_API_URL_PROD; // Cambia a REACT_APP_API_URL_TEST si estás en pruebas
   const apiTest = process.env.REACT_APP_API_URL_TEST; // Cambia a REACT_APP_API_URL_PROD si estás en producción
 
-  
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuAsesorId, setMenuAsesorId] = useState(null);
+
+  const handleMenuOpen = (event, id) => {
+    setAnchorEl(event.currentTarget);
+    setMenuAsesorId(id);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuAsesorId(null);
+  };
+
   useEffect(() => {
     const fetchAsesores = async () => {
       try {
@@ -58,7 +96,7 @@ const Asesores = () => {
         console.error('Error al obtener los asesores:', error);
       }
     };
-  
+
     fetchAsesores();
   }, []);
 
@@ -167,12 +205,12 @@ const Asesores = () => {
 
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
-  
+
   const handleOpenConfirmDialog = (id) => {
     setDeleteId(id);
     setOpenConfirmDialog(true);
   };
-  
+
   const handleCloseConfirmDialog = () => {
     setOpenConfirmDialog(false);
     setDeleteId(null);
@@ -180,11 +218,11 @@ const Asesores = () => {
 
   const handleConfirmDelete = async () => {
     if (!deleteId) return;
-  
+
     try {
       // const response = await axios.delete(`https://gestoriasantana-production.up.railway.app/usuarios/${deleteId}`);
       const response = await axios.delete(`${apiUrl}/usuarios/${deleteId}`);
-  
+
       if (response.status === 200) {
         toast.success('Usuario eliminado con éxito', {
           position: "top-right",
@@ -229,17 +267,16 @@ const Asesores = () => {
   const generatePDF = (asesor) => {
     const nombreCompleto = `${asesor.nombres} ${asesor.apellido_p} ${asesor.apellido_m}`;
     const nombreCompletoMayus = `${nombreCompleto}`.toUpperCase();
-    const domicilioCompleto = `${asesor.calle || ''}${asesor.numeroExterior ? ' #' + asesor.numeroExterior : ''}${
-      asesor.numeroInterior ? ' #' + asesor.numeroInterior : ''
-    }, ${asesor.ciudad || ''}, ${asesor.estado || ''}`.trim();
+    const domicilioCompleto = `${asesor.calle || ''}${asesor.numeroExterior ? ' #' + asesor.numeroExterior : ''}${asesor.numeroInterior ? ' #' + asesor.numeroInterior : ''
+      }, ${asesor.ciudad || ''}, ${asesor.estado || ''}`.trim();
 
-    
+
     const ahora = new Date();
     const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
     const fechaActual = ahora.toLocaleDateString('es-MX', opciones);
 
-      const input = document.createElement('div');
-      input.innerHTML = `
+    const input = document.createElement('div');
+    input.innerHTML = `
         <div style="width: 700px; margin: 0 auto; font-size: 18px;">
           <h6 style="text-align: justify; margin-bottom: 16px;">
             <strong>CONTRATO DE COMISIÓN MERCANTIL, QUE CELEBRAN, POR UNA PARTE: LA NEGOCIACIÓN “M SANTANA ASESORIAS” REPRESENTADA POR: MARTHA MARGARITA SANTANA CEJA, LA CUAL SERÁ DESIGNADA EN EL CURSO DE ESTE CONTRATO COMO “LA COMITENTE” Y POR LA OTRA PARTE ${nombreCompleto} A QUIEN SE LE DESIGNARÁ COMO “LA COMISIONISTA”, QUIENES HACEN LAS SIGUIENTES:</strong>
@@ -342,48 +379,47 @@ const Asesores = () => {
           
         </div>
       `;
-  
-      const options = {
-        margin: [15, 10, 20, 10],
-        filename: `contratoAsesor_${nombreCompleto}.pdf`,
-        image: { type: 'jpeg', quality: 1 },
-        html2canvas: { scale: 3, letterRendering: false, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
-      };
-  
-      html2pdf().set(options).from(input).toPdf().get('pdf').then((pdf) => {
-        const totalPages = pdf.internal.getNumberOfPages();
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const headerImage = '/img/logo.png';
-        // const footerText = 'C. CUERNAVACA NO. 47 COND CUAHUNAHUAC  CUERNAVACA MORELOS 7772167527';
-        const footerText = asesor.direccion;
-        
-    
-        for (let i = 1; i <= totalPages; i++) {
-          pdf.setPage(i);
-          pdf.addImage(headerImage, 'PNG', 0, -5, 40, 30); // Adjust the position and size as needed
-          pdf.setFontSize(10);
-          const textWidth = pdf.getTextDimensions(footerText).w;
-          const xPosition = (pageWidth - textWidth) / 2;
-          pdf.text(footerText, xPosition, pageHeight - 10);
-        }
-      }).save();
+
+    const options = {
+      margin: [15, 10, 20, 10],
+      filename: `contratoAsesor_${nombreCompleto}.pdf`,
+      image: { type: 'jpeg', quality: 1 },
+      html2canvas: { scale: 3, letterRendering: false, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
     };
 
-    const generateSecondPDF = (asesor) => {
-      const nombreCompleto = `${asesor.nombres} ${asesor.apellido_p} ${asesor.apellido_m}`;
-      const nombreCompletoMayus = `${nombreCompleto}`.toUpperCase();
-      const domicilioCompleto = `${asesor.calle || ''}${asesor.numeroExterior ? ' #' + asesor.numeroExterior : ''}${
-        asesor.numeroInterior ? ' #' + asesor.numeroInterior : ''
+    html2pdf().set(options).from(input).toPdf().get('pdf').then((pdf) => {
+      const totalPages = pdf.internal.getNumberOfPages();
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const headerImage = '/img/logo.png';
+      // const footerText = 'C. CUERNAVACA NO. 47 COND CUAHUNAHUAC  CUERNAVACA MORELOS 7772167527';
+      const footerText = asesor.direccion;
+
+
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        pdf.addImage(headerImage, 'PNG', 0, -5, 40, 30); // Adjust the position and size as needed
+        pdf.setFontSize(10);
+        const textWidth = pdf.getTextDimensions(footerText).w;
+        const xPosition = (pageWidth - textWidth) / 2;
+        pdf.text(footerText, xPosition, pageHeight - 10);
+      }
+    }).save();
+  };
+
+  const generateSecondPDF = (asesor) => {
+    const nombreCompleto = `${asesor.nombres} ${asesor.apellido_p} ${asesor.apellido_m}`;
+    const nombreCompletoMayus = `${nombreCompleto}`.toUpperCase();
+    const domicilioCompleto = `${asesor.calle || ''}${asesor.numeroExterior ? ' #' + asesor.numeroExterior : ''}${asesor.numeroInterior ? ' #' + asesor.numeroInterior : ''
       }, ${asesor.ciudad || ''}, ${asesor.estado || ''}`.trim();
-  
-      const ahora = new Date();
-      const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
-      const fechaActual = ahora.toLocaleDateString('es-MX', opciones);
-        const input = document.createElement('div');
-        input.innerHTML = `
+
+    const ahora = new Date();
+    const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
+    const fechaActual = ahora.toLocaleDateString('es-MX', opciones);
+    const input = document.createElement('div');
+    input.innerHTML = `
           <div style="width: 700px; margin: 0 auto; font-size: 15px;">
             <h6 style="text-align: justify; margin-bottom: 16px;">
               <strong>CONTRATO DE CONFIDENCIALIDAD</strong>
@@ -480,38 +516,38 @@ const Asesores = () => {
 <br/>
           </div>
         `;
-    
-        const options = {
-          margin: [15, 10, 20, 10],
-          filename: `contratoAsesorConfidencialidad_${nombreCompleto}.pdf`,
-          image: { type: 'jpeg', quality: 1 },
-          html2canvas: { scale: 3, letterRendering: false, useCORS: true },
-          jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
-          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
-        };
-    
-        html2pdf().set(options).from(input).toPdf().get('pdf').then((pdf) => {
-          const totalPages = pdf.internal.getNumberOfPages();
-          const pageWidth = pdf.internal.pageSize.getWidth();
-          const pageHeight = pdf.internal.pageSize.getHeight();
-          const headerImage = '/img/logo.png';
-          // const footerText = 'C. CUERNAVACA NO. 47 COND CUAHUNAHUAC  CUERNAVACA MORELOS 7772167527';
-          const footerText = asesor.direccion;
-      
-          for (let i = 1; i <= totalPages; i++) {
-            pdf.setPage(i);
-            pdf.addImage(headerImage, 'PNG', 0, -5, 40, 30); // Adjust the position and size as needed
-            pdf.setFontSize(10);
-            const textWidth = pdf.getTextDimensions(footerText).w;
-            const xPosition = (pageWidth - textWidth) / 2;
-            pdf.text(footerText, xPosition, pageHeight - 10);
-          }
-        }).save();
-      };
 
-      const filteredAsesores = asesores.filter((asesor) =>
-        asesor.nombres.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+    const options = {
+      margin: [15, 10, 20, 10],
+      filename: `contratoAsesorConfidencialidad_${nombreCompleto}.pdf`,
+      image: { type: 'jpeg', quality: 1 },
+      html2canvas: { scale: 3, letterRendering: false, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+    };
+
+    html2pdf().set(options).from(input).toPdf().get('pdf').then((pdf) => {
+      const totalPages = pdf.internal.getNumberOfPages();
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const headerImage = '/img/logo.png';
+      // const footerText = 'C. CUERNAVACA NO. 47 COND CUAHUNAHUAC  CUERNAVACA MORELOS 7772167527';
+      const footerText = asesor.direccion;
+
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        pdf.addImage(headerImage, 'PNG', 0, -5, 40, 30); // Adjust the position and size as needed
+        pdf.setFontSize(10);
+        const textWidth = pdf.getTextDimensions(footerText).w;
+        const xPosition = (pageWidth - textWidth) / 2;
+        pdf.text(footerText, xPosition, pageHeight - 10);
+      }
+    }).save();
+  };
+
+  const filteredAsesores = asesores.filter((asesor) =>
+    asesor.nombres.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div style={{ padding: '20px' }}>
@@ -528,7 +564,7 @@ const Asesores = () => {
       <TableContainer component={Paper}>
         <Table>
           <TableBody>
-          {filteredAsesores.map((asesor) => (
+            {filteredAsesores.map((asesor) => (
               <React.Fragment key={asesor.id_usuario}>
                 <TableRow>
                   <TableCell sx={{ ...commonStyles }} className="uppercase"><strong>Asesor:</strong></TableCell>
@@ -538,74 +574,56 @@ const Asesores = () => {
                   <TableCell sx={{ ...commonStyles }} className="uppercase"><strong>NSS:</strong></TableCell>
                   <TableCell sx={{ ...commonStyles }} className="uppercase">{asesor.nss}</TableCell>
                   <TableCell sx={{ ...commonStyles }}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      startIcon={<DescriptionIcon />}
-                      sx={buttonStyles}
-                      onClick={() => handleContratoClick(asesor)}
+                    <IconButton
+                      sx={buttonIconStyles}
+                      onClick={(e) => handleMenuOpen(e, asesor.id_usuario)}
+                      size="large"
                     >
-                      Contrato
-                    </Button>
-                    
-                    <Button
-                      variant="contained"
-                      color="success"
-                      sx={buttonStyles}
-                      onClick={() => handleDetallesClick(asesor)}
+                      <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                      anchorEl={anchorEl}
+                      open={menuAsesorId === asesor.id_usuario}
+                      onClose={handleMenuClose}
+                      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                      transformOrigin={{ vertical: 'top', horizontal: 'center' }}
                     >
-                      Ver Detalles
-                    </Button>
+                      <MenuItem onClick={() => { handleContratoClick(asesor); handleMenuClose(); }}>
+                        <DescriptionIcon sx={{ mr: 1 }} /> Contrato
+                      </MenuItem>
+                      <MenuItem onClick={() => { handleDetallesClick(asesor); handleMenuClose(); }}>
+                        <InfoIcon sx={{ mr: 1, color: buttonIconSuccess.color }} /> Ver Detalles
+                      </MenuItem>
+                      {profile && profile.tipo === 3 && (
+                        <>
+                          <MenuItem onClick={() => { handleEdit(asesor.id_usuario); handleMenuClose(); }}>
+                            <EditIcon sx={{ mr: 1 }} /> Editar
+                          </MenuItem>
+                          <MenuItem onClick={() => { handleOpenConfirmDialog(asesor.id_usuario); handleMenuClose(); }}>
+                            <DeleteIcon sx={{ mr: 1, color: buttonIconDanger.color }} /> Eliminar
+                          </MenuItem>
+                          <MenuItem onClick={() => { openModal(asesor.id_usuario); handleMenuClose(); }}>
+                            <PersonAddIcon sx={{ mr: 1 }} /> Crear Usuario
+                          </MenuItem>
+                        </>
+                      )}
+                    </Menu>
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                <TableCell className="uppercase"><strong>Teléfono:</strong></TableCell>
+                  <TableCell className="uppercase"><strong>Teléfono:</strong></TableCell>
                   <TableCell className="uppercase">{asesor.telefono}</TableCell>
                   <TableCell className="uppercase"><strong>Email:</strong></TableCell>
                   <TableCell className="uppercase">{asesor.email}</TableCell>
                   <TableCell className="uppercase"><strong>Status:</strong></TableCell>
                   <TableCell className="uppercase">{asesor.status === 1 ? 'Activo' : 'Inactivo'}</TableCell>
-                  <TableCell sx={{ ...commonStyles }}>
-                  {profile && profile.tipo === 3 && (
-                    
-                  <Button
-                      variant="contained"
-                      color="secondary"
-                      startIcon={<EditIcon />}
-                      sx={buttonStyles}
-                      onClick={() => handleEdit(asesor.id_usuario)}
-                    >
-                      Editar
-                    </Button>
-                  )}
-                  {profile && profile.tipo === 3 && (
-                    <Button
-    variant="contained"
-    color="error"
-    sx={buttonStyles}
-    onClick={() => handleOpenConfirmDialog(asesor.id_usuario)}
-  >
-    Eliminar
-  </Button>
-                  )}
-                  {profile && profile.tipo === 3 && (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      sx={buttonStyles}
-                      onClick={() => openModal(asesor.id_usuario)}
-                    >
-                      Crear Usuario
-                    </Button>
-                  )}
-                  </TableCell>
+                  <TableCell sx={{ ...commonStyles }} />
                 </TableRow>
               </React.Fragment>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
@@ -648,50 +666,54 @@ const Asesores = () => {
           </div>
         </div>
       </Modal>
-      {detalleAsesor && (
-        <div className="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="modal-content custom-modal p-4 rounded shadow-lg overflow-auto">
-            <h2 className="text-xl font-bold mb-4">Detalles del Asesor</h2>
-            <p className="whitespace-normal"><strong>Nombre:</strong> {detalleAsesor.nombrecompleto}</p>
-            <p className="whitespace-normal"><strong>CURP:</strong> {detalleAsesor.curp}</p>
-            <p className="whitespace-normal"><strong>NSS:</strong> {detalleAsesor.nss}</p>
-            <p className="whitespace-normal"><strong>Email:</strong> {detalleAsesor.email}</p>
-            <p className="whitespace-normal"><strong>RFC:</strong> {detalleAsesor.rfc}</p>
-            <p className="whitespace-normal"><strong>Teléfono:</strong> {detalleAsesor.telefono}</p>
-            <p className="whitespace-normal"><strong>Dirección:</strong> {detalleAsesor.direccioncompleta}</p>
-            <p className="whitespace-normal"><strong>A cargo de:</strong> {detalleAsesor.acargo}</p>
-            <p className="whitespace-normal"><strong>Oficina:</strong> {detalleAsesor.oficina}</p>
-            <button
-              className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-700 mt-4"
-              onClick={() => setDetalleAsesor(null)}
-            >
-              Cerrar
-            </button>
-          </div>
-        </div>
-      )}
+      <Dialog
+        open={!!detalleAsesor}
+        onClose={() => setDetalleAsesor(null)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          <strong>DETALLES DEL ASESOR</strong>
+        </DialogTitle>
+        <DialogContent dividers style={{ maxHeight: '80vh' }}>
+          <p className="whitespace-normal"><strong>Nombre:</strong> {detalleAsesor?.nombrecompleto}</p>
+          <p className="whitespace-normal"><strong>CURP:</strong> {detalleAsesor?.curp}</p>
+          <p className="whitespace-normal"><strong>NSS:</strong> {detalleAsesor?.nss}</p>
+          <p className="whitespace-normal"><strong>Email:</strong> {detalleAsesor?.email}</p>
+          <p className="whitespace-normal"><strong>RFC:</strong> {detalleAsesor?.rfc}</p>
+          <p className="whitespace-normal"><strong>Teléfono:</strong> {detalleAsesor?.telefono}</p>
+          <p className="whitespace-normal"><strong>Dirección:</strong> {detalleAsesor?.direccioncompleta}</p>
+          <p className="whitespace-normal"><strong>A cargo de:</strong> {detalleAsesor?.acargo}</p>
+          <p className="whitespace-normal"><strong>Oficina:</strong> {detalleAsesor?.oficina}</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDetalleAsesor(null)} color="primary">
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
 
-<Dialog
-  open={openConfirmDialog}
-  onClose={handleCloseConfirmDialog}
-  aria-labelledby="alert-dialog-title"
-  aria-describedby="alert-dialog-description"
->
-  <DialogTitle id="alert-dialog-title">{"Confirmar eliminación"}</DialogTitle>
-  <DialogContent>
-    <DialogContentText id="alert-dialog-description">
-      ¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.
-    </DialogContentText>
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={handleCloseConfirmDialog} color="primary">
-      Cancelar
-    </Button>
-    <Button onClick={handleConfirmDelete} color="error" autoFocus>
-      Eliminar
-    </Button>
-  </DialogActions>
-</Dialog>
+      <Dialog
+        open={openConfirmDialog}
+        onClose={handleCloseConfirmDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Confirmar eliminación"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            ¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirmDialog} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleConfirmDelete} color="error" autoFocus>
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

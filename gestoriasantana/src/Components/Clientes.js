@@ -2,10 +2,16 @@ import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import html2pdf from 'html2pdf.js';
+
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import EditIcon from '@mui/icons-material/Edit';
+import DescriptionIcon from '@mui/icons-material/Description';
+import InfoIcon from '@mui/icons-material/Info';
+import DeleteIcon from '@mui/icons-material/Delete';
 import CambiarStatus from "./Modales/CambiarStatus";
 import { toast } from 'react-toastify';
 import { AuthContext } from "./auth/AuthContext"; // Importar el contexto de autenticación
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Button } from '@mui/material'; // Importar componentes de Material-UI
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Button, MenuItem, Select, FormControl, InputLabel, Menu, IconButton, Tooltip } from '@mui/material'; // Importar componentes de Material-UI
 import { getISOWeek, parseISO } from 'date-fns'; // Asegúrate de instalar date-fns: npm install date-fns
 import { FaFilter, FaTimes } from 'react-icons/fa'; // Importar los íconos necesarios
 import { FaTrash } from 'react-icons/fa'; // Importar el ícono de la papelera
@@ -25,12 +31,25 @@ const Clientes = () => {
   const apiUrl = process.env.REACT_APP_API_URL_PROD; // O REACT_APP_API_URL_TEST según el entorno
   const apiTest = process.env.REACT_APP_API_URL_TEST; // O REACT_APP_API_URL_PROD según el entorno
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuClienteId, setMenuClienteId] = useState(null);
+
+  const handleMenuOpen = (event, id) => {
+    setAnchorEl(event.currentTarget);
+    setMenuClienteId(id);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuClienteId(null);
+  };
+
   useEffect(() => {
     const fetchClientes = async () => {
       try {
         const token = localStorage.getItem('token'); // Asumiendo que guardaste el token en localStorage
 
-          const response = await axios.get(`${apiUrl}/clientes/clientes`, {
+        const response = await axios.get(`${apiUrl}/clientes/clientes`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -40,7 +59,7 @@ const Clientes = () => {
         console.error("Error al cargar los clientes:", error);
       }
     };
-  
+
     fetchClientes();
   }, []);
 
@@ -50,7 +69,7 @@ const Clientes = () => {
     const opciones = { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" };
     const fechaUTC = new Date(fecha);
     return fechaUTC.toLocaleDateString("es-MX", opciones);
-};
+  };
 
   const formatMonto = (monto) => {
     if (monto === null || monto === undefined) {
@@ -82,7 +101,7 @@ const Clientes = () => {
     navigate(`/editarCliente/${cliente.id_cliente}`);
   };
 
-  
+
   const [fechaBaja, setFechaBaja] = useState("");
   const [clienteSeleccionadoParaBaja, setClienteSeleccionadoParaBaja] = useState(null);
 
@@ -173,7 +192,7 @@ const Clientes = () => {
         return 0; // Valor por defecto en caso de error
       }
     };
-  
+
     // Espera a que se obtengan los honorarios
     const honorariosObtenidos = await fetchHonorarios();
 
@@ -197,14 +216,14 @@ const Clientes = () => {
     console.log('Honorario:', honorario);
     console.log('Aseguramiento:', aseguramiento);
     console.log('Total a pagar:', totalPagar);
-    
+
     const totalEnLetras = NumerosALetras(parseFloat(totalCliente), {
-  
+
       plural: 'pesos',
       singular: 'peso',
       centPlural: 'centavos',
       centSingular: 'centavo'
-  });
+    });
 
 
     const input = document.createElement('div');
@@ -387,7 +406,7 @@ const Clientes = () => {
       const pageHeight = pdf.internal.pageSize.getHeight();
       const headerImage = '/img/logo.png';
       const footerText = cliente.direccion_sucursal;
-  
+
       for (let i = 1; i <= totalPages; i++) {
         pdf.setPage(i);
         pdf.addImage(headerImage, 'PNG', 0, -5, 40, 30); // Adjust the position and size as needed
@@ -407,16 +426,16 @@ const Clientes = () => {
   const handleConfirmStatusChange = async (cliente, nuevoStatus) => {
     try {
       // await axios.put(`https://gestoriasantana-production.up.railway.app/clientes/cliente/${cliente.id_cliente}/status`, {
-        await axios.put(`${apiUrl}/clientes/cliente/${cliente.id_cliente}/status`, {
-    //await axios.put(`https://gestoriasantana-production.up.railway.app/cliente/${clienteSeleccionadoParaBaja.id_cliente}/fecha_baja`, {
-          nuevoStatus
+      await axios.put(`${apiUrl}/clientes/cliente/${cliente.id_cliente}/status`, {
+        //await axios.put(`https://gestoriasantana-production.up.railway.app/cliente/${clienteSeleccionadoParaBaja.id_cliente}/fecha_baja`, {
+        nuevoStatus
       });
 
       // Actualizar el estado local
       setClientes((prevClientes) =>
-          prevClientes.map((c) =>
-              c.id_cliente === cliente.id_cliente ? { ...c, status: nuevoStatus } : c
-          )
+        prevClientes.map((c) =>
+          c.id_cliente === cliente.id_cliente ? { ...c, status: nuevoStatus } : c
+        )
       );
     } catch (error) {
       console.error("Error al cambiar el status del cliente:", error);
@@ -432,18 +451,18 @@ const Clientes = () => {
   const filteredClientes = clientes.filter((cliente) => {
     const matchesSearch = cliente.nombre.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "" || cliente.status.toLowerCase() === statusFilter.toLowerCase();
-  
+
     // Filtrar por semana, año, mes y asesor
     const fechaTramite = cliente.fecha_registro ? parseISO(cliente.fecha_registro) : null;
     const weekOfYear = fechaTramite ? getISOWeek(fechaTramite) : null;
     const yearOfTramite = fechaTramite ? fechaTramite.getFullYear() : null;
     const monthOfTramite = fechaTramite ? fechaTramite.getMonth() + 1 : null; // Los meses en JavaScript son 0-indexados
-  
+
     const matchesWeek = weekFilter === "" || weekOfYear === parseInt(weekFilter);
     const matchesYear = yearFilter === "" || yearOfTramite === parseInt(yearFilter);
     const matchesMonth = monthFilter === "" || monthOfTramite === parseInt(monthFilter);
     const matchesAsesor = asesorFilter === "" || (cliente.nombreasesor || "").toLowerCase() === asesorFilter.toLowerCase();
-  
+
     return matchesSearch && matchesStatus && matchesWeek && matchesYear && matchesMonth && matchesAsesor;
   });
 
@@ -466,11 +485,11 @@ const Clientes = () => {
 
   //   return matchesSearch && matchesStatus && matchesWeek && matchesYear && matchesMonth;
   // });
-  
+
   const handleDeleteClick = async (cliente) => {
     const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar al cliente ${cliente.nombre}?`);
     if (!confirmDelete) return;
-  
+
     try {
       const token = localStorage.getItem('token'); // Asumiendo que usas autenticación con token
       await axios.delete(`${apiUrl}/clientes/cliente/${cliente.id_cliente}`, {
@@ -478,10 +497,10 @@ const Clientes = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-  
+
       // Actualizar la lista de clientes localmente
       setClientes((prevClientes) => prevClientes.filter((c) => c.id_cliente !== cliente.id_cliente));
-  
+
       toast.success('Cliente eliminado correctamente', {
         position: "top-right",
         autoClose: 5000,
@@ -507,19 +526,21 @@ const Clientes = () => {
     }
   };
 
+
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4 text-center">LISTA DE CLIENTES</h1>
 
       {/* Botón para mostrar/ocultar filtros */}
       <div className="flex justify-end mb-4">
-      <button
-        className="bg-blue-500 text-white py-2 px-4 rounded flex items-center gap-2 hover:bg-blue-700 transition-all"
-        onClick={() => setShowFilters(!showFilters)}
-      >
-        {showFilters ? <FaTimes /> : <FaFilter />} {/* Cambiar ícono dinámicamente */}
-        {showFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
-      </button>
+        <button
+          className="bg-blue-500 text-white py-2 px-4 rounded flex items-center gap-2 hover:bg-blue-700 transition-all"
+          onClick={() => setShowFilters(!showFilters)}
+        >
+          {showFilters ? <FaTimes /> : <FaFilter />} {/* Cambiar ícono dinámicamente */}
+          {showFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
+        </button>
       </div>
       {/* Filtros */}
       {/* Contenedor de filtros */}
@@ -531,138 +552,181 @@ const Clientes = () => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Buscar Cliente</label>
               <input
-              type="text"
-              placeholder="Escribe el nombre del cliente..."
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value.toUpperCase())}
+                type="text"
+                placeholder="Escribe el nombre del cliente..."
+                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value.toUpperCase())}
               />
-          </div>
+            </div>
 
-          {/* Filtro de estatus */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Estatus</label>
-            <select
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="">Todos los estatus</option>
-              <option value="alta">Alta</option>
-              <option value="en espera">En espera</option>
-              <option value="en tramite">En trámite</option>
-              <option value="liquidado">Liquidado</option>
-              <option value="fallido">Fallido</option>
-              <option value="activo">Activo</option>
-              <option value="inactivo">Inactivo</option>
-            </select>
-          </div>
+            {/* Filtro de estatus */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Estatus</label>
+              <select
+                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <option value="">Todos los estatus</option>
+                <option value="alta">Alta</option>
+                <option value="en espera">En espera</option>
+                <option value="en tramite">En trámite</option>
+                <option value="liquidado">Liquidado</option>
+                <option value="fallido">Fallido</option>
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+              </select>
+            </div>
 
-          {/* Filtro de semana */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Semana</label>
-            <select
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={weekFilter}
-              onChange={(e) => setWeekFilter(e.target.value)}
-            >
-              <option value="">Todas las semanas</option>
-              {Array.from({ length: 52 }, (_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  Semana {i + 1}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Filtro de mes */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Mes</label>
-            <select
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={monthFilter}
-              onChange={(e) => setMonthFilter(e.target.value)}
-            >
-              <option value="">Todos los meses</option>
-              {Array.from({ length: 12 }, (_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  {new Date(0, i).toLocaleString("es-MX", { month: "long" }).toUpperCase()}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Filtro de año */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Año</label>
-            <select
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={yearFilter}
-              onChange={(e) => setYearFilter(e.target.value)}
-            >
-              <option value="">Todos los años</option>
-              {Array.from({ length: 5 }, (_, i) => {
-                const year = new Date().getFullYear() - i;
-                return (
-                  <option key={year} value={year}>
-                    {year}
+            {/* Filtro de semana */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Semana</label>
+              <select
+                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={weekFilter}
+                onChange={(e) => setWeekFilter(e.target.value)}
+              >
+                <option value="">Todas las semanas</option>
+                {Array.from({ length: 52 }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    Semana {i + 1}
                   </option>
-                );
-              })}
-            </select>
-          </div>
+                ))}
+              </select>
+            </div>
 
-          {/* Filtro de asesor */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Asesor</label>
-            <select
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={asesorFilter}
-              onChange={(e) => setAsesorFilter(e.target.value)}
-            >
-              <option value="">Todos los asesores</option>
-              {[...new Set(clientes.map((cliente) => cliente.nombreasesor || "No asignado"))].map((asesor, index) => (
-                <option key={index} value={asesor}>
-                  {asesor.toUpperCase()}
-                </option>
-              ))}
-            </select>
+            {/* Filtro de mes */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Mes</label>
+              <select
+                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={monthFilter}
+                onChange={(e) => setMonthFilter(e.target.value)}
+              >
+                <option value="">Todos los meses</option>
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {new Date(0, i).toLocaleString("es-MX", { month: "long" }).toUpperCase()}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Filtro de año */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Año</label>
+              <select
+                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={yearFilter}
+                onChange={(e) => setYearFilter(e.target.value)}
+              >
+                <option value="">Todos los años</option>
+                {Array.from({ length: 5 }, (_, i) => {
+                  const year = new Date().getFullYear() - i;
+                  return (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+
+            {/* Filtro de asesor */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Asesor</label>
+              <select
+                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={asesorFilter}
+                onChange={(e) => setAsesorFilter(e.target.value)}
+              >
+                <option value="">Todos los asesores</option>
+                {[...new Set(clientes.map((cliente) => cliente.nombreasesor || "No asignado"))].map((asesor, index) => (
+                  <option key={index} value={asesor}>
+                    {asesor.toUpperCase()}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
 
       <div className="grid gap-4">
         {filteredClientes.map((cliente) => (
           <div
-            key={cliente.id_cliente}
-            className="border rounded-lg p-4 shadow-md bg-white"
-          >
-            {/* Renglón 1 */}
-            <div className="flex flex-wrap mb-2 gap-4 justify-center">
-              <div className="flex items-center flex-grow">
-                <p className="font-bold">CLIENTE:</p>
-                <p className="ml-1">{cliente.nombre.toUpperCase()}</p>
-              </div>
-              <div className="flex items-center flex-grow">
-                <p className="font-bold">CURP:</p>
-                <p className="ml-1">{cliente.curp.toUpperCase()}</p>
-              </div>
-              <div className="flex items-center flex-grow">
-                <p className="font-bold">NSS:</p>
-                <p className="ml-1">{cliente.nss.toUpperCase()}</p>
-              </div>
+          key={cliente.id_cliente}
+          className="border rounded-lg p-4 shadow-md bg-white"
+        >
+          {/* Renglón 1: Info principal + menú de acciones */}
+          <div className="flex flex-wrap mb-2 gap-4 justify-center items-center">
+            <div className="flex items-center flex-grow">
+              <p className="font-bold">CLIENTE:</p>
+              <p className="ml-1">{cliente.nombre.toUpperCase()}</p>
             </div>
+            <div className="flex items-center flex-grow">
+              <p className="font-bold">CURP:</p>
+              <p className="ml-1">{cliente.curp.toUpperCase()}</p>
+            </div>
+            <div className="flex items-center flex-grow">
+              <p className="font-bold">NSS:</p>
+              <p className="ml-1">{cliente.nss.toUpperCase()}</p>
+            </div>
+            {/* Menú de acciones alineado a la derecha */}
+            <div className="flex items-center ml-auto">
+              <Tooltip title="Más acciones">
+                <IconButton
+                  onClick={(e) => handleMenuOpen(e, cliente.id_cliente)}
+                  size="large"
+                >
+                  <MoreVertIcon />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                anchorEl={anchorEl}
+                open={menuClienteId === cliente.id_cliente}
+                onClose={handleMenuClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+              >
+                <MenuItem onClick={() => { handleEditClick(cliente); handleMenuClose(); }}>
+                  <EditIcon sx={{ mr: 1, color: '#f59e42' }} /> Editar
+                </MenuItem>
+                <MenuItem onClick={() => { handleContratoClick(cliente); handleMenuClose(); }}>
+                  <DescriptionIcon sx={{ mr: 1, color: '#1976d2' }} /> Contrato
+                </MenuItem>
+                <MenuItem onClick={() => { handleDetallesClick(cliente); handleMenuClose(); }}>
+                  <InfoIcon sx={{ mr: 1, color: '#388e3c' }} /> Ver Detalles
+                </MenuItem>
+                <MenuItem onClick={() => { handleDeleteClick(cliente); handleMenuClose(); }}>
+                  <DeleteIcon sx={{ mr: 1, color: '#d32f2f' }} /> Eliminar
+                </MenuItem>
+                {profile && profile.tipo === 3 && (
+                  <>
+                    <MenuItem onClick={() => { handleChangeStatus(cliente); handleMenuClose(); }}>
+                      <EditIcon sx={{ mr: 1, color: '#f59e42' }} /> Cambiar Status
+                    </MenuItem>
+                    <MenuItem onClick={() => { handleOpenFechaBajaModal(cliente); handleMenuClose(); }}>
+                      <DeleteIcon sx={{ mr: 1, color: '#d32f2f' }} /> Fecha de Baja
+                    </MenuItem>
+                  </>
+                )}
+              </Menu>
+            </div>
+          </div>
+            
+            
 
             {/* Renglón 2 */}
 
             <div className="flex flex-wrap mb-2 gap-4 justify-center">
-            {cliente.tipo_tramite && cliente.tipo_tramite != "Activate" && (
-              <div className="flex items-center flex-grow">
-                <p className="font-bold">MONTO:</p>
-                <p className="ml-1">{formatMonto(cliente.monto).toUpperCase()}</p>
-              </div>
-            )}
+              {cliente.tipo_tramite && cliente.tipo_tramite != "Activate" && (
+                <div className="flex items-center flex-grow">
+                  <p className="font-bold">MONTO:</p>
+                  <p className="ml-1">{formatMonto(cliente.monto).toUpperCase()}</p>
+                </div>
+              )}
               <div className="flex items-center flex-grow">
                 <p className="font-bold">FECHA DE TRÁMITE:</p>
                 <p className="ml-2">{formatFecha(cliente.fecha_registro).toUpperCase()}</p>
@@ -696,108 +760,51 @@ const Clientes = () => {
             {/* Renglón 4 */}
             <div className="flex flex-wrap mb-2 gap-4 justify-center">
               <div className="flex items-center flex-grow">
-              <p className="font-bold">ASESOR:</p>
-              <p className="ml-2">{(cliente.nombreasesor || "NO ASIGNADO").toUpperCase()}</p>
+                <p className="font-bold">ASESOR:</p>
+                <p className="ml-2">{(cliente.nombreasesor || "NO ASIGNADO").toUpperCase()}</p>
               </div>
               <div className="flex items-center flex-grow">
-              <p className="font-bold">STATUS:</p>
-              <p className="ml-2">{cliente.status.toUpperCase()}</p>
-              </div>
-              <div className="flex items-center flex-grow">
-              <button
-                className="bg-yellow-500 text-white py-1 px-4 rounded hover:bg-yellow-700 ml-2"
-                onClick={() => handleEditClick(cliente)}
-              >
-                EDITAR
-              </button>
-              </div>
-              <div className="flex items-center flex-grow">
-              <button
-                className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-700"
-                onClick={() => handleContratoClick(cliente)}
-              >
-                CONTRATO
-              </button>
-              </div>
-              <div className="flex items-center flex-grow">
-              <button
-                className="bg-green-500 text-white py-1 px-4 rounded hover:bg-green-700 ml-2"
-                onClick={() => handleDetallesClick(cliente)}
-              >
-                VER DETALLES
-              </button>
-              </div>
-
-              <div className="flex items-center flex-grow">
-  <button
-    className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-700 ml-2 flex items-center justify-center"
-    onClick={() => handleDeleteClick(cliente)}
-  >
-    <FaTrash size={16} /> {/* Ícono de papelera */}
-  </button>
-</div>
-            </div>
-
-            
-            {profile && profile.tipo === 3 && (
-            <div className="flex flex-wrap mb-2 gap-4 justify-center">
-              <div className="flex items-center flex-grow">
-
-                <button 
-                  className="bg-yellow-500 text-white py-1 px-4 rounded hover:bg-yellow-700 ml-2"
-                  onClick={() => handleChangeStatus(cliente)}
-                >
-                  CAMBIAR STATUS
-                </button>
-              
-
-
-              
-                <button
-                  className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-700 ml-2"
-                  onClick={() => handleOpenFechaBajaModal(cliente)}
-                >
-                  FECHA DE BAJA
-                </button>
-              
+                <p className="font-bold">STATUS:</p>
+                <p className="ml-2">{cliente.status.toUpperCase()}</p>
               </div>
             </div>
-            )}
           </div>
         ))}
       </div>
-      <CambiarStatus 
-        isOpen={modalOpen} 
-        onClose={() => setModalOpen(false)} 
-        onConfirm={handleConfirmStatusChange} 
+      <CambiarStatus
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onConfirm={handleConfirmStatusChange}
         cliente={clienteSeleccionado}
       />
-      {detalleCliente && (
-        <div className="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="modal-content custom-modal p-4 rounded shadow-lg overflow-auto">
-            <h2 className="text-xl font-bold mb-4">DETALLES DEL CLIENTE</h2>
-            <p className="whitespace-normal"><strong>NOMBRE:</strong> {detalleCliente.nombre.toUpperCase()}</p>
-            <p className="whitespace-normal"><strong>CURP:</strong> {detalleCliente.curp.toUpperCase()}</p>
-            <p className="whitespace-normal"><strong>NSS:</strong> {detalleCliente.nss.toUpperCase()}</p>
-            <p className="whitespace-normal"><strong>EMAIL:</strong> {detalleCliente.email.toUpperCase()}</p>
-            <p className="whitespace-normal"><strong>RFC:</strong> {detalleCliente.rfc.toUpperCase()}</p>
-            <p className="whitespace-normal"><strong>TELÉFONO:</strong> {detalleCliente.telefono.toUpperCase()}</p>
-            <p className="whitespace-normal"><strong>DIRECCIÓN:</strong> {detalleCliente.direccioncompleta.toUpperCase()}</p>
-            <p className="whitespace-normal"><strong>STATUS:</strong> {detalleCliente.status.toUpperCase()}</p>
-            <p className="whitespace-normal"><strong>ZONA:</strong> {detalleCliente.zona.toUpperCase()}</p>
-            <p className="whitespace-normal"><strong>ACTUALIZÓ:</strong> {detalleCliente.actualizo.toUpperCase()}</p>
-            <p className="whitespace-normal"><strong>FECHA DE SOLUCIÓN:</strong> {formatFecha(detalleCliente.fecha_solucion).toUpperCase()}</p>
-            <p className="whitespace-normal"><strong>OBSERVACIONES:</strong> {detalleCliente.observaciones.toUpperCase()}</p>
-            <p className="whitespace-normal"><strong>FECHA DE BAJA:</strong> {detalleCliente.fecha_baja ? formatFecha(detalleCliente.fecha_baja).toUpperCase() : "NO HAY FECHA DE BAJA"}</p>
-            <button
-              className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-700 mt-4"
-              onClick={() => setDetalleCliente(null)}
-            >
-              CERRAR
-            </button>
-          </div>
-        </div>
-      )}
+      <Dialog
+        open={!!detalleCliente}
+        onClose={() => setDetalleCliente(null)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle><strong>DETALLES DEL CLIENTE</strong></DialogTitle>
+        <DialogContent dividers style={{ maxHeight: '80vh' }}>
+          <p className="whitespace-normal"><strong>NOMBRE:</strong> {detalleCliente?.nombre?.toUpperCase()}</p>
+          <p className="whitespace-normal"><strong>CURP:</strong> {detalleCliente?.curp?.toUpperCase()}</p>
+          <p className="whitespace-normal"><strong>NSS:</strong> {detalleCliente?.nss?.toUpperCase()}</p>
+          <p className="whitespace-normal"><strong>EMAIL:</strong> {detalleCliente?.email?.toUpperCase()}</p>
+          <p className="whitespace-normal"><strong>RFC:</strong> {detalleCliente?.rfc?.toUpperCase()}</p>
+          <p className="whitespace-normal"><strong>TELÉFONO:</strong> {detalleCliente?.telefono?.toUpperCase()}</p>
+          <p className="whitespace-normal"><strong>DIRECCIÓN:</strong> {detalleCliente?.direccioncompleta?.toUpperCase()}</p>
+          <p className="whitespace-normal"><strong>STATUS:</strong> {detalleCliente?.status?.toUpperCase()}</p>
+          <p className="whitespace-normal"><strong>ZONA:</strong> {detalleCliente?.zona?.toUpperCase()}</p>
+          <p className="whitespace-normal"><strong>ACTUALIZÓ:</strong> {detalleCliente?.actualizo?.toUpperCase()}</p>
+          <p className="whitespace-normal"><strong>FECHA DE SOLUCIÓN:</strong> {formatFecha(detalleCliente?.fecha_solucion).toUpperCase()}</p>
+          <p className="whitespace-normal"><strong>OBSERVACIONES:</strong> {detalleCliente?.observaciones?.toUpperCase()}</p>
+          <p className="whitespace-normal"><strong>FECHA DE BAJA:</strong> {detalleCliente?.fecha_baja ? formatFecha(detalleCliente.fecha_baja).toUpperCase() : "NO HAY FECHA DE BAJA"}</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDetalleCliente(null)} color="primary">
+            CERRAR
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Dialog
         open={modalFechaBajaOpen}
         onClose={handleCloseFechaBajaModal}

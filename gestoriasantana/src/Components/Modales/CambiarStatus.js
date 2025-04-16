@@ -1,8 +1,12 @@
-// ModalCambiarStatus.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 
 const CambiarStatus = ({ isOpen, onClose, onConfirm, cliente }) => {
   const [nuevoStatus, setNuevoStatus] = useState('');
+
+  useEffect(() => {
+    setNuevoStatus(cliente?.status || '');
+  }, [cliente]);
 
   const handleConfirm = () => {
     if (nuevoStatus) {
@@ -14,38 +18,36 @@ const CambiarStatus = ({ isOpen, onClose, onConfirm, cliente }) => {
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="modal-content bg-white p-4 rounded shadow-lg">
-        <h2 className="text-xl font-bold mb-4">Cambiar Estado de {cliente.nombre}</h2>
-        
-        <select 
-          value={nuevoStatus} 
-          onChange={(e) => setNuevoStatus(e.target.value)} 
-          className="border p-2 mb-4 w-full"
-        >
-          <option value="">Selecciona un nuevo estado</option>
-          {["Fallido", "Liquidado", "Inactivo"].map((status) => (
-            <option key={status} value={status}>{status}</option>
-          ))}
-        </select>
-
-        <button 
-          className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-700"
-          onClick={handleConfirm}
-        >
-          Confirmar
-        </button>
-        <button 
-          className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-700 ml-2"
-          onClick={onClose}
-        >
+    <Dialog open={isOpen} onClose={onClose} maxWidth="xs" fullWidth>
+      <DialogTitle>
+        <strong>CAMBIAR STATUS DE {cliente?.nombre?.toUpperCase()}</strong>
+      </DialogTitle>
+      <DialogContent dividers>
+        <FormControl fullWidth>
+          <InputLabel id="nuevo-status-label">Nuevo Status</InputLabel>
+          <Select
+            labelId="nuevo-status-label"
+            value={nuevoStatus}
+            label="Nuevo Status"
+            onChange={(e) => setNuevoStatus(e.target.value)}
+          >
+            <MenuItem value="">Selecciona un nuevo estado</MenuItem>
+            <MenuItem value="fallido">Fallido</MenuItem>
+            <MenuItem value="liquidado">Liquidado</MenuItem>
+            <MenuItem value="inactivo">Inactivo</MenuItem>
+          </Select>
+        </FormControl>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="primary">
           Cancelar
-        </button>
-      </div>
-    </div>
+        </Button>
+        <Button onClick={handleConfirm} color="primary" variant="contained">
+          Confirmar
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 
