@@ -16,7 +16,7 @@ router.get('/pendientes', verifyToken, async (req, res) => {
     // Filtrar por el ID del usuario si no es tipo 3 (administrador)
     if (userType !== 3) {
       values.push(userId);
-      conditions = ` AND (c.id_asesor = $${values.length} OR u.jefe = $${values.length})`;
+      conditions = ` WHERE (c.id_asesor = $${values.length} OR u.jefe = $${values.length})`;
     }
 
     const query = `
@@ -32,10 +32,10 @@ router.get('/pendientes', verifyToken, async (req, res) => {
             WHEN monto < 15000 THEN 1500
           END AS aseguramiento
         FROM clientes
-        WHERE status = 'Liquidado'
+        WHERE status = 'Liquidado' OR status = 'liquidado'
       )
       SELECT 
-        p.nombres || ' ' || p.apellido_p || ' ' || p.apellido_m AS nombre,
+        UPPER(p.nombres || ' ' || p.apellido_p || ' ' || p.apellido_m) AS nombre,
         c.monto AS monto,
         h.honorario*100 AS porcentaje,
         ROUND(ca.aseguramiento::numeric, 3) AS aseguramiento,
@@ -52,7 +52,6 @@ router.get('/pendientes', verifyToken, async (req, res) => {
       INNER JOIN 
         clientes_aseguramiento ca ON c.id_cliente = ca.id_cliente
       INNER JOIN Usuarios u ON u.id_usuario = c.id_asesor
-      WHERE DATE_PART('year', c.fecha_registro) = DATE_PART('year', CURRENT_DATE)
       ${conditions}
       ORDER BY 
         c.id_cliente;
