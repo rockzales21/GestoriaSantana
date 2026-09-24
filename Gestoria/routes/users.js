@@ -115,11 +115,16 @@ router.get('/profile', async (req, res) => {
 
 // Ruta para cambiar la contraseña del usuario
 router.put('/change-password', verifyToken, async (req, res) => {
+    console.log('ENTRO')
     const { currentPassword, newPassword } = req.body;
-    const userId = req.user.id; // Obtener el ID del usuario del token verificado
+    
+    // 1. Aseguramos extraer id_usuario tal como lo hace tu archivo que sí funciona
+    const userId = req.user.id_usuario; 
   
     try {
-      const user = await pool.query('SELECT password FROM users WHERE id = $1', [userId]);
+      // 2. Buscamos en la tabla 'users' coincidiendo con la columna 'id_usuario'
+      const user = await pool.query('SELECT password FROM users WHERE id_usuario = $1', [userId]);
+      
       if (user.rows.length === 0) {
         return res.status(404).json({ message: 'Usuario no encontrado' });
       }
@@ -134,14 +139,14 @@ router.put('/change-password', verifyToken, async (req, res) => {
       const salt = await bcrypt.genSalt(10);
       const hashedNewPassword = await bcrypt.hash(newPassword, salt);
   
-      // Actualizar la contraseña en la base de datos
-      await pool.query('UPDATE users SET password = $1 WHERE id = $2', [hashedNewPassword, userId]);
+      // 3. Actualizamos en la tabla 'users' filtrando por 'id_usuario'
+      await pool.query('UPDATE users SET password = $1 WHERE id_usuario = $2', [hashedNewPassword, userId]);
   
       res.json({ message: 'Contraseña actualizada correctamente' });
     } catch (error) {
+      console.error('Error al cambiar contraseña:', error.message);
       res.status(500).json({ error: error.message });
     }
 });
-
 
 module.exports = router;

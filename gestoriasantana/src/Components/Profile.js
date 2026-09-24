@@ -2,6 +2,9 @@ import React, { useContext, useState } from "react";
 import { AuthContext } from "./auth/AuthContext";
 import CambiarPassModal from "./CambiarPassModal";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const Profile = () => {
   const { profile } = useContext(AuthContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -35,6 +38,7 @@ const Profile = () => {
         Cambiar Contraseña
       </button>
       {isModalOpen && <CambiarPassModal onClose={() => setIsModalOpen(false)} />}
+        <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
     </div>
   );
 };
